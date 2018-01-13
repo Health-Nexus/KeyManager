@@ -1,0 +1,20 @@
+
+<div>
+  <p>
+    Choose Login Method
+  </p>
+  <form>
+    <input type="radio" name="wallet" (click)="chooseWallet('keystore')" [value]="keystore" checked>Keystore / JSON File<br>
+    <input type="radio" name="wallet" (click)="chooseWallet('private')" [value]="private">Private Key<br>
+  </form>
+  <div *ngIf="wallet == 'keystore'">
+    <p>Upload file</p>
+    <input name="myFile" type="file">
+    <input name="password" type="password">
+
+  </div>
+  <div *ngIf="wallet == 'private'">
+    <p>Paste/Type Your Private Key</p>
+    <input name="key" type="text">
+  </div>
+</div>
