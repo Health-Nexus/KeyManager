@@ -13,9 +13,13 @@ export class Web3Service {
    private adding: boolean = false;                                             // If we're adding a question
    private web3Instance: any;                                                   // Current instance of web3
    private unlockedAccount: string;
+   private addr: string;
    private privateKey: string;
    private address: string;
-                                   // Current unlocked account
+   private abi:any = [ {} ]; // redacted on purpose
+   private abiArray:any = this.abi;
+   private contract: any;
+         // Current unlocked account
    // Application Binary Interface so we can use the question contract
    //private ABI  = [{'constant':false,'inputs':[{'name':'queryID','type':'bytes32'},{'name':'result','type':'string'}],'name':'__callback','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'','type':'uint256'}],'name':'questions','outputs':[{'name':'contractAddress','type':'address'},{'name':'site','type':'string'},{'name':'questionID','type':'uint256'},{'name':'winnerAddress','type':'address'},{'name':'winnerID','type':'uint256'},{'name':'acceptedAnswerID','type':'uint256'},{'name':'updateDelay','type':'uint256'},{'name':'expiryDate','type':'uint256'},{'name':'ownedFee','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[],'name':'kill','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'},{'name':'_sponsorAddr','type':'address'}],'name':'getSponsorBalance','outputs':[{'name':'sponsorBalance','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'handleQuestion','outputs':[],'type':'function'},{'constant':false,'inputs':[{'name':'_i','type':'uint256'}],'name':'increaseBounty','outputs':[],'type':'function'},{'constant':true,'inputs':[],'name':'contractBalance','outputs':[{'name':'','type':'uint256'}],'type':'function'},{'constant':true,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'getAddressOfQuestion','outputs':[{'name':'questionAddr','type':'address'}],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'}],'name':'getSponsors','outputs':[{'name':'sponsorList','type':'address[]'}],'type':'function'},{'inputs':[],'type':'constructor'},{'anonymous':false,'inputs':[{'indexed':false,'name':'questionAddr','type':'address'}],'name':'QuestionAdded','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyIncreased','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyPaid','type':'event'}];
    private ABI  = [{}]
@@ -30,6 +34,40 @@ export class Web3Service {
 
    weiToEth(wei: number): number {
        return parseFloat(this.web3.fromWei(wei, 'ether'));
+   }
+
+
+   contractSetUp(): any {
+       this.contract =  this.web3.eth.contract(this.abiArray).at(this.contractAddr);
+
+   }
+
+   sendTransaction(): any {
+     var data = this.contract.transfer.getData(this.contractAddr, 10000, {from: this.addr});
+     var gasPrice = this.web3.eth.gasPrice;
+     var gasLimit = 90000;
+
+     var rawTransaction = {
+       "from": this.addr,
+       "gasPrice": this.web3.toHex(gasPrice),
+       "gasLimit": this.web3.toHex(gasLimit),
+       "to": this.contractAddr,
+       "value": "0",
+       "data": data,
+    "chainId": 0x03
+  };
+
+  // var tx = new Tx(rawTransaction);
+  //
+  // tx.sign(privKey);
+  // var serializedTx = tx.serialize();
+
+  this.web3.eth.sendTransaction(rawTransaction, function(err, hash) {
+    if (!err)
+      console.log(hash);
+      else
+      console.log(err);
+    });
    }
 
    connected(): Promise<any> {
