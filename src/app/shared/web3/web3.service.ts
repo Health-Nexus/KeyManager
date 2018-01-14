@@ -54,7 +54,7 @@ export class Web3Service {
        "to": this.contractAddr,
        "value": "0",
        "data": data,
-    "chainId": 0x03
+    "chainId": ''
   };
 
   // var tx = new Tx(rawTransaction);
