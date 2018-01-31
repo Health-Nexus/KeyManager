@@ -13,4 +13,20 @@ export class AppComponent {
       web3Service.intializeWeb3('0xa96a6269f13b9cf0eb82dc4af916bbe926f34e0db92d5c3d68fa029a9f5462d7','0x7e9eFE5712aCAaE3E00839F48F48c0eefBfE5C77');
   }
 
+  test(): any{
+    this.web3Service.test();
+  }
+
+  createService2(): any{
+    console.log('here')
+    this.web3Service.createservice();
+  }
+  getNumberService(): any{
+    this.web3Service.getServiceCount();
+  }
+  getServiceURL(): any{
+    this.web3Service.getServiceURL('');
+  }
+
+
 }
