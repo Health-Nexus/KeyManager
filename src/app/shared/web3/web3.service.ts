@@ -34,14 +34,14 @@ export class Web3Service {
          this.contract = this.http.get("./data/HealthDRS.json")
             .map(response => response.json() )
             .subscribe(result =>{
-            this.web3.eth.estimateGas({from: this.web3.eth.accounts[0], to: "0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB", amount: this.web3.toWei(1, "ether")},(error, result) => {console.log('cost2: ',error,' ; ', result)})
+            this.web3.eth.estimateGas({from: this.web3.eth.accounts[0], to: "0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910", amount: this.web3.toWei(1, "ether")},(error, result) => {console.log('cost2: ',error,' ; ', result)})
 
               this.contract=result;
               console.log(result);
               const filter = this.web3.eth.filter({
                 fromBlock: 0,
                 toBlock: 'latest',
-                address: '0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB',
+                address: '0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910',
                 topics: [this.web3.sha3('ServiceCreated(address indexed _owner, bytes32 indexed _service)')]
               })
 
@@ -77,7 +77,7 @@ export class Web3Service {
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+           this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910').authorizedToSpend((error, result) => {
              if (!error) {
                console.log('result contract test1:', result)
                resolve(result);
@@ -96,16 +96,16 @@ export class Web3Service {
     console.log('abi: ', this.contract)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
-         console.log('contract found2: ',this._contract.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB'))
+         console.log('contract found2: ',this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910'))
 
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').createService('www.facebook8.com',(error, result) => {
+           this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910').createService('www.facebook9.com',(error, result) => {
              if (!error) {
                console.log('result contract test2:', result)
                console.log(typeof result);
                let result2=this.web3.toAscii(result)
                console.log('result contract test2:', result2)
-              //  this.getServiceURL(result)
+                this.getServiceURL(result)
 
              } else {
                console.log('error from test2:',error)
@@ -123,7 +123,7 @@ export class Web3Service {
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').getServiceCount((error, result) => {
+           this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910').getServiceCount((error, result) => {
              if (!error) {
                console.log('result contract test3:', result)
                resolve(result);
@@ -148,7 +148,7 @@ export class Web3Service {
          console.log(typeof url)
 
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').getUrl(this.web3.fromAscii(url),(error, result) => {
+           this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910').getUrl(this.web3.fromAscii(url),(error, result) => {
              if (!error) {
                console.log('result contract test4:', result)
                resolve(result);
