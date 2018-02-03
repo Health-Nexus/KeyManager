@@ -24,8 +24,8 @@ export class AppComponent {
   getNumberService(): any{
     this.web3Service.getServiceCount();
   }
-  getServiceURL(): any{
-    this.web3Service.getServiceURL('');
+  getServiceURL(id): any{
+    this.web3Service.getServiceURL(id);
   }
 
 

@@ -7,7 +7,7 @@ import 'rxjs/add/operator/map';
 export class Web3Service {
 
   @Output() update = new EventEmitter();
-   private contractAddr: string = ''//'0xcebe9aa3b41a0b12d28ebcb7931fff0e0244165b'; // Current address if the user selects a custom
+   private contractAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'// Current address 
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
@@ -34,30 +34,38 @@ export class Web3Service {
          this.contract = this.http.get("./data/HealthDRS.json")
             .map(response => response.json() )
             .subscribe(result =>{
-            this.web3.eth.estimateGas({from: this.web3.eth.accounts[0], to: "0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910", amount: this.web3.toWei(1, "ether")},(error, result) => {console.log('cost2: ',error,' ; ', result)})
-
               this.contract=result;
-              console.log(result);
-              const filter = this.web3.eth.filter({
-                fromBlock: 0,
-                toBlock: 'latest',
-                address: '0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910',
-                topics: [this.web3.sha3('ServiceCreated(address indexed _owner, bytes32 indexed _service)')]
-              })
+              this._contract=this.web3.eth.contract(this.contract.abi)
+              console.log('abi2: ',result);
+              this.web3.eth.filter("pending").watch(
+                function(error,result){
+                  if (!error) {
+            console.log('pending: ',result);
+            }
+          }
+        )
+        console.log('here23')
+        let serviceEvent = this.web3.eth.contract(this.contract.abi).at('contractAddr').ServiceCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
+  console.log(err, event)
+})
+        serviceEvent.get((error, logs) => {
+          // we have the logs, now print them
+          logs.forEach(log => console.log('log: ',log.args))
+        })
+        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
 
-              filter.watch((error, result) => {
-                console.log('result from filter: ',result)
-                console.log('error from filter: ',error)
+        console.log('service: ',serviceEvent)
+        console.log('contract foundB: ',this._contract.at('contractAddr'))
+        this._contract.at('contractAddr').serviceList(3,(error, eventResult) => {
+           if (error)
+             console.log('3Error in myEvent event handler: ' + error);
+           else
+             console.log('3myEvent: ' + eventResult);
+         })
 
-                 //
-              })
             });
 
-                          //  .subscribe(res =>{
-                          //    res.json();
-                          //    console.log('res:', res.json());
-                          //  })
-                          //  .do(data => console.log(data));
+
                         }
 
 
@@ -73,11 +81,11 @@ export class Web3Service {
 
    test(): any {
     // let p = new Promise<any>((resolve, reject) => {
-    console.log('abi: ', this.contract)
+    console.log('abi3: ', this.contract)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910').authorizedToSpend((error, result) => {
+           this._contract.at('contractAddr').authorizedToSpend((error, result) => {
              if (!error) {
                console.log('result contract test1:', result)
                resolve(result);
@@ -94,18 +102,22 @@ export class Web3Service {
    createservice(): any {
     // let p = new Promise<any>((resolve, reject) => {
     console.log('abi: ', this.contract)
+    console.log('abi type: ',typeof this.contract.abi)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
-         console.log('contract found2: ',this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910'))
-
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910').createService('www.facebook9.com',(error, result) => {
+           this._contract.at('contractAddr').createService('www.test12.com',(error, result) => {
              if (!error) {
                console.log('result contract test2:', result)
                console.log(typeof result);
                let result2=this.web3.toAscii(result)
                console.log('result contract test2:', result2)
-                this.getServiceURL(result)
+              //  this.web3.eth.contract(this.contract.abi).at('contractAddr').ServiceCreated({}, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
+              //    if (error)
+              //      console.log('2Error in myEvent event handler: ' + error);
+              //    else
+              //      console.log('2myEvent: ' + JSON.stringify(eventResult.args));
+              //  });
 
              } else {
                console.log('error from test2:',error)
@@ -123,42 +135,315 @@ export class Web3Service {
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910').getServiceCount((error, result) => {
+           this._contract.at('contractAddr').getServiceCount((error, result) => {
              if (!error) {
                console.log('result contract test3:', result)
                resolve(result);
              } else {
                console.log('error from test3:',error)
-               reject(error)   }
+               reject(error) ;  }
              });
 
            });
            return p;
    }
 
+   getServiceIds(index): any {
+     let p = new Promise<any>((resolve, reject) => {
+        this._contract.at('contractAddr').serviceList(index,(error, result) => {
+          if (!error) {
+            console.log('result contract test4:', result)
+            resolve(result);
+          } else {
+            console.log(error)
+            reject(error)
+          }
+          });
+        })
+          return p;
 
-   getServiceURL(url): any {
-    // let p = new Promise<any>((resolve, reject) => {
-    console.log('abi: ', this.contract)
-    console.log('ascii: ',this.web3.fromAscii('0x4cf35a9cd4c88b71134e382ce2fea9dd2ef183881e9b23a7e1f62e3f8830e443'))
-    var big32=this.web3.fromAscii('0x4cf35a9cd4c88b71134e382ce2fea9dd2ef183881e9b23a7e1f62e3f8830e443');
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
-         console.log('contract found: ',this._contract)
-         console.log('url found: ',url)
-         console.log(typeof url)
 
-         let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('0x1Ba6cea196f186e6ee2d8AC46308E6D18018E910').getUrl(this.web3.fromAscii(url),(error, result) => {
-             if (!error) {
-               console.log('result contract test4:', result)
-               resolve(result);
-             } else {
-               console.log('error from test4:',error)
-               reject(error)   }
-             });
+   }
 
-           });
-           return p;
+   getServiceURL(id): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').getUrl(id,(error, result) => {
+         if (!error) {
+           console.log('result contract test4:', result)
+           resolve(result);
+         } else {
+           console.log('error from test4:',error)
+           reject(error)
+         }
+       });
+     })
+    return p;
+
+   }
+
+
+   isServiceOwner(id): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').isServiceOwner(id,this.unlockedAccount,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   shareService(id,account): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').shareService(id,account,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   unshareService(id,account): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').unshareService(id,account,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   updateURL(id,url): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').updateUrl(id,url,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   createKey(id): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').createKey(id,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+   issueKey(id,address): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').issueKey(id,address,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   permissionKey(id,canShare,canTrade,canSell): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').setKeyPermissions(id,canShare,canTrade,canSell,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   shareKey(key,account): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').shareKey(key,account,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   unshareKey(key,account): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').unshareKey(key,account,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   createSalesOffer(key,buyer,price,canSell): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').createSalesOffer(key,buyer,price,canSell,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   cancelSalesOffer(key): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').cancelSalesOffer(key,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   purchaseKey(key, value): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').purchaseKey(key, value,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   tradeKey(key1, key2): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').tradeKey(key1, key2,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   setKeyData(key, dataKey, dataValue): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').setKeyData(key, dataKey, dataValue,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   getKeyData(key, dataKey): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').getKeyData(key, dataKey,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   getUrlFromKey(key): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').getUrlFromKey(key,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   logAccess(key, data): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').logAccess(key, data,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   message(from, to, category, data): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').message(from, to, category, data,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   log(from,data): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at('contractAddr').log(from,data,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
    }
 
 
