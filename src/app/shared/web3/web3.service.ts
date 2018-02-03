@@ -7,7 +7,7 @@ import 'rxjs/add/operator/map';
 export class Web3Service {
 
   @Output() update = new EventEmitter();
-   private contractAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'// Current address 
+   private contractAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'// Current address
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
@@ -70,12 +70,10 @@ export class Web3Service {
 
 
 
-   intializeWeb3(privateKeyInput, addressInput): void {
+   initializeWeb3(): void {
      console.log('ABI: ', this.contract);
        this.nodeIP = 'MetaMask';//localStorage['nodeIP'] || this.defaultNodeIP;
       // this.web3 = new Web3(this.web3.currentProvider);
-       this.privateKey=privateKeyInput;
-       this.address=addressInput;
        this.connectToNode(); // Connect to whatever's available
    }
 
@@ -552,7 +550,7 @@ export class Web3Service {
 
    get web3(): any {
        if (!this.web3Instance) {
-           this.intializeWeb3(this.privateKey,this.address);
+           this.initializeWeb3();
        }
        return this.web3Instance;
    }
