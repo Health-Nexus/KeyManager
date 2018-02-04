@@ -50,13 +50,13 @@ export class HealthcashService {
        this.connectToNode(); // Connect to whatever's available
    }
 
-   test(): any {
+   setTransferAgent(): any {
     // let p = new Promise<any>((resolve, reject) => {
     console.log('abi3: ', this.contract)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('contractAddr').authorizedToSpend((error, result) => {
+           this._contract.at(contractAddr).setTransferAgent('0x1ba6cea196f186e6ee2d8ac46308e6d18018e910',true,(error, result) => {
              if (!error) {
                console.log('result contract test1:', result)
                resolve(result);
@@ -70,26 +70,56 @@ export class HealthcashService {
    }
 
 
-   createservice(): any {
-    // let p = new Promise<any>((resolve, reject) => {
-    console.log('abi: ', this.contract)
-    console.log('abi type: ',typeof this.contract.abi)
+   transfer( _to,  _value): any {
+
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
-         console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('contractAddr').createService('www.test12.com',(error, result) => {
+           this._contract.at(this.contractAddr).transfer(_to,_value,(error, result) => {
              if (!error) {
                console.log('result contract test2:', result)
                console.log(typeof result);
                let result2=this.web3.toAscii(result)
                console.log('result contract test2:', result2)
-              //  this.web3.eth.contract(this.contract.abi).at('contractAddr').ServiceCreated({}, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
-              //    if (error)
-              //      console.log('2Error in myEvent event handler: ' + error);
-              //    else
-              //      console.log('2myEvent: ' + JSON.stringify(eventResult.args));
-              //  });
+             } else {
+               console.log('error from test2:',error)
+               reject(error)   }
+             });
 
+           });
+           return p;
+   }
+
+
+   balanceOf(): any {
+
+       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+         let p = new Promise<any>((resolve, reject) => {
+           this._contract.at(this.contractAddr).balanceOf(this.unlockedAccount,(error, result) => {
+             if (!error) {
+               console.log('result contract test2:', result)
+               console.log(typeof result);
+               let result2=this.web3.toAscii(result)
+               console.log('result contract test2:', result2)
+             } else {
+               console.log('error from test2:',error)
+               reject(error)   }
+             });
+
+           });
+           return p;
+   }
+
+
+   transferFrom( _from, _to,  _value): any {
+
+       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+         let p = new Promise<any>((resolve, reject) => {
+           this._contract.at(this.contractAddr).transferFrom(_from, _to,  _value,(error, result) => {
+             if (!error) {
+               console.log('result contract test2:', result)
+               console.log(typeof result);
+               let result2=this.web3.toAscii(result)
+               console.log('result contract test2:', result2)
              } else {
                console.log('error from test2:',error)
                reject(error)   }

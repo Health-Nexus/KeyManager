@@ -45,7 +45,7 @@ export class Web3Service {
           }
         )
         console.log('here23')
-        let serviceEvent = this.web3.eth.contract(this.contract.abi).at('contractAddr').ServiceCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
+        let serviceEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
   console.log(err, event)
 })
         serviceEvent.get((error, logs) => {
@@ -55,8 +55,8 @@ export class Web3Service {
         this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
 
         console.log('service: ',serviceEvent)
-        console.log('contract foundB: ',this._contract.at('contractAddr'))
-        this._contract.at('contractAddr').serviceList(3,(error, eventResult) => {
+        console.log('contract foundB: ',this._contract.at(this.contractAddr))
+        this._contract.at(this.contractAddr).serviceList(3,(error, eventResult) => {
            if (error)
              console.log('3Error in myEvent event handler: ' + error);
            else
@@ -83,7 +83,7 @@ export class Web3Service {
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('contractAddr').authorizedToSpend((error, result) => {
+           this._contract.at(this.contractAddr).authorizedToSpend((error, result) => {
              if (!error) {
                console.log('result contract test1:', result)
                resolve(result);
@@ -104,13 +104,13 @@ export class Web3Service {
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('contractAddr').createService('www.test12.com',(error, result) => {
+           this._contract.at(this.contractAddr).createService('www.test12.com',(error, result) => {
              if (!error) {
                console.log('result contract test2:', result)
                console.log(typeof result);
                let result2=this.web3.toAscii(result)
                console.log('result contract test2:', result2)
-              //  this.web3.eth.contract(this.contract.abi).at('contractAddr').ServiceCreated({}, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
+              //  this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
               //    if (error)
               //      console.log('2Error in myEvent event handler: ' + error);
               //    else
@@ -133,7 +133,7 @@ export class Web3Service {
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at('contractAddr').getServiceCount((error, result) => {
+           this._contract.at(this.contractAddr).getServiceCount((error, result) => {
              if (!error) {
                console.log('result contract test3:', result)
                resolve(result);
@@ -148,7 +148,7 @@ export class Web3Service {
 
    getServiceIds(index): any {
      let p = new Promise<any>((resolve, reject) => {
-        this._contract.at('contractAddr').serviceList(index,(error, result) => {
+        this._contract.at(this.contractAddr).serviceList(index,(error, result) => {
           if (!error) {
             console.log('result contract test4:', result)
             resolve(result);
@@ -165,7 +165,7 @@ export class Web3Service {
 
    getServiceURL(id): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').getUrl(id,(error, result) => {
+       this._contract.at(this.contractAddr).getUrl(id,(error, result) => {
          if (!error) {
            console.log('result contract test4:', result)
            resolve(result);
@@ -182,7 +182,7 @@ export class Web3Service {
 
    isServiceOwner(id): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').isServiceOwner(id,this.unlockedAccount,(error, result) => {
+       this._contract.at(this.contractAddr).isServiceOwner(id,this.unlockedAccount,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -196,7 +196,7 @@ export class Web3Service {
 
    shareService(id,account): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').shareService(id,account,(error, result) => {
+       this._contract.at(this.contractAddr).shareService(id,account,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -210,7 +210,7 @@ export class Web3Service {
 
    unshareService(id,account): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').unshareService(id,account,(error, result) => {
+       this._contract.at(this.contractAddr).unshareService(id,account,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -224,7 +224,7 @@ export class Web3Service {
 
    updateURL(id,url): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').updateUrl(id,url,(error, result) => {
+       this._contract.at(this.contractAddr).updateUrl(id,url,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -238,7 +238,7 @@ export class Web3Service {
 
    createKey(id): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').createKey(id,(error, result) => {
+       this._contract.at(this.contractAddr).createKey(id,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -251,7 +251,7 @@ export class Web3Service {
 
    issueKey(id,address): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').issueKey(id,address,(error, result) => {
+       this._contract.at(this.contractAddr).issueKey(id,address,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -265,7 +265,7 @@ export class Web3Service {
 
    permissionKey(id,canShare,canTrade,canSell): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').setKeyPermissions(id,canShare,canTrade,canSell,(error, result) => {
+       this._contract.at(this.contractAddr).setKeyPermissions(id,canShare,canTrade,canSell,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -279,7 +279,7 @@ export class Web3Service {
 
    shareKey(key,account): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').shareKey(key,account,(error, result) => {
+       this._contract.at(this.contractAddr).shareKey(key,account,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -293,7 +293,7 @@ export class Web3Service {
 
    unshareKey(key,account): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').unshareKey(key,account,(error, result) => {
+       this._contract.at(this.contractAddr).unshareKey(key,account,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -307,7 +307,7 @@ export class Web3Service {
 
    createSalesOffer(key,buyer,price,canSell): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').createSalesOffer(key,buyer,price,canSell,(error, result) => {
+       this._contract.at(this.contractAddr).createSalesOffer(key,buyer,price,canSell,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -321,7 +321,7 @@ export class Web3Service {
 
    cancelSalesOffer(key): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').cancelSalesOffer(key,(error, result) => {
+       this._contract.at(this.contractAddr).cancelSalesOffer(key,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -335,7 +335,7 @@ export class Web3Service {
 
    purchaseKey(key, value): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').purchaseKey(key, value,(error, result) => {
+       this._contract.at(this.contractAddr).purchaseKey(key, value,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -349,7 +349,7 @@ export class Web3Service {
 
    tradeKey(key1, key2): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').tradeKey(key1, key2,(error, result) => {
+       this._contract.at(this.contractAddr).tradeKey(key1, key2,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -363,7 +363,7 @@ export class Web3Service {
 
    setKeyData(key, dataKey, dataValue): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').setKeyData(key, dataKey, dataValue,(error, result) => {
+       this._contract.at(this.contractAddr).setKeyData(key, dataKey, dataValue,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -377,7 +377,7 @@ export class Web3Service {
 
    getKeyData(key, dataKey): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').getKeyData(key, dataKey,(error, result) => {
+       this._contract.at(this.contractAddr).getKeyData(key, dataKey,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -391,7 +391,7 @@ export class Web3Service {
 
    getUrlFromKey(key): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').getUrlFromKey(key,(error, result) => {
+       this._contract.at(this.contractAddr).getUrlFromKey(key,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -405,7 +405,7 @@ export class Web3Service {
 
    logAccess(key, data): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').logAccess(key, data,(error, result) => {
+       this._contract.at(this.contractAddr).logAccess(key, data,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -419,7 +419,7 @@ export class Web3Service {
 
    message(from, to, category, data): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').message(from, to, category, data,(error, result) => {
+       this._contract.at(this.contractAddr).message(from, to, category, data,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -433,7 +433,7 @@ export class Web3Service {
 
    log(from,data): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at('contractAddr').log(from,data,(error, result) => {
+       this._contract.at(this.contractAddr).log(from,data,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
