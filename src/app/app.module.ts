@@ -9,10 +9,14 @@ import { LoginComponent } from './login/login.component';
 
 import {HttpClientModule} from '@angular/common/http';
 import {HttpModule} from '@angular/http';
+import { DrsComponent } from './drs/drs.component';
+import { TokenComponent } from './token/token.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DrsComponent,
+    TokenComponent
   ],
   imports: [
     BrowserModule, HttpClientModule, HttpModule

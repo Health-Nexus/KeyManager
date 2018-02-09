@@ -1,11 +1,13 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Http, Response } from '@angular/http';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 // const Web3 = require('web3');
 import 'rxjs/add/operator/map';
 @Injectable()
 export class HealthcashService {
   @Output() update = new EventEmitter();
-   private contractAddr: string = '0x6057982d1eb8a4902bf49b6a68d526e27f4be088'// Current address
+   private contractAddr: string = '0xAB6cee678340A12ee72d41D472300f6A2befA1EB'// Current address
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
@@ -19,6 +21,9 @@ export class HealthcashService {
    private abiArray:any = this.abi;
    private contract: any;
    private _contract: any;
+    private balance = new BehaviorSubject<number>(0);
+    currentBalance = this.balance.asObservable();
+
          // Current unlocked account
    // Application Binary Interface so we can use the question contract
    //private ABI  = [{'constant':false,'inputs':[{'name':'queryID','type':'bytes32'},{'name':'result','type':'string'}],'name':'__callback','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'','type':'uint256'}],'name':'questions','outputs':[{'name':'contractAddress','type':'address'},{'name':'site','type':'string'},{'name':'questionID','type':'uint256'},{'name':'winnerAddress','type':'address'},{'name':'winnerID','type':'uint256'},{'name':'acceptedAnswerID','type':'uint256'},{'name':'updateDelay','type':'uint256'},{'name':'expiryDate','type':'uint256'},{'name':'ownedFee','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[],'name':'kill','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'},{'name':'_sponsorAddr','type':'address'}],'name':'getSponsorBalance','outputs':[{'name':'sponsorBalance','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'handleQuestion','outputs':[],'type':'function'},{'constant':false,'inputs':[{'name':'_i','type':'uint256'}],'name':'increaseBounty','outputs':[],'type':'function'},{'constant':true,'inputs':[],'name':'contractBalance','outputs':[{'name':'','type':'uint256'}],'type':'function'},{'constant':true,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'getAddressOfQuestion','outputs':[{'name':'questionAddr','type':'address'}],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'}],'name':'getSponsors','outputs':[{'name':'sponsorList','type':'address[]'}],'type':'function'},{'inputs':[],'type':'constructor'},{'anonymous':false,'inputs':[{'indexed':false,'name':'questionAddr','type':'address'}],'name':'QuestionAdded','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyIncreased','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyPaid','type':'event'}];
@@ -26,24 +31,30 @@ export class HealthcashService {
 
        constructor(private http: Http) {
          this.ngOnInit();
+         console.log('constructor', this.balance)
        }
 
        ngOnInit() {
-         this.contract = this.http.get("./data/HealthCash.json")
+         let p = new Promise<any>((resolve, reject) => {
+           this.http.get("./data/HealthCash.json")
             .map(response => response.json() )
             .subscribe(result =>{
               this.contract=result;
               this._contract=this.web3.eth.contract(this.contract.abi)
-              console.log('abi2: ',result);
+              console.log('balance of init ')
+              this.balanceOf();
+              resolve(result);
 
 
             });
+          });
+
       }
 
 
 
    initializeWeb3(): void {
-     console.log('ABI: ', this.contract);
+     this.ngOnInit();
        this.nodeIP = 'MetaMask';//localStorage['nodeIP'] || this.defaultNodeIP;
       // this.web3 = new Web3(this.web3.currentProvider);
 
@@ -52,16 +63,14 @@ export class HealthcashService {
 
    setTransferAgent(): any {
     // let p = new Promise<any>((resolve, reject) => {
-    console.log('abi3: ', this.contract)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
-         console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at(contractAddr).setTransferAgent('0x1ba6cea196f186e6ee2d8ac46308e6d18018e910',true,(error, result) => {
+           this._contract.at(this.contractAddr).setTransferAgent('0x1ba6cea196f186e6ee2d8ac46308e6d18018e910',true,(error, result) => {
              if (!error) {
-               console.log('result contract test1:', result)
+               console.log('result contract transfer agents:', result)
                resolve(result);
              } else {
-               console.log('error from test1:',error)
+               console.log('error from transfer agent:',error)
                reject(error)   }
              });
 
@@ -77,9 +86,7 @@ export class HealthcashService {
            this._contract.at(this.contractAddr).transfer(_to,_value,(error, result) => {
              if (!error) {
                console.log('result contract test2:', result)
-               console.log(typeof result);
-               let result2=this.web3.toAscii(result)
-               console.log('result contract test2:', result2)
+               resolve(result);
              } else {
                console.log('error from test2:',error)
                reject(error)   }
@@ -91,17 +98,37 @@ export class HealthcashService {
 
 
    balanceOf(): any {
+     console.log('balanceof start ')
 
+     console.log('balance account: ', this.unlockedAccount)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+         console.log('balance contract: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).balanceOf(this.unlockedAccount,(error, result) => {
              if (!error) {
-               console.log('result contract test2:', result)
-               console.log(typeof result);
-               let result2=this.web3.toAscii(result)
-               console.log('result contract test2:', result2)
+               console.log('result contract balance:', result.c[0])
+               this.balance.next(result.c[0])
+              this.currentBalance=result.c[0]
+               resolve(result.c[0]);
              } else {
-               console.log('error from test2:',error)
+               console.log('error from balance:',error)
+               reject(error)   }
+             });
+
+           });
+           return p;
+   }
+
+
+   transferOwnership(): any {
+       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+         let p = new Promise<any>((resolve, reject) => {
+           this._contract.at(this.contractAddr).transferOwnership('0xC6EBD9EfB9469555B3785bd09570571c7310bCb3',(error, result) => {
+             if (!error) {
+               console.log('result contract balance:', result)
+               resolve(result);
+             } else {
+               console.log('error from balance:',error)
                reject(error)   }
              });
 
@@ -117,9 +144,7 @@ export class HealthcashService {
            this._contract.at(this.contractAddr).transferFrom(_from, _to,  _value,(error, result) => {
              if (!error) {
                console.log('result contract test2:', result)
-               console.log(typeof result);
-               let result2=this.web3.toAscii(result)
-               console.log('result contract test2:', result2)
+               resolve(result);
              } else {
                console.log('error from test2:',error)
                reject(error)   }

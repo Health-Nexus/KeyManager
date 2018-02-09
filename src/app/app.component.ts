@@ -11,17 +11,21 @@ export class AppComponent {
   title = 'Health Nexus Wallet';
 
   constructor(private web3Service:Web3Service,private healthcashService:HealthcashService) {
-      web3Service.initializeWeb3();
+      this.web3Service.initializeWeb3();
+      this.healthcashService.initializeWeb3();
+
   }
 
-  test(): any{
-    this.web3Service.test();
+  balance(): any{
+    this.healthcashService.balanceOf();
   }
 
-  createService2(): any{
-    console.log('here')
-    this.web3Service.createservice();
+
+  transferOwnership(): any{
+    this.healthcashService.transferOwnership();
   }
+
+
   getNumberService(): any{
     this.web3Service.getServiceCount();
   }

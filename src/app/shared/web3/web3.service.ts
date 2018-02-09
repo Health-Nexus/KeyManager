@@ -21,67 +21,95 @@ export class Web3Service {
    private abiArray:any = this.abi;
    private contract: any;
    private _contract: any;
+   private services: Array<{}>;
+   private keys: Array<{}>;
+
          // Current unlocked account
    // Application Binary Interface so we can use the question contract
    //private ABI  = [{'constant':false,'inputs':[{'name':'queryID','type':'bytes32'},{'name':'result','type':'string'}],'name':'__callback','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'','type':'uint256'}],'name':'questions','outputs':[{'name':'contractAddress','type':'address'},{'name':'site','type':'string'},{'name':'questionID','type':'uint256'},{'name':'winnerAddress','type':'address'},{'name':'winnerID','type':'uint256'},{'name':'acceptedAnswerID','type':'uint256'},{'name':'updateDelay','type':'uint256'},{'name':'expiryDate','type':'uint256'},{'name':'ownedFee','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[],'name':'kill','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'},{'name':'_sponsorAddr','type':'address'}],'name':'getSponsorBalance','outputs':[{'name':'sponsorBalance','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'handleQuestion','outputs':[],'type':'function'},{'constant':false,'inputs':[{'name':'_i','type':'uint256'}],'name':'increaseBounty','outputs':[],'type':'function'},{'constant':true,'inputs':[],'name':'contractBalance','outputs':[{'name':'','type':'uint256'}],'type':'function'},{'constant':true,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'getAddressOfQuestion','outputs':[{'name':'questionAddr','type':'address'}],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'}],'name':'getSponsors','outputs':[{'name':'sponsorList','type':'address[]'}],'type':'function'},{'inputs':[],'type':'constructor'},{'anonymous':false,'inputs':[{'indexed':false,'name':'questionAddr','type':'address'}],'name':'QuestionAdded','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyIncreased','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyPaid','type':'event'}];
 
 
        constructor(private http: Http) {
+         this.services=[];
+
          this.ngOnInit();
        }
 
        ngOnInit() {
+
          this.contract = this.http.get("./data/HealthDRS.json")
             .map(response => response.json() )
             .subscribe(result =>{
               this.contract=result;
               this._contract=this.web3.eth.contract(this.contract.abi)
-              console.log('abi2: ',result);
-              this.web3.eth.filter("pending").watch(
-                function(error,result){
-                  if (!error) {
-            console.log('pending: ',result);
-            }
-          }
-        )
-        console.log('here23')
+
         let serviceEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
-  console.log(err, event)
-})
+          console.log(err, event)
+        })
         serviceEvent.get((error, logs) => {
           // we have the logs, now print them
-          logs.forEach(log => console.log('log: ',log.args))
+          logs.forEach(function(log) {
+            if(log.args._owner==this.unlockedAccount)
+              this.services.push(log.args);
+          }, this)
         })
+        console.log('serviceEvent: ',serviceEvent)
+        new Promise<any>((resolve, reject) => {
+          this._contract.at(this.contractAddr).getKeyCount((error, result) => {
+            if (!error) {
+              console.log('result contract key count:', result)
+              // resolve(result);
+            } else {
+              console.log('error from key count:',error)
+              // reject(error)
+            }
+            });
+
+          });
+        let keyEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).KeyCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
+          console.log(err, event)
+        })
+        keyEvent.get((error, logs) => {
+          // we have the logs, now print them
+          logs.forEach(function(log) {
+            console.log('Key Log: ',log.args);
+            this.keys.push(log.args);
+          }, this)
+        })
+        console.log('KeyEvent: ',keyEvent)
         this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
 
-        console.log('service: ',serviceEvent)
-        console.log('contract foundB: ',this._contract.at(this.contractAddr))
         this._contract.at(this.contractAddr).serviceList(3,(error, eventResult) => {
            if (error)
              console.log('3Error in myEvent event handler: ' + error);
            else
              console.log('3myEvent: ' + eventResult);
          })
-
-            });
-
-
-                        }
+      });
+    }
 
 
 
    initializeWeb3(): void {
-     console.log('ABI: ', this.contract);
        this.nodeIP = 'MetaMask';//localStorage['nodeIP'] || this.defaultNodeIP;
       // this.web3 = new Web3(this.web3.currentProvider);
        this.connectToNode(); // Connect to whatever's available
    }
 
+   getServices(): any {
+     console.log(this._contract);
+
+     return this.services;
+   }
+
+   getKeys(): any {
+     return this.keys;
+   }
+
+
    test(): any {
     // let p = new Promise<any>((resolve, reject) => {
-    console.log('abi3: ', this.contract)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
-         console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).authorizedToSpend((error, result) => {
              if (!error) {
@@ -97,14 +125,12 @@ export class Web3Service {
    }
 
 
-   createservice(): any {
+   createservice(url): any {
     // let p = new Promise<any>((resolve, reject) => {
-    console.log('abi: ', this.contract)
-    console.log('abi type: ',typeof this.contract.abi)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at(this.contractAddr).createService('www.test12.com',(error, result) => {
+           this._contract.at(this.contractAddr).createService(url,(error, result) => {
              if (!error) {
                console.log('result contract test2:', result)
                console.log(typeof result);
@@ -129,9 +155,7 @@ export class Web3Service {
 
    getServiceCount(): any {
     // let p = new Promise<any>((resolve, reject) => {
-    console.log('abi: ', this.contract)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
-         console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).getServiceCount((error, result) => {
              if (!error) {

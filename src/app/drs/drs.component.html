@@ -1,0 +1,16 @@
+<p>
+  <button (click)="displayData()">Update Services</button>
+  <br>
+    URL: <input type="text" name="url" #url>
+    <button (click)="createService(url.value)">Create Service</button>
+  <h3>
+    <ul>
+      <li (click)="expand(service)" *ngFor="let service of services">
+        {{ service._service }}: {{service.url | async}}
+        <br>
+        <button (click)="createKey(service._service)">Create Service</button>
+        <li *ngFor="let key of keys">
+           {{key.owner | async}} :
+        </li>
+    </ul>
+  </h3>
