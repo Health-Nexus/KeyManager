@@ -8,7 +8,7 @@
       <li (click)="expand(service)" *ngFor="let service of services">
         {{ service._service }}: {{service.url | async}}
         <br>
-        <button (click)="createKey(service._service)">Create Service</button>
+        <button (click)="createKey(service._service)">Create Key</button>
         <li *ngFor="let key of keys">
            {{key.owner | async}} :
         </li>
