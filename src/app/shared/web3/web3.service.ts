@@ -23,6 +23,10 @@ export class Web3Service {
    private _contract: any;
    private services: Array<{}>;
    private keys: Array<{}>;
+   private keysData: Array<{}>;
+   private keyOwners:any;
+   private keyNumber:number;
+   private keyAccess:any;
 
          // Current unlocked account
    // Application Binary Interface so we can use the question contract
@@ -31,6 +35,10 @@ export class Web3Service {
 
        constructor(private http: Http) {
          this.services=[];
+         this.keys=[];
+         this.keysData=[];
+         this.keyOwners={};
+         this.keyAccess={};
 
          this.ngOnInit();
        }
@@ -44,20 +52,21 @@ export class Web3Service {
               this._contract=this.web3.eth.contract(this.contract.abi)
 
         let serviceEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
-          console.log(err, event)
+          // console.log(err, event)
         })
         serviceEvent.get((error, logs) => {
           // we have the logs, now print them
           logs.forEach(function(log) {
-            if(log.args._owner==this.unlockedAccount)
+            if(log.args._owner==this.unlockedAccount || log.args._owner=='0x32d5acad1448e16ff3593fddb53fd0fc45be8705')
               this.services.push(log.args);
           }, this)
         })
-        console.log('serviceEvent: ',serviceEvent)
         new Promise<any>((resolve, reject) => {
+          console.log("drs contract: ", this._contract)
           this._contract.at(this.contractAddr).getKeyCount((error, result) => {
             if (!error) {
               console.log('result contract key count:', result)
+              this.keyNumber=result.c[0];
               // resolve(result);
             } else {
               console.log('error from key count:',error)
@@ -67,16 +76,31 @@ export class Web3Service {
 
           });
         let keyEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).KeyCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
-          console.log(err, event)
+          //console.log(err, event)
         })
         keyEvent.get((error, logs) => {
           // we have the logs, now print them
           logs.forEach(function(log) {
-            console.log('Key Log: ',log.args);
-            this.keys.push(log.args);
+            if(log.args._owner==this.unlockedAccount){
+              this.keys.push(log.args);
+              var keyOwnerArray=[];
+
+              this.getKeyOwners(log.args._key,0,keyOwnerArray).then(function(result) {
+                this.keyOwners[log.args._key]=result;
+                }.bind(this));
+              this.getKeyInfo(log.args._key).then(function(result) {
+                this.keysData.push(result);
+
+              }.bind(this));
+            }
+            else{
+              var keyOwnerArray=[];
+              this.getKeyOwners(log.args._key,0,keyOwnerArray).then(function(result) {
+                this.keyAccess[log.args._key]=result;
+                }.bind(this));
+            }
           }, this)
         })
-        console.log('KeyEvent: ',keyEvent)
         this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
 
         this._contract.at(this.contractAddr).serviceList(3,(error, eventResult) => {
@@ -102,8 +126,23 @@ export class Web3Service {
      return this.services;
    }
 
+
    getKeys(): any {
      return this.keys;
+   }
+
+   returnKeyOwners(): any {
+     return this.keyOwners;
+   }
+
+
+   getKeysData(): any {
+     return this.keysData;
+   }
+
+
+   getkeyAccess(): any {
+     return this.keyAccess;
    }
 
 
@@ -128,14 +167,11 @@ export class Web3Service {
    createservice(url): any {
     // let p = new Promise<any>((resolve, reject) => {
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
-         console.log('contract found: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).createService(url,(error, result) => {
              if (!error) {
-               console.log('result contract test2:', result)
-               console.log(typeof result);
+
                let result2=this.web3.toAscii(result)
-               console.log('result contract test2:', result2)
               //  this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
               //    if (error)
               //      console.log('2Error in myEvent event handler: ' + error);
@@ -159,7 +195,6 @@ export class Web3Service {
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).getServiceCount((error, result) => {
              if (!error) {
-               console.log('result contract test3:', result)
                resolve(result);
              } else {
                console.log('error from test3:',error)
@@ -170,11 +205,36 @@ export class Web3Service {
            return p;
    }
 
+
+   getKeyOwners(key,index,finalResult): any {
+    // let p = new Promise<any>((resolve, reject) => {
+    // console.log('getKeyOwners test: ',key,' ; ',index, ': ',finalResult)
+       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+         let p = new Promise<any>((resolve, reject) => {
+           this._contract.at(this.contractAddr).owners(key,index,(error, result) => {
+             if (!error) {
+               if(result!='0x'){
+                //  console.log('push',result)
+                 finalResult.push(result)
+                 resolve(this.getKeyOwners(key,index+1,finalResult))
+               }
+               else{
+                resolve(finalResult);
+              }
+             } else {
+               console.log('error from test3:',error)
+               reject(error) ;  }
+             });
+
+           });
+           return p;
+   }
+
+
    getServiceIds(index): any {
      let p = new Promise<any>((resolve, reject) => {
         this._contract.at(this.contractAddr).serviceList(index,(error, result) => {
           if (!error) {
-            console.log('result contract test4:', result)
             resolve(result);
           } else {
             console.log(error)
@@ -191,7 +251,6 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getUrl(id,(error, result) => {
          if (!error) {
-           console.log('result contract test4:', result)
            resolve(result);
          } else {
            console.log('error from test4:',error)
@@ -357,9 +416,9 @@ export class Web3Service {
    }
 
 
-   purchaseKey(key, value): any {
+   purchaseKey(key): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at(this.contractAddr).purchaseKey(key, value,(error, result) => {
+       this._contract.at(this.contractAddr).purchaseKey(key,(error, result) => {
          if (!error) {
            console.log(result)
          } else {
@@ -385,6 +444,34 @@ export class Web3Service {
    }
 
 
+   CreateTradeKeyOffer(key1, key2): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at(this.contractAddr).createTradeOffer(key1, key2,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
+   CancelTradeKey(key): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at(this.contractAddr).cancelTradeOffer(key,(error, result) => {
+         if (!error) {
+           console.log(result)
+         } else {
+           console.log(error)
+         }
+        });
+      })
+     return p;
+   }
+
+
    setKeyData(key, dataKey, dataValue): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).setKeyData(key, dataKey, dataValue,(error, result) => {
@@ -398,13 +485,33 @@ export class Web3Service {
      return p;
    }
 
+   getKeyInfo(key): any {
+     let p = new Promise<any>((resolve, reject) => {
+       this._contract.at(this.contractAddr).getKey(key,(error, result) => {
+         if (!error) {
+           result.push(key)
+           resolve(result);
+
+         } else {
+           console.log(error)
+           reject(error);
+
+         }
+        });
+      })
+     return p;
+   }
+
+
 
    getKeyData(key, dataKey): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getKeyData(key, dataKey,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
+           reject(error);
            console.log(error)
          }
         });

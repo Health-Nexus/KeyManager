@@ -1,6 +1,9 @@
 <p>
   <button (click)="displayData()">Update Services</button>
   <br>
+  Purchase Key: <input type="text" name="keyPurchase" #keyPurchase>
+  <button (click)="purchaseKey(keyPurchase.value)">Purchase Key</button>
+  <br>
     URL: <input type="text" name="url" #url>
     <button (click)="createService(url.value)">Create Service</button>
   <h3>
@@ -9,8 +12,74 @@
         {{ service._service }}: {{service.url | async}}
         <br>
         <button (click)="createKey(service._service)">Create Key</button>
-        <li *ngFor="let key of keys">
-           {{key.owner | async}} :
-        </li>
+        <ul *ngIf="service.keysExist">
+          <li *ngFor="let key of service.keys">
+              Current Owner: {{key.owner}}
+              <br>
+              <div *ngIf="keyOwners[key.id].length>0">
+                Shared With: {{keyOwners[key.id]}}
+              </div>
+              <br>
+              Sharing Status: {{key.share}}
+              <div *ngIf="key.share && key.owner==service._owner">
+                <br>
+                Share With: <input type="text" name="share" #share>
+                <button (click)="shareKey(key.id,share.value)">Share Key</button>
+                <br>
+
+                Unshare With: <input type="text" name="unshare" #unshare>
+                <button (click)="shareKey(key.id,unshare.value)">Unshare Key</button>
+                <br>
+
+              </div>
+              <br>
+              Trading Status: {{key.trade}}
+              <div *ngIf="key.trade && keyOwners[key.id].length==0">
+                <br>
+                Key to Trade for: <input type="text" name="keyToTrade" #keyToTrade>
+                <button (click)="tradeKeyOffer(key.id,keyToTrade.value)">Trade Key Offer</button>
+                <br>
+                <button (click)="cancelTradeKeyOffer(key.id)">Cancel Trade Key Offer</button>
+                <br>
+                Trade Key: <input type="text" name="keyTrade" #keyTrade>
+                <button (click)="tradeKey(key.id,keyTrade.value)">Trade Keys</button>
+              </div>
+              <br>
+              Selling Status:{{key.sell}}
+              <div *ngIf="key.sell && keyOwners[key.id].length==0">
+                <br>
+                Buyer Address: <input type="text" name="buyer" #buyer>
+                Price: <input type="number" name="price" #price>
+                Can Sell: <input type="checkbox" name="sellPermission" #sellPermission>
+                <button (click)="sellKeyOffer(key.id,buyer.value,price.value,sellPermission.checked)">Sell Key Offer</button>
+                <br>
+                <button (click)="cancelSellKeyOffer(key.id)">Cancel Sell Key Offer</button>
+              </div>
+              <br>
+              <div *ngIf="key.owner==service._owner">
+                Change Permissioning
+                <br>
+                Can Share: <input type="checkbox" name="sharePermission" #sharePermission>
+                Can Trade: <input type="checkbox" name="tradePermission" #tradePermission>
+                Can Sell: <input type="checkbox" name="sellPermission" #sellPermission>
+                <button (click)="changePermission(key.id,sharePermission.checked,tradePermission.checked,sellPermission.checked)">Change Permissions</button>
+                <br>
+              </div>
+        </ul>
     </ul>
+    <br>
+    Owned Keys:
+    <br>
+    <ul>
+      <li *ngFor="let key of keys">
+        {{key}}
+        <br>
+    </ul>
+    Shared Keys:
+    <br>
+    <ul>
+      <li *ngFor="let key of keyAccessArray">
+        {{key}}
+        <br>
+    </ul >
   </h3>
