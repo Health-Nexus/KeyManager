@@ -13,6 +13,9 @@ export class DrsComponent implements OnInit {
   @Input() drsServices: any;
    services:any= [];
    keys:any= [];
+   data:any;
+   dataOnKey:any;
+
    keysData:any= [];
    keyOwners:any={};
    keyAccess:any={};
@@ -31,7 +34,6 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     this.keys=this.web3Service.getKeysData()
     this.keyOwners=this.web3Service.returnKeyOwners();
     this.keyAccess=this.web3Service.getkeyAccess()
-    console.log('displayData',this.services)
 
     for(var json in this.keyAccess){
       this.keyAccessArray=json;
@@ -47,7 +49,6 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       this.services[i].url=this.web3Service.getServiceURL(this.services[i]._service);
       var length=this.keys.length
       for(var j=0;j<length;j++){
-        console.log('index0',i,j,this.keys)
 
         if(this.services[i]._service==this.keys[j][4]){
           var serviceKey={}
@@ -56,11 +57,9 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
           serviceKey['trade']=this.keys[j][2];
           serviceKey['sell']=this.keys[j][3];
           serviceKey['id']=this.keys[j][5];
-          console.log('index1',i,j)
           this.keys.splice(j,1);
           j--;
           length--;
-          console.log('index2',i,j)
           this.services[i].keys.push(serviceKey);
           this.services[i].keysExist=true;
 
@@ -79,6 +78,26 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     console.log('here')
     this.web3Service.createservice(url);
   }
+
+  setData(key,type,parameter): any{
+    console.log('here')
+    this.dataOnKey=this.web3Service.setKeyData(key, type, parameter);
+  }
+
+  getData(key,type): any{
+    console.log('here')
+    this.data=this.web3Service.getKeyData(key, type);
+  }
+
+
+
+
+  retrieveData(urlKey,parameter,key): any{
+    console.log('here')
+    this.web3Service.dataRequestTest(urlKey,parameter,key)
+
+  }
+
 
   shareKey(id,account): any{
     this.web3Service.shareKey(id,account);
@@ -121,7 +140,8 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
   }
 
 
-  purchaseKey(key): any{
+  purchaseKey(key,amount): any{
+    this.healthcashService.approve(amount)
     this.web3Service.purchaseKey(key);
 
   }

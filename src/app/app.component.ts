@@ -20,6 +20,10 @@ export class AppComponent {
     this.healthcashService.balanceOf();
   }
 
+  // test(): any{
+  //   this.web3Service.dataRequestTest();
+  // }
+
 
   transferOwnership(): any{
     this.healthcashService.transferOwnership();

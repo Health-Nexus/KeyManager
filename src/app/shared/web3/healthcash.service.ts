@@ -79,6 +79,25 @@ export class HealthcashService {
    }
 
 
+   approve(amount): any {
+    // let p = new Promise<any>((resolve, reject) => {
+       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+         let p = new Promise<any>((resolve, reject) => {
+           this._contract.at(this.contractAddr).approve(this.unlockedAccount,amount,(error, result) => {
+             if (!error) {
+               console.log('result contract transfer agents:', result)
+               resolve(result);
+             } else {
+               console.log('error from transfer agent:',error)
+               reject(error)   }
+             });
+
+           });
+           return p;
+   }
+
+
+
    transfer( _to,  _value): any {
 
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {

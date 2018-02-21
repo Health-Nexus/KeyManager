@@ -1,6 +1,8 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Http, Response } from '@angular/http';
 // const Web3 = require('web3');
+import { Http, Response,Headers, RequestOptions,URLSearchParams } from '@angular/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+
 import 'rxjs/add/operator/map';
 
 @Injectable()
@@ -44,6 +46,7 @@ export class Web3Service {
        }
 
        ngOnInit() {
+         console.log('http1', this.http)
 
          this.contract = this.http.get("./data/HealthDRS.json")
             .map(response => response.json() )
@@ -51,13 +54,15 @@ export class Web3Service {
               this.contract=result;
               this._contract=this.web3.eth.contract(this.contract.abi)
 
-        let serviceEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
+        let serviceEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, {fromBlock: 1649845, toBlock: 'latest'},(err, event) => {
           // console.log(err, event)
         })
         serviceEvent.get((error, logs) => {
           // we have the logs, now print them
+          console.log('services',logs)
           logs.forEach(function(log) {
-            if(log.args._owner==this.unlockedAccount || log.args._owner=='0x32d5acad1448e16ff3593fddb53fd0fc45be8705')
+
+            if(log.args._owner==this.unlockedAccount)
               this.services.push(log.args);
           }, this)
         })
@@ -112,6 +117,44 @@ export class Web3Service {
       });
     }
 
+    dataRequestTest(urlKey,parameter,key): any{
+    //def data(request, address_id, signature_id, message_hash, parameter, key):
+
+      var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0] ;
+      var original_message = "I am but a stack exchange post";
+      var message_hash = this.web3.sha3(
+        '\u0019Ethereum Signed Message:\n' +
+        original_message.length.toString() +
+        original_message
+      );
+      // message_hash=this.web3.eth.accounts.hashMessage(original_message)
+      var signature;
+      console.log('web sign:',this.web3)
+//     this.web3.personal.sign(message_hash,signer function(err, res) {
+      this.web3.eth.sign(signer,message_hash, function(err, res) {
+        if (err) console.error(err);
+        signature = res;
+        console.log({
+          "signer": signer,
+          "message": message_hash,
+          "message_hash": message_hash,
+          "signature": signature,
+        })
+        var headers = new Headers({ 'Content-Type': 'application/json'  });
+        var options = new RequestOptions({ headers: headers, withCredentials: true });
+        //    path('<str:address_id>/<str:signature_id>/<str:message_hash>/<str:parameter>', views.data, name='data'),
+        console.log('http', this.http.get)
+        //'http://localhost:8000/gatekeeper/'
+        var url=urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key
+        return this.http.get(url,options)//,  {search: params})
+                  .map((res: Response): any => res.json() )
+                  .subscribe(result =>{
+                    console.log(result);
+                  })
+
+      }.bind(this))
+
+  }
 
 
    initializeWeb3(): void {
@@ -366,6 +409,8 @@ export class Web3Service {
          if (!error) {
            console.log(result)
          } else {
+           reject(error);
+
            console.log(error)
          }
         });
@@ -392,8 +437,12 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).createSalesOffer(key,buyer,price,canSell,(error, result) => {
          if (!error) {
+           resolve(result);
+
            console.log(result)
          } else {
+           reject(error);
+
            console.log(error)
          }
         });
@@ -406,8 +455,12 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).cancelSalesOffer(key,(error, result) => {
          if (!error) {
+           resolve(result);
+
            console.log(result)
          } else {
+           reject(error);
+
            console.log(error)
          }
         });
@@ -420,8 +473,12 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).purchaseKey(key,(error, result) => {
          if (!error) {
+           resolve(result);
+
            console.log(result)
          } else {
+           reject(error);
+
            console.log(error)
          }
         });
@@ -434,8 +491,12 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).tradeKey(key1, key2,(error, result) => {
          if (!error) {
+           resolve(result);
+
            console.log(result)
          } else {
+           reject(error);
+
            console.log(error)
          }
         });
@@ -448,8 +509,12 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).createTradeOffer(key1, key2,(error, result) => {
          if (!error) {
+           resolve(result);
+
            console.log(result)
          } else {
+           reject(error);
+
            console.log(error)
          }
         });
@@ -462,8 +527,11 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).cancelTradeOffer(key,(error, result) => {
          if (!error) {
+           resolve(result);
+
            console.log(result)
          } else {
+           reject(error);
            console.log(error)
          }
         });
@@ -476,8 +544,11 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).setKeyData(key, dataKey, dataValue,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
+           reject(error);
+
            console.log(error)
          }
         });
@@ -490,8 +561,8 @@ export class Web3Service {
        this._contract.at(this.contractAddr).getKey(key,(error, result) => {
          if (!error) {
            result.push(key)
-           resolve(result);
 
+           resolve(result);
          } else {
            console.log(error)
            reject(error);
@@ -502,12 +573,20 @@ export class Web3Service {
      return p;
    }
 
-
+    hex_to_ascii(str1): string{
+   	  var hex  = str1.toString();
+   	  var str = '';
+   	  for (var n = 0; n < hex.length; n += 2) {
+   		   str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+   	   }
+   	   return str;
+    }
 
    getKeyData(key, dataKey): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getKeyData(key, dataKey,(error, result) => {
          if (!error) {
+           result=this.hex_to_ascii(result)
            resolve(result);
            console.log(result)
          } else {

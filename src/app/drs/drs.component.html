@@ -1,8 +1,19 @@
 <p>
   <button (click)="displayData()">Update Services</button>
   <br>
+  Data Display:
+  {{data}}
+  <br>
+  <div *ngIf="dataOnKey">
+    <br>
+      Key Data:
+      {{dataOnKey}}
+      <br>
+  </div>
   Purchase Key: <input type="text" name="keyPurchase" #keyPurchase>
-  <button (click)="purchaseKey(keyPurchase.value)">Purchase Key</button>
+  Amount Approved: <input type="text" name="amount" #amount>
+
+  <button (click)="purchaseKey(keyPurchase.value,amount.value)">Purchase Key</button>
   <br>
     URL: <input type="text" name="url" #url>
     <button (click)="createService(url.value)">Create Service</button>
@@ -16,10 +27,22 @@
           <li *ngFor="let key of service.keys">
               Current Owner: {{key.owner}}
               <br>
+              Retrieve data from Database:
+              Parameter: <input type="text" name="Parameter" #Parameter>
+              <button (click)="retrieveData(service.url,Parameter.value,key.id)">Retrieve Data</button>
+              <br>
               <div *ngIf="keyOwners[key.id].length>0">
                 Shared With: {{keyOwners[key.id]}}
               </div>
               <br>
+              Set Key Data:
+              <br>
+              Type of data: <input type="text" name="Type" #Type>
+              Data: <input type="text" name="Data" #Data>
+              <button (click)="setData(key.id,Type.value,Data.value)">Set Key Data</button>
+              <br>
+              Type of data: <input type="text" name="Type" #Type>
+              <button (click)="getData(key.id,Type.value)">Get Key Data</button>
               Sharing Status: {{key.share}}
               <div *ngIf="key.share && key.owner==service._owner">
                 <br>
