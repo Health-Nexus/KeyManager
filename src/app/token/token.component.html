@@ -1,10 +1,12 @@
 <p>
-  Current Token Balance: {{balance}}
+  Current Token Balance: {{balance}} <br>
+  Contract Allowed to Spend: {{canspend}}  
   <br>
   <button (click)="balances()">Update Balance</button>
   <br>
   Transfer Tokens
   <br>
-    Address: <input type="text" name="addr" #addr><br>
-    amount: <input type="number" name="amount" #amount><br>
-    <button (click)="transfer(addr.value,amount.value)">Submit</button>
+  Address: <input type="text" name="addr" #addr><br>
+  amount: <input type="number" name="amount" #amount><br>
+  <button (click)="transfer(addr.value,amount.value)">Submit</button>
+</p>

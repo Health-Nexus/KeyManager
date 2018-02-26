@@ -13,7 +13,6 @@ export class AppComponent {
   constructor(private web3Service:Web3Service,private healthcashService:HealthcashService) {
       this.web3Service.initializeWeb3();
       this.healthcashService.initializeWeb3();
-
   }
 
   balance(): any{
