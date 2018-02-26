@@ -10,10 +10,17 @@
       {{dataOnKey}}
       <br>
   </div>
-  Purchase Key: <input type="text" name="keyPurchase" #keyPurchase>
-  Amount Approved: <input type="text" name="amount" #amount>
 
-  <button (click)="purchaseKey(keyPurchase.value,amount.value)">Purchase Key</button>
+  <div>
+  Purchase Key: <input type="text" name="keyPurchase" #keyPurchase>
+  <button (click)="purchaseKey(keyPurchase.value)">Purchase Key</button>
+  </div>
+  
+  <div>
+  Approve HLTH: <input type="text" name="amount" #amount>
+  <button (click)="approveHLTH(amount.value)">Approve HLTH to be spent</button>  
+  </div>
+  
   <br>
     URL: <input type="text" name="url" #url>
     <button (click)="createService(url.value)">Create Service</button>
@@ -91,18 +98,22 @@
         </ul>
     </ul>
     <br>
-    Owned Keys:
-    <br>
-    <ul>
-      <li *ngFor="let key of keys">
-        {{key}}
-        <br>
-    </ul>
-    Shared Keys:
-    <br>
-    <ul>
-      <li *ngFor="let key of keyAccessArray">
-        {{key}}
-        <br>
-    </ul >
+    <div *ngIf="keys.length>0">
+      Owned Keys:
+      <br>
+      <ul>
+        <li *ngFor="let key of keys">
+          {{key}}
+          <br>
+      </ul>
+    </div>
+    <div *ngIf="keyAccessArray.constructor === Array && keyAccessArray.length>0">
+      Shared Keys:
+      <br>
+      <ul>
+        <li *ngFor="let key of keyAccessArray">
+          {{key}}
+          <br>
+      </ul >
+    </div>
   </h3>

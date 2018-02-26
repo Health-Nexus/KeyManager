@@ -8,6 +8,7 @@ import 'rxjs/add/operator/map';
 export class HealthcashService {
   @Output() update = new EventEmitter();
    private contractAddr: string = '0xAB6cee678340A12ee72d41D472300f6A2befA1EB'// Current address
+   private drsAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'// Current address
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
@@ -21,8 +22,10 @@ export class HealthcashService {
    private abiArray:any = this.abi;
    private contract: any;
    private _contract: any;
-    private balance = new BehaviorSubject<number>(0);
-    currentBalance = this.balance.asObservable();
+   private balance = new BehaviorSubject<number>(0);
+   private canspend = new BehaviorSubject<number>(0);   
+   currentBalance = this.balance.asObservable();
+   allowedToSpend = this.canspend.asObservable();    
 
          // Current unlocked account
    // Application Binary Interface so we can use the question contract
@@ -44,8 +47,6 @@ export class HealthcashService {
               console.log('balance of init ')
               this.balanceOf();
               resolve(result);
-
-
             });
           });
 
@@ -81,9 +82,9 @@ export class HealthcashService {
 
    approve(amount): any {
     // let p = new Promise<any>((resolve, reject) => {
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+       //this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at(this.contractAddr).approve(this.unlockedAccount,amount,(error, result) => {
+           this._contract.at(this.contractAddr).approve(this.drsAddr,amount,(error, result) => {
              if (!error) {
                console.log('result contract transfer agents:', result)
                resolve(result);
@@ -91,7 +92,6 @@ export class HealthcashService {
                console.log('error from transfer agent:',error)
                reject(error)   }
              });
-
            });
            return p;
    }
@@ -115,6 +115,28 @@ export class HealthcashService {
            return p;
    }
 
+   drsApprovedFor(): any {
+    console.log('approved for start ')
+    console.log('drs account: ', this.drsAddr)
+    let p = new Promise<any>((resolve, reject) => {
+          this._contract.at(this.contractAddr)
+          .allowance(this.unlockedAccount, 
+                     this.drsAddr,
+                     (error, result) => {
+            if (!error) {
+             console.log(result)
+             this.canspend.next(result.c[0])             
+             this.allowedToSpend=result.c[0]
+             resolve(result.c[0]);
+            } else {
+             console.log('error from allowance:',error)
+             reject(error)   
+            }
+            });
+          });
+    return p;
+  }
+
 
    balanceOf(): any {
      console.log('balanceof start ')
@@ -125,8 +147,8 @@ export class HealthcashService {
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).balanceOf(this.unlockedAccount,(error, result) => {
              if (!error) {
-               console.log('result contract balance:', result.c[0])
-               this.balance.next(result.c[0])
+              console.log('result contract balance:', result.c[0])
+              this.balance.next(result.c[0])
               this.currentBalance=result.c[0]
                resolve(result.c[0]);
              } else {
