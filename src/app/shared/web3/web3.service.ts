@@ -586,6 +586,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getKeyData(key, dataKey,(error, result) => {
          if (!error) {
+           console.log('getKeyData: ',result)
            result=this.hex_to_ascii(result)
            resolve(result);
            console.log(result)
