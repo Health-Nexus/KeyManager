@@ -121,7 +121,7 @@ export class Web3Service {
     //def data(request, address_id, signature_id, message_hash, parameter, key):
 
       var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0] ;
-      var original_message = "I am but a stack exchange post";
+      var original_message = "DRS Message";
       var message_hash = this.web3.sha3(
         '\u0019Ethereum Signed Message:\n' +
         original_message.length.toString() +
@@ -131,7 +131,7 @@ export class Web3Service {
       var signature;
       console.log('web sign:',this.web3)
 //     this.web3.personal.sign(message_hash,signer function(err, res) {
-      this.web3.eth.sign(signer,message_hash, function(err, res) {
+      let p = new Promise<any>((resolve, reject) => {this.web3.eth.sign(signer,message_hash, function(err, res) {
         if (err) console.error(err);
         signature = res;
         console.log({
@@ -141,18 +141,22 @@ export class Web3Service {
           "signature": signature,
         })
         var headers = new Headers({ 'Content-Type': 'application/json'  });
-        var options = new RequestOptions({ headers: headers, withCredentials: true });
+        var options = new RequestOptions({ headers: headers });
         //    path('<str:address_id>/<str:signature_id>/<str:message_hash>/<str:parameter>', views.data, name='data'),
-        console.log('http', this.http.get)
         //'http://localhost:8000/gatekeeper/'
-        var url=urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key
-        return this.http.get(url,options)//,  {search: params})
+        var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
+        console.log(urlKey);
+        console.log(url);
+        return this.http.get(url, options)//,  {search: params})
                   .map((res: Response): any => res.json() )
                   .subscribe(result =>{
                     console.log(result);
+                    resolve(result)
+
                   })
 
-      }.bind(this))
+      }.bind(this)) });
+      return p;
 
   }
 
@@ -221,6 +225,7 @@ export class Web3Service {
               //    else
               //      console.log('2myEvent: ' + JSON.stringify(eventResult.args));
               //  });
+              resolve(result2);
 
              } else {
                console.log('error from test2:',error)
@@ -310,6 +315,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).isServiceOwner(id,this.unlockedAccount,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -324,6 +330,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).shareService(id,account,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -338,6 +345,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).unshareService(id,account,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -352,6 +360,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).updateUrl(id,url,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -366,6 +375,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).createKey(id,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -379,6 +389,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).issueKey(id,address,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -393,6 +404,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).setKeyPermissions(id,canShare,canTrade,canSell,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -407,6 +419,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).shareKey(key,account,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            reject(error);
@@ -423,6 +436,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).unshareKey(key,account,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -542,7 +556,7 @@ export class Web3Service {
 
    setKeyData(key, dataKey, dataValue): any {
      let p = new Promise<any>((resolve, reject) => {
-       this._contract.at(this.contractAddr).setKeyData(key, dataKey, dataValue,(error, result) => {
+       this._contract.at(this.contractAddr).setKeyData(key.toString(), dataKey, dataValue,(error, result) => {
          if (!error) {
            resolve(result);
            console.log(result)
@@ -586,6 +600,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getKeyData(key, dataKey,(error, result) => {
          if (!error) {
+
            console.log('getKeyData: ',result)
            result=this.hex_to_ascii(result)
            resolve(result);
@@ -604,6 +619,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getUrlFromKey(key,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -618,7 +634,8 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).logAccess(key, data,(error, result) => {
          if (!error) {
-           console.log(result)
+           resolve(result);
+         console.log(result)
          } else {
            console.log(error)
          }
@@ -632,6 +649,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).message(from, to, category, data,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)
@@ -646,6 +664,7 @@ export class Web3Service {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).log(from,data,(error, result) => {
          if (!error) {
+           resolve(result);
            console.log(result)
          } else {
            console.log(error)

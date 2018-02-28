@@ -2,12 +2,12 @@
   <button (click)="displayData()">Update Services</button>
   <br>
   Data Display:
-  {{data}}
+  {{dataToDisplay | async}}
   <br>
   <div *ngIf="dataOnKey">
     <br>
       Key Data:
-      {{dataOnKey}}
+      {{dataOnKey | async}}
       <br>
   </div>
 
@@ -15,12 +15,12 @@
   Purchase Key: <input type="text" name="keyPurchase" #keyPurchase>
   <button (click)="purchaseKey(keyPurchase.value)">Purchase Key</button>
   </div>
-  
+
   <div>
   Approve HLTH: <input type="text" name="amount" #amount>
-  <button (click)="approveHLTH(amount.value)">Approve HLTH to be spent</button>  
+  <button (click)="approveHLTH(amount.value)">Approve HLTH to be spent</button>
   </div>
-  
+
   <br>
     URL: <input type="text" name="url" #url>
     <button (click)="createService(url.value)">Create Service</button>
@@ -36,7 +36,7 @@
               <br>
               Retrieve data from Database:
               Parameter: <input type="text" name="Parameter" #Parameter>
-              <button (click)="retrieveData(service.url,Parameter.value,key.id)">Retrieve Data</button>
+              <button (click)="retrieveData(service.url.__zone_symbol__value,Parameter.value,key.id)">Retrieve Data</button>
               <br>
               <div *ngIf="keyOwners[key.id].length>0">
                 Shared With: {{keyOwners[key.id]}}

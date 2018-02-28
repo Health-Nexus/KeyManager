@@ -15,7 +15,7 @@ export class DrsComponent implements OnInit {
    keys:any= [];
    data:any;
    dataOnKey:any;
-
+   dataToDisplay:any;
    keysData:any= [];
    keyOwners:any={};
    keyAccess:any={};
@@ -79,21 +79,24 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
   }
 
   setData(key,type,parameter): any{
-    console.log('here')
+    console.log('here',parameter, ' : ', typeof parameter)
     this.dataOnKey=this.web3Service.setKeyData(key, type, parameter);
+    console.log('retrieved data DRS',this.dataOnKey)
   }
 
   getData(key,type): any{
     console.log('here')
-    this.data=this.web3Service.getKeyData(key, type);
+    this.dataOnKey=this.web3Service.getKeyData(key, type);
+    console.log(this.data)
   }
 
 
 
 
   retrieveData(urlKey,parameter,key): any{
-    console.log('here')
-    this.web3Service.dataRequestTest(urlKey,parameter,key)
+    console.log('retrieve: ',urlKey)
+    this.dataToDisplay=this.web3Service.dataRequestTest(urlKey,parameter,key)
+    console.log(this.dataToDisplay);
 
   }
 
