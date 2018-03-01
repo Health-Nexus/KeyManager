@@ -103,16 +103,16 @@
       <br>
       <ul>
         <li *ngFor="let key of keys">
-          {{key}}
+          {{key | async}}
           <br>
       </ul>
     </div>
-    <div *ngIf="keyAccessArray.constructor === Array && keyAccessArray.length>0">
+    <div *ngIf="keyAccessArray">
       Shared Keys:
       <br>
       <ul>
-        <li *ngFor="let key of keyAccessArray">
-          {{key}}
+        <li *ngFor="let keyShared of keyAccessArray">
+          {{keyShared }}
           <br>
       </ul >
     </div>
