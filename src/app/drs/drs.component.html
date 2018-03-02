@@ -112,8 +112,17 @@
       <br>
       <ul>
         <li *ngFor="let keyShared of keyAccessArray">
-          {{keyShared }}
+          {{keyShared.key }} :           {{keyShared.url }}
+
           <br>
+          Parameter: <input type="text" name="Parameter" #Parameter>
+          <button (click)="retrieveData(keyShared.url,Parameter.value,keyShared.key)">Retrieve Data</button>
+          <br>
+          Type of data: <input type="text" name="Type" #Type>
+          <button (click)="getData(keyShared.key,Type.value)">Get Key Data</button>
+          <br>
+
+
       </ul >
     </div>
   </h3>

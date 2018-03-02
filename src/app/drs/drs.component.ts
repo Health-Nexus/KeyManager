@@ -36,9 +36,11 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     this.keyOwners=this.web3Service.returnKeyOwners();
     var keyAccessTemp=this.web3Service.getkeyAccess()
     this.keyAccessArray=[];
+    console.log('keyAccessTemp; ', keyAccessTemp)
 
     for(var json in keyAccessTemp){
-      this.keyAccessArray.push(json);
+      console.log('json; ', json)
+      this.keyAccessArray.push({'key':json,'url':keyAccessTemp[json].url.trim()});
     }
 
     for(var i=0;i<this.services.length;i++){

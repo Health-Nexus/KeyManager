@@ -100,9 +100,16 @@ export class Web3Service {
             }
             else{
               var keyOwnerArray=[];
-              this.getKeyOwners(log.args._key,0,keyOwnerArray).then(function(result) {
-                this.keyAccess[log.args._key]=result;
-                }.bind(this));
+              //getUrlFromKey
+                 this.isKeyOwner(log.args._key,this.unlockedAccount).then(function(resultOwner) {
+                  if(resultOwner){
+                    this.keyAccess[log.args._key]={'key':log.args._key};
+                    this.getUrlFromKey(log.args._key).then(function(resultUrl) {
+                      this.keyAccess[log.args._key]['url']=resultUrl;
+                      console.log('key urls: ',this.keyAccess)
+                      }.bind(this));
+                    }
+                  }.bind(this));
             }
           }, this)
         })
@@ -262,9 +269,10 @@ export class Web3Service {
            this._contract.at(this.contractAddr).owners(key,index,(error, result) => {
              if (!error) {
                if(result!='0x'){
-                //  console.log('push',result)
+                console.log('push',result)
                  finalResult.push(result)
-                 resolve(this.getKeyOwners(key,index+1,finalResult))
+
+                  resolve(this.getKeyOwners(key,index+1,finalResult))
                }
                else{
                 resolve(finalResult);
@@ -294,6 +302,24 @@ export class Web3Service {
 
 
    }
+
+
+   isKeyOwner(key, account): any {
+     let p = new Promise<any>((resolve, reject) => {
+        this._contract.at(this.contractAddr).isKeyOwner(key,account,(error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            console.log(error)
+            reject(error)
+          }
+          });
+        })
+          return p;
+
+
+   }
+
 
    getServiceURL(id): any {
      let p = new Promise<any>((resolve, reject) => {
