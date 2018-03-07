@@ -112,17 +112,37 @@
       <br>
       <ul>
         <li *ngFor="let keyShared of keyAccessArray">
-          {{keyShared.key }} :           {{keyShared.url }}
+            <div (click)="togglePane($event)">{{keyShared.key }} : {{keyShared.url }}</div> 
+            <div class="hidden">
+              <br>
+              Parameter: <input type="text" name="Parameter" #Parameter>
+              <button (click)="retrieveData(keyShared.url,Parameter.value,keyShared.key)">Retrieve Data</button>
+              <br>
+              Set Key Data:
+              <br>
+              Type of data: <input type="text" name="Type" #Type>
+              Data: <input type="text" name="Data" #Data>
+              <button (click)="setData(keyShared.key,Type.value,Data.value)">Set Key Data</button>
+              <br>
+              Type of data: <input type="text" name="Type" #Type>
+              <button (click)="getData(keyShared.key,Type.value)">Get Key Data</button>
+              <br>
 
-          <br>
-          Parameter: <input type="text" name="Parameter" #Parameter>
-          <button (click)="retrieveData(keyShared.url,Parameter.value,keyShared.key)">Retrieve Data</button>
-          <br>
-          Type of data: <input type="text" name="Type" #Type>
-          <button (click)="getData(keyShared.key,Type.value)">Get Key Data</button>
-          <br>
+              Sharing Status: {{keyShared.share}}
+              <div *ngIf="keyShared.share">
+                <br>
+                Share With: <input type="text" name="share" #share>
+                <button (click)="shareKey(keyShared.key,share.value)">Share Key</button>
+                <br>
 
-
+                Unshare With: <input type="text" name="unshare" #unshare>
+                <button (click)="shareKey(keyShared.key,unshare.value)">Unshare Key</button>
+                <br>
+              </div>
+              <br>
+              <br>
+          </div>
+        </li>
       </ul >
     </div>
   </h3>

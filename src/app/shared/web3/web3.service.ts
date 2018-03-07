@@ -108,6 +108,12 @@ export class Web3Service {
                       this.keyAccess[log.args._key]['url']=resultUrl;
                       console.log('key urls: ',this.keyAccess)
                       }.bind(this));
+                    this.getKeyInfo(log.args._key).then(function(keyResult) {
+                      this.keyAccess[log.args._key]['share']=keyResult[1];
+                      this.keyAccess[log.args._key]['trade']=keyResult[2];                        
+                      this.keyAccess[log.args._key]['sell']=keyResult[3];                                                
+                      this.keyAccess[log.args._key]['service']=keyResult[4];                                                                        
+                      }.bind(this));                      
                     }
                   }.bind(this));
             }

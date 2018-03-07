@@ -37,10 +37,17 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     var keyAccessTemp=this.web3Service.getkeyAccess()
     this.keyAccessArray=[];
     console.log('keyAccessTemp; ', keyAccessTemp)
+    let sharedKey = {}
 
     for(var json in keyAccessTemp){
       console.log('json; ', json)
-      this.keyAccessArray.push({'key':json,'url':keyAccessTemp[json].url.trim()});
+      sharedKey = {'key':json,
+                    'url':keyAccessTemp[json].url.trim(),
+                    'share':keyAccessTemp[json].share,
+                    'trade':keyAccessTemp[json].trade,                       
+                    'sell':keyAccessTemp[json].sell,
+                    'service':keyAccessTemp[json].service}
+      this.keyAccessArray.push(sharedKey);
     }
 
     for(var i=0;i<this.services.length;i++){
@@ -95,8 +102,14 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     console.log(this.data)
   }
 
-
-
+  togglePane(event): any {
+     let el = event.target.nextElementSibling
+     if (el.classList.contains('hidden')) {
+      el.classList.remove('hidden');
+     } else {
+      el.classList.add('hidden');
+     }
+  }
 
   retrieveData(urlKey,parameter,key): any{
     console.log('retrieve: ',urlKey)
