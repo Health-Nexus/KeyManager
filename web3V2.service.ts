@@ -19,7 +19,6 @@ export class Web3Service {
     if (typeof window.web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
       this._web3 = new Web3(window.web3.currentProvider);
-
       if (this._web3.version.network !== '4') {
         alert('Please connect to the Rinkeby network');
       }

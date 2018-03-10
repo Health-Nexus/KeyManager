@@ -9,7 +9,8 @@ import 'rxjs/add/operator/map';
 export class Web3Service {
 
   @Output() update = new EventEmitter();
-   private contractAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'// Current address
+   private mainContractAddr: string = '' //Main net
+   private contractAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'// Rinkeby Default
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
@@ -53,6 +54,11 @@ export class Web3Service {
             .subscribe(result =>{
               this.contract=result;
               this._contract=this.web3.eth.contract(this.contract.abi)
+
+        if (this.web3.version.network == 1 ) {
+          //User Main net contract Address
+          this.contractAddr = this.mainContractAddr;
+        }
 
         let serviceEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, {fromBlock: 1649845, toBlock: 'latest'},(err, event) => {
           // console.log(err, event)

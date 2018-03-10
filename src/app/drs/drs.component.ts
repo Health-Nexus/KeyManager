@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ViewContainerRef } from '@angular/core';
 import { HealthcashService } from '../shared/web3/healthcash.service';
 import { Web3Service } from '../shared/web3/web3.service';
 import { AsyncPipe } from '@angular/common';
@@ -21,12 +21,23 @@ export class DrsComponent implements OnInit {
    keyAccess:any={};
    urls: any={};
    keyAccessArray: any=[];
+   isRinkeby: boolean;   
 
 constructor(private web3Service:Web3Service,private healthcashService:HealthcashService) {
    }
 
 
   ngOnInit() {
+    switch(this.web3Service.web3.version.network) {
+      case '1':
+       this.isRinkeby = false;
+       break;
+      case '4':
+      this.isRinkeby = true;      
+       break; 
+      default:
+      this.isRinkeby = false;
+    } 
   }
 
   displayData(){

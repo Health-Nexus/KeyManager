@@ -1,4 +1,6 @@
 <p>
+  <div [ngClass]="{'hidden': isRinkeby, 'data-warning': !isRinkeby}">You are not connected to the Rinkeby Test network.</div>
+  <div [ngClass]="{'hidden': !isRinkeby, 'data-warning': isRinkeby}">You are connected to the Rinkeby Test network. Do not spend real ETH on Rinkeby.</div>  
   <button (click)="displayData()">Update Services</button>
   <br>
   Data Display:
@@ -37,6 +39,9 @@
               Retrieve data from Database:
               Parameter: <input type="text" name="Parameter" #Parameter>
               <button (click)="retrieveData(service.url.__zone_symbol__value,Parameter.value,key.id)">Retrieve Data</button>
+              <div class="data-warning">
+                Using the default client to retrieve sensitive medical data is not advised. This is an example implementaiton for use with non-sensitive data only. 
+              </div>
               <br>
               <div *ngIf="keyOwners[key.id].length>0">
                 Shared With: {{keyOwners[key.id]}}
@@ -117,6 +122,9 @@
               <br>
               Parameter: <input type="text" name="Parameter" #Parameter>
               <button (click)="retrieveData(keyShared.url,Parameter.value,keyShared.key)">Retrieve Data</button>
+              <div class="data-warning">
+                Using the default client to retrieve sensitive medical data is not advised. This is an example implementaiton for use with non-sensitive data only. 
+              </div>
               <br>
               Set Key Data:
               <br>

@@ -4,11 +4,16 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 // const Web3 = require('web3');
 import 'rxjs/add/operator/map';
+
 @Injectable()
 export class HealthcashService {
   @Output() update = new EventEmitter();
-   private contractAddr: string = '0xAB6cee678340A12ee72d41D472300f6A2befA1EB'// Current address
-   private drsAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'// Current address
+   private rinkebyContractAddr: string = '0xAB6cee678340A12ee72d41D472300f6A2befA1EB'
+   private mainContractAddr: string = ''   
+   private contractAddr: string;
+   private rinkebyDrsAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'
+   private mainDrsAddr: string = ''      
+   private drsAddr: string;
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
@@ -35,9 +40,20 @@ export class HealthcashService {
        constructor(private http: Http) {
          this.ngOnInit();
          console.log('constructor', this.balance)
+         //set our addresses based on the network
+         switch(this.web3.version.network) {
+          case '1':
+            this.contractAddr = this.mainContractAddr;
+            this.drsAddr = this.mainDrsAddr;              
+            break;
+          default:
+            this.contractAddr = this.rinkebyContractAddr;
+            this.drsAddr = this.rinkebyDrsAddr;
+        }          
        }
 
        ngOnInit() {
+         
          let p = new Promise<any>((resolve, reject) => {
            this.http.get("./data/HealthCash.json")
             .map(response => response.json() )
@@ -49,16 +65,11 @@ export class HealthcashService {
               resolve(result);
             });
           });
-
       }
-
-
 
    initializeWeb3(): void {
      this.ngOnInit();
        this.nodeIP = 'MetaMask';//localStorage['nodeIP'] || this.defaultNodeIP;
-      // this.web3 = new Web3(this.web3.currentProvider);
-
        this.connectToNode(); // Connect to whatever's available
    }
 
