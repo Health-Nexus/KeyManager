@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component,SecurityContext, OnInit, Input, ViewChild, ViewContainerRef } from '@angular/core';
 import { HealthcashService } from '../shared/web3/healthcash.service';
 import { Web3Service } from '../shared/web3/web3.service';
 import { AsyncPipe } from '@angular/common';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-drs',
@@ -21,9 +22,10 @@ export class DrsComponent implements OnInit {
    keyAccess:any={};
    urls: any={};
    keyAccessArray: any=[];
-   isRinkeby: boolean;   
+   isRinkeby: boolean;
+   image: any;
 
-constructor(private web3Service:Web3Service,private healthcashService:HealthcashService) {
+constructor(private web3Service:Web3Service,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer) {
    }
 
 
@@ -33,11 +35,11 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
        this.isRinkeby = false;
        break;
       case '4':
-      this.isRinkeby = true;      
-       break; 
+      this.isRinkeby = true;
+       break;
       default:
       this.isRinkeby = false;
-    } 
+    }
   }
 
   displayData(){
@@ -55,7 +57,7 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       sharedKey = {'key':json,
                     'url':keyAccessTemp[json].url.trim(),
                     'share':keyAccessTemp[json].share,
-                    'trade':keyAccessTemp[json].trade,                       
+                    'trade':keyAccessTemp[json].trade,
                     'sell':keyAccessTemp[json].sell,
                     'service':keyAccessTemp[json].service}
       this.keyAccessArray.push(sharedKey);
@@ -124,7 +126,27 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   retrieveData(urlKey,parameter,key): any{
     console.log('retrieve: ',urlKey)
-    this.dataToDisplay=this.web3Service.dataRequestTest(urlKey,parameter,key)
+    this.dataToDisplay=this.web3Service.dataRequestTest(urlKey,parameter,key).then(function(value){
+    // Do things after onload
+      console.log('this.dataToDisplay: ',value)
+      if(value.headers.get("Content-Type") =='image/jpeg')
+      {
+
+        // var trust=this._sanitizer.sanitize(SecurityContext.RESOURCE_URL,'data:image/jpg;base64,'
+        //            + value._body);
+        //            console.log(trust);
+      this.image = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'
+                 + value._body);
+                 console.log(this.image)
+      }
+      if(value.headers.get("Content-Type") =="audio/mpeg"){
+        // this.audio = new Audio();
+        // this.audio.src =value._body;
+        // this.audio.load();
+        // this.audio.play();
+      }
+    }.bind(this));
+
     console.log(this.dataToDisplay);
 
   }

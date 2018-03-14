@@ -116,10 +116,10 @@ export class Web3Service {
                       }.bind(this));
                     this.getKeyInfo(log.args._key).then(function(keyResult) {
                       this.keyAccess[log.args._key]['share']=keyResult[1];
-                      this.keyAccess[log.args._key]['trade']=keyResult[2];                        
-                      this.keyAccess[log.args._key]['sell']=keyResult[3];                                                
-                      this.keyAccess[log.args._key]['service']=keyResult[4];                                                                        
-                      }.bind(this));                      
+                      this.keyAccess[log.args._key]['trade']=keyResult[2];
+                      this.keyAccess[log.args._key]['sell']=keyResult[3];
+                      this.keyAccess[log.args._key]['service']=keyResult[4];
+                      }.bind(this));
                     }
                   }.bind(this));
             }
@@ -167,10 +167,23 @@ export class Web3Service {
         console.log(urlKey);
         console.log(url);
         return this.http.get(url, options)//,  {search: params})
-                  .map((res: Response): any => res.json() )
+                  // .map((res: Response): any =>
+                  // res.json() )
                   .subscribe(result =>{
-                    console.log(result);
-                    resolve(result)
+                    console.log(result, result.headers.get("Content-Type"));
+                    if(result.headers.get("Content-Type") !='image/jpeg' && result.headers.get("Content-Type") !='audio/mpeg')
+                    {
+                      resolve(result.json())
+                    }
+                    if(result.headers.get("Content-Type") =='audio/mpeg')
+                    {
+                      const blob = new Blob([result], { type: 'audio/mpeg' });
+                      const url= window.URL.createObjectURL(blob);
+                      console.log('auido url',url, blob)
+                      window.open(url);
+                     }
+
+                      resolve(result)
 
                   })
 

@@ -1,11 +1,16 @@
 <p>
   <div [ngClass]="{'hidden': isRinkeby, 'data-warning': !isRinkeby}">You are not connected to the Rinkeby Test network.</div>
-  <div [ngClass]="{'hidden': !isRinkeby, 'data-warning': isRinkeby}">You are connected to the Rinkeby Test network. Do not spend real ETH on Rinkeby.</div>  
+  <div [ngClass]="{'hidden': !isRinkeby, 'data-warning': isRinkeby}">You are connected to the Rinkeby Test network. Do not spend real ETH on Rinkeby.</div>
   <button (click)="displayData()">Update Services</button>
   <br>
   Data Display:
   {{dataToDisplay | async}}
   <br>
+  <div *ngIf="image">
+    <img [src]="image" />
+    <br>
+
+  </div>
   <div *ngIf="dataOnKey">
     <br>
       Key Data:
@@ -40,7 +45,7 @@
               Parameter: <input type="text" name="Parameter" #Parameter>
               <button (click)="retrieveData(service.url.__zone_symbol__value,Parameter.value,key.id)">Retrieve Data</button>
               <div class="data-warning">
-                Using the default client to retrieve sensitive medical data is not advised. This is an example implementaiton for use with non-sensitive data only. 
+                Using the default client to retrieve sensitive medical data is not advised. This is an example implementaiton for use with non-sensitive data only.
               </div>
               <br>
               <div *ngIf="keyOwners[key.id].length>0">
@@ -117,13 +122,13 @@
       <br>
       <ul>
         <li *ngFor="let keyShared of keyAccessArray">
-            <div (click)="togglePane($event)">{{keyShared.key }} : {{keyShared.url }}</div> 
+            <div (click)="togglePane($event)">{{keyShared.key }} : {{keyShared.url }}</div>
             <div class="hidden">
               <br>
               Parameter: <input type="text" name="Parameter" #Parameter>
               <button (click)="retrieveData(keyShared.url,Parameter.value,keyShared.key)">Retrieve Data</button>
               <div class="data-warning">
-                Using the default client to retrieve sensitive medical data is not advised. This is an example implementaiton for use with non-sensitive data only. 
+                Using the default client to retrieve sensitive medical data is not advised. This is an example implementaiton for use with non-sensitive data only.
               </div>
               <br>
               Set Key Data:
