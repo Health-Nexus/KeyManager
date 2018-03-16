@@ -48,6 +48,7 @@
                 Using the default client to retrieve sensitive medical data is not advised. This is an example implementaiton for use with non-sensitive data only.
               </div>
               <br>
+              
               <div *ngIf="keyOwners[key.id].length>0">
                 Shared With: {{keyOwners[key.id]}}
               </div>
@@ -108,18 +109,75 @@
         </ul>
     </ul>
     <br>
+   
     <div *ngIf="keys.length>0">
-      Owned Keys:
+      <h3>Owned Keys:</h3>
       <br>
       <ul>
         <li *ngFor="let key of keys">
-          {{key | async}}
-          <br>
+            <div (click)="togglePane($event)">{{key.key}}</div>
+            <div class="hidden">
+                <div *ngIf="keyOwners[key.key].length>0">
+                  Shared With: {{keyOwners[key.key]}}
+                </div>
+                <br>
+                Set Key Data:
+                <br>
+                Type of data: <input type="text" name="Type" #Type>
+                Data: <input type="text" name="Data" #Data>
+                <button (click)="setData(key.key,Type.value,Data.value)">Set Key Data</button>
+                <br>
+                Type of data: <input type="text" name="Type" #Type>
+                <button (click)="getData(key.key,Type.value)">Get Key Data</button>
+                Sharing Status: {{key.share}}
+                <div *ngIf="key.share">
+                  <br>
+                  Share With: <input type="text" name="share" #share>
+                  <button (click)="shareKey(key.key,share.value)">Share Key</button>
+                  <br>
+  
+                  Unshare With: <input type="text" name="unshare" #unshare>
+                  <button (click)="shareKey(key.key,unshare.value)">Unshare Key</button>
+                  <br>
+  
+                </div>
+                <br>
+                Trading Status: {{key.trade}}
+                <div *ngIf="key.trade && keyOwners[key.key].length==0">
+                  <br>
+                  Key to Trade for: <input type="text" name="keyToTrade" #keyToTrade>
+                  <button (click)="tradeKeyOffer(key.key,keyToTrade.value)">Trade Key Offer</button>
+                  <br>
+                  <button (click)="cancelTradeKeyOffer(key.key)">Cancel Trade Key Offer</button>
+                  <br>
+                  Trade Key: <input type="text" name="keyTrade" #keyTrade>
+                  <button (click)="tradeKey(key.key,keyTrade.value)">Trade Keys</button>
+                </div>
+                <br>
+                Selling Status:{{key.sell}}
+                <div *ngIf="key.sell && keyOwners[key.key].length==0">
+                  <br>
+                  Buyer Address: <input type="text" name="buyer" #buyer>
+                  Price: <input type="number" name="price" #price>
+                  Can Sell: <input type="checkbox" name="sellPermission" #sellPermission>
+                  <button (click)="sellKeyOffer(key.key,buyer.value,price.value,sellPermission.checked)">Sell Key Offer</button>
+                  <br>
+                  <button (click)="cancelSellKeyOffer(key.key)">Cancel Sell Key Offer</button>
+                </div>
+                <br>
+                  Change Permissioning
+                  <br>
+                  Can Share: <input type="checkbox" name="sharePermission" #sharePermission>
+                  Can Trade: <input type="checkbox" name="tradePermission" #tradePermission>
+                  Can Sell: <input type="checkbox" name="sellPermission" #sellPermission>
+                  <button (click)="changePermission(key.key,sharePermission.checked,tradePermission.checked,sellPermission.checked)">Change Permissions</button>
+                  <br>
+             </div>
+          </li>
       </ul>
     </div>
     <div *ngIf="keyAccessArray">
-      Shared Keys:
-      <br>
+      <h3>Shared Keys:</h3>
       <ul>
         <li *ngFor="let keyShared of keyAccessArray">
             <div (click)="togglePane($event)">{{keyShared.key }} : {{keyShared.url }}</div>

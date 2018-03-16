@@ -44,9 +44,10 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   displayData(){
     this.services=this.web3Service.getServices()
-    this.keys=this.web3Service.getKeysData()
-    console.log('keys:',this.keys);
+    this.keys=this.web3Service.getKeys()
+    console.log('keys:',this.keys.length);
     this.keyOwners=this.web3Service.returnKeyOwners();
+    console.log('Display Data keyOwners:',this.keyOwners);
     var keyAccessTemp=this.web3Service.getkeyAccess()
     this.keyAccessArray=[];
     console.log('keyAccessTemp; ', keyAccessTemp)
@@ -72,16 +73,16 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       var length=this.keys.length
       for(var j=0;j<length;j++){
 
-        if(this.services[i]._service==this.keys[j][4]){
+        if(this.services[i]._service==this.keys[j].service){
           var serviceKey={}
-          serviceKey['owner']=this.keys[j][0];
-          serviceKey['share']=this.keys[j][1];
-          serviceKey['trade']=this.keys[j][2];
-          serviceKey['sell']=this.keys[j][3];
-          serviceKey['id']=this.keys[j][5];
-          this.keys.splice(j,1);
-          j--;
-          length--;
+          serviceKey['owner']=this.keys[j].owner;
+          serviceKey['share']=this.keys[j].share;
+          serviceKey['trade']=this.keys[j].trade;
+          serviceKey['sell']=this.keys[j].sell;
+          serviceKey['id']=this.keys[j].key;
+          //this.keys.splice(j,1);
+          //j--;
+          //length--;
           this.services[i].keys.push(serviceKey);
           this.services[i].keysExist=true;
 
@@ -91,12 +92,13 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
     }
 
-    console.log('services',this.services)
-    console.log('keys',this.keys)
-    console.log('keys',this.keyAccessArray)
-
+    console.log('DD services',this.services)
+    console.log('DD keys',this.keys.length)
+    console.log('DD keysAccess',this.keyAccessArray)
 
   }
+
+  log(val) { console.log(val); }
 
   createService(url): any{
     console.log('here')

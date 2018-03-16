@@ -92,20 +92,24 @@ export class Web3Service {
         keyEvent.get((error, logs) => {
           // we have the logs, now print them
           logs.forEach(function(log) {
+
+            this.getKeyOwners(log.args._key,0,[]).then(function(result) {
+              this.keyOwners[log.args._key]=result;
+            }.bind(this));
+
             if(log.args._owner==this.unlockedAccount){
-              this.keys.push(log.args);
-              var keyOwnerArray=[];
-
-              this.getKeyOwners(log.args._key,0,keyOwnerArray).then(function(result) {
-                this.keyOwners[log.args._key]=result;
-                }.bind(this));
               this.getKeyInfo(log.args._key).then(function(result) {
+                this.keys.push({key:log.args._key,
+                  owner:log.args._owner,
+                  share:result[1],
+                  trade:result[2],
+                  sell:result[3],
+                  service:result[4]
+                 });
                 this.keysData.push(result);
-
               }.bind(this));
             }
             else{
-              var keyOwnerArray=[];
               //getUrlFromKey
                  this.isKeyOwner(log.args._key,this.unlockedAccount).then(function(resultOwner) {
                   if(resultOwner){
@@ -295,9 +299,8 @@ export class Web3Service {
              if (!error) {
                if(result!='0x'){
                 console.log('push',result)
-                 finalResult.push(result)
-
-                  resolve(this.getKeyOwners(key,index+1,finalResult))
+                finalResult.push(result)
+                resolve(this.getKeyOwners(key,index+1,finalResult));
                }
                else{
                 resolve(finalResult);
