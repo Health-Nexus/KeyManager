@@ -1,8 +1,10 @@
 import { Component,SecurityContext, OnInit, Input, ViewChild, ViewContainerRef } from '@angular/core';
 import { HealthcashService } from '../shared/web3/healthcash.service';
 import { Web3Service } from '../shared/web3/web3.service';
+import { WindowRefService } from '../shared/window-ref.service';
 import { AsyncPipe } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-drs',
@@ -12,6 +14,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class DrsComponent implements OnInit {
   @Input() tokenServices: any;
   @Input() drsServices: any;
+   private _window: Window;
    services:any= [];
    keys:any= [];
    data:any;
@@ -25,7 +28,8 @@ export class DrsComponent implements OnInit {
    isRinkeby: boolean;
    image: any;
 
-constructor(private web3Service:Web3Service,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer) {
+constructor(private web3Service:Web3Service,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService) {
+  this._window = windowRef.nativeWindow;
    }
 
 
@@ -139,7 +143,17 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
         //            console.log(trust);
       this.image = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'
                  + value._body);
-                 console.log(this.image)
+
+        //This allows the conditional viewing of the returned image. 
+        if (this._window.confirm("We retrieved an image from the data service. The image is unfiltered and could be innappropriate. Press 'OK' to view the image.")) {
+          var image = new Image();
+          image.src = "data:image/jpg;base64," + value._body;
+          var w = this._window.open("");
+          w.document.write(image.outerHTML);        
+        } else {
+          console.log(this.image)        
+        }
+        
       }
       if(value.headers.get("Content-Type") =="audio/mpeg"){
         // this.audio = new Audio();
