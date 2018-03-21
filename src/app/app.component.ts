@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Web3Service } from './shared/web3/web3.service';
+import { HealthcashService } from './shared/web3/healthcash.service';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +10,34 @@ import { Web3Service } from './shared/web3/web3.service';
 export class AppComponent {
   title = 'Health Nexus Wallet';
 
-  constructor(private web3Service:Web3Service) {
-      web3Service.intializeWeb3('0xa96a6269f13b9cf0eb82dc4af916bbe926f34e0db92d5c3d68fa029a9f5462d7','0x7e9eFE5712aCAaE3E00839F48F48c0eefBfE5C77');
+  constructor(private web3Service:Web3Service,private healthcashService:HealthcashService) {
+      this.web3Service.initializeWeb3();
+      this.healthcashService.initializeWeb3();
+  }
+
+  balance(): any{
+    this.healthcashService.balanceOf();
+  }
+
+  // test(): any{
+  //   this.web3Service.dataRequestTest();
+  // }
+
+
+  transferOwnership(): any{
+    this.healthcashService.transferOwnership();
+  }
+
+
+  getNumberService(): any{
+    this.web3Service.getServiceCount();
+  }
+  getServiceURL(id): any{
+    this.web3Service.getServiceURL(id);
+  }
+
+  setTransferAgent(): any{
+    this.healthcashService.setTransferAgent();
   }
 
 }
