@@ -9,7 +9,7 @@ import { HealthcashService } from './shared/web3/healthcash.service';
 })
 export class AppComponent {
   title = 'Health Nexus Wallet';
-
+  authorized = true
   constructor(private web3Service:Web3Service,private healthcashService:HealthcashService) {
       this.web3Service.initializeWeb3();
       this.healthcashService.initializeWeb3();

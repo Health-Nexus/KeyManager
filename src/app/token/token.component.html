@@ -1,6 +1,7 @@
-<p>
+<div class="container">
+  <div class="row">
   Current Token Balance: {{balance}} <br>
-  Contract Allowed to Spend: {{canspend}}  
+  Contract Allowed to Spend: {{canspend}}
   <br>
   <button (click)="balances()">Update Balance</button>
   <br>
@@ -9,4 +10,5 @@
   Address: <input type="text" name="addr" #addr><br>
   amount: <input type="number" name="amount" #amount><br>
   <button (click)="transfer(addr.value,amount.value)">Submit</button>
-</p>
+</div>
+</div>
