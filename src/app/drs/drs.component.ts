@@ -144,16 +144,16 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       this.image = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'
                  + value._body);
 
-        //This allows the conditional viewing of the returned image. 
+        //This allows the conditional viewing of the returned image.
         if (this._window.confirm("We retrieved an image from the data service. The image is unfiltered and could be innappropriate. Press 'OK' to view the image.")) {
           var image = new Image();
           image.src = "data:image/jpg;base64," + value._body;
           var w = this._window.open("");
-          w.document.write(image.outerHTML);        
+          w.document.write(image.outerHTML);
         } else {
-          console.log(this.image)        
+          console.log(this.image)
         }
-        
+
       }
       if(value.headers.get("Content-Type") =="audio/mpeg"){
         // this.audio = new Audio();

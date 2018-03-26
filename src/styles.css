@@ -32,12 +32,51 @@ body {
     display: none;
 }
 
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.float-right {
+  float: right;
+}
+
+.float-right {
+  float: left;
+}
+
 .container {
   width: 100%;
 }
 
+.col-9 {
+  width: 90%;
+}
+
 .padding-lg {
   padding: 30px;
+}
+
+.padding-sm {
+  padding: 10px;
+}
+
+.padding-top-lg {
+  padding-top: 30px;
+}
+
+.margin-top-md {
+  margin-top: 20px;
+}
+
+.margin-md {
+  margin: 20px;
+}
+
+.margin-v-sm {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .padding-xl {
@@ -48,22 +87,102 @@ body {
   color: white;
 }
 
+.bold {
+  font-size: 20px;
+  font-weight: 600;
+}
+
 .content {
   background-color: white;
   box-shadow: 0px 0px 30px 3px rgba(109, 109, 109, 0.1);
   position: relative;
+  padding: 50px;
+  min-height: 350px;
+  font-size: 25px;
+  font-weight: 100;
 }
 
 span {
   display: block;
 }
 
+span.inline {
+  display: inline;
+}
+
+li {
+  list-style-type: none;
+  display: inline;
+}
+
+input {
+  font-size: medium;
+  padding: 7px;
+  text-indent: 10px;
+  line-height: 1.5em;
+}
+
+input.form-control {
+  margin-top: 20px;
+  min-width: 600px;
+}
+
+.editing {
+  background-color: #d9d9d9;
+  padding-left: 30px;
+  margin-top: 15px;
+}
+
+@media screen and (max-width: 992px) {
+  input.form-control, input.form-control.drs {
+    min-width: 100%;
+  }
+}
+
+button.form-control {
+  width: 165px;
+  padding: 11px;
+  background-color: #3f819e;
+  color: white;
+  font-size: 20px;
+  font-weight: 400;
+  border-radius: 10px;
+  margin: 20px;
+}
+
+
+::-webkit-input-placeholder,
+::-moz-placeholder,
+:-ms-input-placeholder,
+:-moz-placeholder {
+  font-size: medium;
+  font-style: italic!important;
+  color: #6b6b6b;
+  padding: 7px;
+  text-indent: 10px;
+  line-height: 1.5em;
+}
+
 .text-center {
   text-align: center;
 }
 
+.text-right {
+  text-align: right;
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
 .font-lg {
   font-size: 30pt;
+}
+
+.clickable {
+  color: #3f819e;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .data-warning {

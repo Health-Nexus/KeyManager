@@ -13,16 +13,22 @@ export class TokenComponent implements OnInit {
   canspend:number;
   addr:string;
   amount:number;
+  editing:boolean = false;
   constructor(private healthcashService:HealthcashService) { }
 
   ngOnInit() {
     this.healthcashService.currentBalance.subscribe(balance => this.balance = balance)
-    this.healthcashService.allowedToSpend.subscribe(canspend => this.canspend = canspend)    
+    this.healthcashService.allowedToSpend.subscribe(canspend => this.canspend = canspend)
+    // this.canspend = 50000;  * JADE using canspend as the value (use amount instead?)
   }
 
   balances(): any{
     this.healthcashService.balanceOf();
-    this.healthcashService.drsApprovedFor();      
+    this.healthcashService.drsApprovedFor();
+  }
+
+  editCanSpend() {
+    this.editing = !this.editing;
   }
 
   transfer(addr, amount): any{

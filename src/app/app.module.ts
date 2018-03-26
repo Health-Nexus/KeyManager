@@ -6,14 +6,15 @@ import { WindowRefService } from './shared/window-ref.service';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 
-import {HttpClientModule} from '@angular/common/http';
-import {HttpModule} from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
+import { HttpModule } from '@angular/http';
 import { DrsComponent } from './drs/drs.component';
 import { TokenComponent } from './token/token.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { TabsComponent } from './tabs/tabs.component';
+import { TabComponent } from './tab/tab.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { TabsComponent } from './tabs/tabs.component';
     HeaderComponent,
     FooterComponent,
     WelcomeComponent,
-    TabsComponent
+    TabsComponent,
+    TabComponent
   ],
   imports: [
     BrowserModule, HttpClientModule, HttpModule

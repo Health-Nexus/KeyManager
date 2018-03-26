@@ -1,20 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Tab } from 'app/tab/tab.interface';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.css']
 })
-export class TabsComponent implements OnInit {
-  selectedTab = 'tokens';
+
+export class TabsComponent {
+  tabs: Tab[] = [];
 
   constructor() { }
 
-  ngOnInit() {
+  selectTab(tab: Tab) {
+    this.tabs.forEach((tab) => {
+      tab.active = false;
+    });
+    tab.active = true;
   }
 
-  selectTab(tab) {
-    this.selectedTab = tab;
+  addTab(tab: Tab) {
+    if (this.tabs.length > 0) {
+      tab.active = true;
+    }
+    this.tabs.push(tab);
   }
-
 }
