@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 // const Web3 = require('web3');
-import { Http, Response,Headers, RequestOptions,URLSearchParams } from '@angular/http';
+import { Http, Response,Headers, RequestOptions,URLSearchParams,ResponseContentType } from '@angular/http';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
 import 'rxjs/add/operator/map';
@@ -159,28 +159,36 @@ export class Web3Service {
           "message_hash": message_hash,
           "signature": signature,
         })
-        var headers = new Headers({ 'Content-Type': 'application/json'  });
-        var options = new RequestOptions({ headers: headers });
+        var headers = new Headers({ 'Content-Type': 'application/json',ResponseType: ResponseContentType.ArrayBuffer})//,responseType: 'arraybuffer'   });
+        var options = new RequestOptions({ headers: headers});
         //    path('<str:address_id>/<str:signature_id>/<str:message_hash>/<str:parameter>', views.data, name='data'),
         //'http://localhost:8000/gatekeeper/'
         var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
         console.log(urlKey);
         console.log(url);
-        return this.http.get(url, options)//,  {search: params})
+        return this.http.get(url, {responseType: ResponseContentType.ArrayBuffer})//,  {search: params})
                   // .map((res: Response): any =>
                   // res.json() )
                   .subscribe(result =>{
                     console.log(result, result.headers.get("Content-Type"));
-                    if(result.headers.get("Content-Type") !='image/jpeg' && result.headers.get("Content-Type") !='audio/mpeg')
+                    console.log('array buffer',result.arrayBuffer());
+                    console.log('content',result.headers.get('content-disposition'));
+
+                    if(result.headers.get("Content-Type") =='application/json')
                     {
                       resolve(result.json())
                     }
-                    if(result.headers.get("Content-Type") =='audio/mpeg')
+                    else
                     {
-                      const blob = new Blob([result], { type: 'audio/mpeg' });
-                      const url= window.URL.createObjectURL(blob);
-                      console.log('auido url',url, blob)
+                      // const blob = new Blob([result._body], { type: result.headers.get("Content-Type") });
+                      // const url= window.URL.createObjectURL(blob);
+                      // console.log('file url',url, blob)
+                      // window.open(url);
+                      var blob = new Blob([result._body], { type: 'image/jpeg' });
+                      var url = window.URL.createObjectURL(blob);
+                      console.log('file :: ',blob,url)
                       window.open(url);
+                      resolve(url)
                      }
 
                       resolve(result)

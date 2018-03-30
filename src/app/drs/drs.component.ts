@@ -129,23 +129,33 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     this.dataToDisplay=this.web3Service.dataRequestTest(urlKey,parameter,key).then(function(value){
     // Do things after onload
       console.log('this.dataToDisplay: ',value)
-      if(value.headers.get("Content-Type") =='image/jpeg')
-      {
+      // if(value.headers.get("Content-Type") !='image/jpeg')
+      // {
 
         // var trust=this._sanitizer.sanitize(SecurityContext.RESOURCE_URL,'data:image/jpg;base64,'
         //            + value._body);
         //            console.log(trust);
+                 console.log('image',this.image)
+      // }
+    //   if(value.headers.get("Content-Type") =='image/jpeg')
+    //   {
+    //
+    //     // var trust=this._sanitizer.sanitize(SecurityContext.RESOURCE_URL,'data:image/jpg;base64,'
+    //     //            + value._body);
+    //     //            console.log(trust);
       this.image = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'
-                 + value._body);
-                 console.log(this.image)
-      }
-      if(value.headers.get("Content-Type") =="audio/mpeg"){
-        // this.audio = new Audio();
-        // this.audio.src =value._body;
-        // this.audio.load();
-        // this.audio.play();
-      }
-    }.bind(this));
+                 + value);
+                 console.log('image',this.image)
+
+    //              console.log(this.image)
+    //   }
+    //   if(value.headers.get("Content-Type") =="audio/mpeg"){
+    //     // this.audio = new Audio();
+    //     // this.audio.src =value._body;
+    //     // this.audio.load();
+    //     // this.audio.play();
+    //   }
+     }.bind(this));
 
     console.log(this.dataToDisplay);
 
