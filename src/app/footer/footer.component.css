@@ -1,0 +1,13 @@
+:root {
+  --light-gray-color: #f5f5f5;
+  --footer-height: 180px;
+}
+
+#footer {
+  height: var(--footer-height);
+  width: 100%;
+  position:fixed;
+  bottom:0;
+  left:0;
+  background-color: #85b2c9;
+}

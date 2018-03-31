@@ -1,14 +1,17 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-  {{ title }}!
-  </h1>
+<app-header></app-header>
+<div id="main" class="padding-xl">
+  <div *ngIf="authorized">
+    <app-tabs>
+        <app-tab tabTitle="My Tokens">
+          <app-token></app-token>
+        </app-tab>
+        <app-tab tabTitle="My Keys">
+          <app-drs ></app-drs>
+        </app-tab>
+    </app-tabs>
+  </div>
+  <div *ngIf="!authorized">
+    <app-welcome></app-welcome>
+  </div>
 </div>
-<div style="text-align:center">
-  <h2>
-  Utilizing Meta Mask, please install Metamask if not currently installed
-  </h2>
-  <app-token></app-token>
-  <app-drs ></app-drs>
-
-</div>
+<app-footer></app-footer>
