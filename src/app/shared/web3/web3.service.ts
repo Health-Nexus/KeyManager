@@ -35,7 +35,7 @@ export class Web3Service {
 
    private selectedParentKey = new Subject<string>();
    private selectedChildKey = new Subject<string>();
-   private authorized = new BehaviorSubject<boolean>();
+   private authorized = new BehaviorSubject<boolean>(false);
 
    parentKeyChanged$ = this.selectedParentKey.asObservable();
    childKeyChanged$ = this.selectedChildKey.asObservable();
@@ -798,7 +798,9 @@ export class Web3Service {
                    (err, res) => {;
                        if (err.toString() !== 'Error: account is locked') {
                            this.unlockedAccount = this.web3.eth.accounts[0];
-                           // this.authorized.next(true);
+                           if (this.unlockedAccount) {
+                             this.authorized.next(true);
+                           }
 
                            this.update.emit(null);
                            console.log('Connected to account: ' + this.unlockedAccount);
@@ -811,7 +813,9 @@ export class Web3Service {
                );
            } else {
                this.unlockedAccount = this.web3.eth.accounts[0];
-               // this.authorized.next(true);
+               if (this.unlockedAccount) {
+                 this.authorized.next(true);
+               }
 
                console.log('Connected to account: ' + this.unlockedAccount)
                resolve(false);
@@ -833,7 +837,6 @@ export class Web3Service {
    connectToNode(): void { // Don't unlock until you send a transaction
       console.log('connecting: ',window['web3'])
       console.log('connecting: ',localStorage['nodeIP'])
-      // this.authorized.next(false);
 
        if (typeof window['web3'] !== 'undefined' && (!localStorage['nodeIP'] || this.nodeIP === 'MetaMask')) {
            localStorage['nodeIP'] = this.nodeIP;

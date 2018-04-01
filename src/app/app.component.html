@@ -1,11 +1,11 @@
 <app-header></app-header>
 <div id="main" class="padding-xl">
-  <div *ngIf="!authorized">
+  <div [hidden]="authorized">
     <app-welcome></app-welcome>
   </div>
 
-  <div *ngIf="authorized">
-    <div *ngIf="selectedParentKey === undefined">
+  <div [hidden]="!authorized">
+    <div [hidden]="selectedParentKey">
       <app-tabs>
           <app-tab tabTitle="My Tokens">
             <app-token></app-token>
@@ -16,7 +16,7 @@
       </app-tabs>
     </div>
 
-    <div *ngIf="selectedParentKey">
+    <div [hidden]="!selectedParentKey">
       <div class="padding-v-md">
         <span class="inline" (click)="clearSelectedKeys()">My Keys</span> > Parent Key
       </div>

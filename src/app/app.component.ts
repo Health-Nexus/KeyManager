@@ -29,10 +29,10 @@ export class AppComponent implements OnInit {
       this.selectedChildKey = selectedChild;
     });
 
-    // this.web3Service.loginChanged$.subscribe(
-    // authed => {
-    //   this.authorized = authed;
-    // });
+    this.web3Service.loginChanged$.subscribe(
+    authed => {
+      this.authorized = authed;
+    });
   }
 
   balance(): any{
