@@ -27,6 +27,8 @@ export class DrsComponent implements OnInit {
    keyAccessArray: any=[];
    isRinkeby: boolean;
    image: any;
+   selectedParentKey?: string;
+   selectedChildKey?: string;
 
 constructor(private web3Service:Web3Service,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService) {
   this._window = windowRef.nativeWindow;
@@ -44,10 +46,24 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       default:
       this.isRinkeby = false;
     }
+
+    this.web3Service.parentKeyChanged$.subscribe(
+    selectedParent => {
+      this.selectedParentKey = selectedParent;
+    });
+
+    this.web3Service.childKeyChanged$.subscribe(
+    selectedChild => {
+      this.selectedChildKey = selectedChild;
+    });
   }
 
   pickParentKey(parentKey: string) {
     this.web3Service.changeParentKey(parentKey);
+  }
+
+  pickChildKey(childKey: string) {
+    this.web3Service.changeChildKey(childKey);
   }
 
   displayData(){

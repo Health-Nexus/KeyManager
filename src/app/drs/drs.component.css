@@ -1,9 +1,1 @@
-.form-control.drs {
-  min-width: 300px;
-}
 
-@media screen and (max-width: 992px) {
-  input.form-control, input.form-control.drs {
-    min-width: 100%;
-  }
-}

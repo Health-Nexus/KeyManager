@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Tab } from 'app/tab/tab.interface';
+import { Web3Service } from '../shared/web3/web3.service';
 
 @Component({
   selector: 'app-tabs',
@@ -7,10 +8,25 @@ import { Tab } from 'app/tab/tab.interface';
   styleUrls: ['./tabs.component.css']
 })
 
-export class TabsComponent {
+export class TabsComponent implements OnInit {
   tabs: Tab[] = [];
+  selectedParentKey?: string;
+  selectedChildKey?: string;
 
-  constructor() { }
+  constructor(private web3Service:Web3Service) { }
+
+
+  ngOnInit() {
+    this.web3Service.parentKeyChanged$.subscribe(
+    selectedParent => {
+      this.selectedParentKey = selectedParent;
+    });
+
+    this.web3Service.childKeyChanged$.subscribe(
+    selectedChild => {
+      this.selectedChildKey = selectedChild;
+    });
+  }
 
   selectTab(tab: Tab) {
     this.tabs.forEach((tab) => {
@@ -24,5 +40,14 @@ export class TabsComponent {
       tab.active = true;
     }
     this.tabs.push(tab);
+  }
+
+  clearSelectedKeys(): void {
+    this.web3Service.changeParentKey(undefined);
+    this.web3Service.changeChildKey(undefined);
+  }
+
+  clearChildKey(): void {
+    this.web3Service.changeChildKey(undefined);
   }
 }

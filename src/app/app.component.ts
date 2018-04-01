@@ -10,8 +10,6 @@ import { HealthcashService } from './shared/web3/healthcash.service';
 export class AppComponent implements OnInit {
   title = 'Health Nexus Wallet';
   authorized: boolean = false;
-  selectedParentKey?: string;
-  selectedChildKey?: string;
 
   constructor(private web3Service:Web3Service,private healthcashService:HealthcashService) {
       this.web3Service.initializeWeb3();
@@ -19,16 +17,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.web3Service.parentKeyChanged$.subscribe(
-    selectedParent => {
-      this.selectedParentKey = selectedParent;
-    });
-
-    this.web3Service.childKeyChanged$.subscribe(
-    selectedChild => {
-      this.selectedChildKey = selectedChild;
-    });
-
     this.web3Service.loginChanged$.subscribe(
     authed => {
       this.authorized = authed;
@@ -37,11 +25,6 @@ export class AppComponent implements OnInit {
 
   balance(): any{
     this.healthcashService.balanceOf();
-  }
-
-  clearSelectedKeys(): void {
-    this.selectedParentKey = undefined;
-    this.selectedChildKey = undefined;
   }
 
   // test(): any{

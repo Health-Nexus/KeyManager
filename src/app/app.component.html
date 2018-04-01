@@ -5,7 +5,7 @@
   </div>
 
   <div [hidden]="!authorized">
-    <div [hidden]="selectedParentKey">
+    <div>
       <app-tabs>
           <app-tab tabTitle="My Tokens">
             <app-token></app-token>
@@ -14,23 +14,6 @@
             <app-drs></app-drs>
           </app-tab>
       </app-tabs>
-    </div>
-
-    <div [hidden]="!selectedParentKey">
-      <div class="padding-v-md">
-        <span class="inline" (click)="clearSelectedKeys()">My Keys</span> > Parent Key
-      </div>
-      <div class="content">
-        <div class="row tokens">
-          <span class="padding-bottom-md">Managing Parent Key</span>
-          <span class="bold"> {{ selectedParentKey }} </span>
-          <span class="padding-v-lg">Child Keys</span>
-          <button class="form-control">Generate new</button>
-          <span class="clickable"> {{ selectedParentKey }} </span>
-          <span class="clickable"> {{ selectedParentKey }} </span>
-
-        </div>
-      </div>
     </div>
   </div>
 </div>

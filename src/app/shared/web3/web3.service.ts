@@ -78,8 +78,9 @@ export class Web3Service {
           console.log('services',logs)
           logs.forEach(function(log) {
 
-            if(log.args._owner==this.unlockedAccount)
+            // if(log.args._owner==this.unlockedAccount)
               this.services.push(log.args);
+              console.log('jade adding service', this.services.length)
           }, this)
         })
         new Promise<any>((resolve, reject) => {
