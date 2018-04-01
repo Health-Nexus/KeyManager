@@ -2,6 +2,8 @@ import { Injectable, EventEmitter, Output } from '@angular/core';
 // const Web3 = require('web3');
 import { Http, Response,Headers, RequestOptions,URLSearchParams } from '@angular/http';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import 'rxjs/add/operator/map';
 
@@ -30,6 +32,14 @@ export class Web3Service {
    private keyOwners:any;
    private keyNumber:number;
    private keyAccess:any;
+
+   private selectedParentKey = new Subject<string>();
+   private selectedChildKey = new Subject<string>();
+   private authorized = new BehaviorSubject<boolean>();
+
+   parentKeyChanged$ = this.selectedParentKey.asObservable();
+   childKeyChanged$ = this.selectedChildKey.asObservable();
+   loginChanged$ = this.authorized.asObservable();
 
          // Current unlocked account
    // Application Binary Interface so we can use the question contract
@@ -138,6 +148,18 @@ export class Web3Service {
              console.log('3myEvent: ' + eventResult);
          })
       });
+    }
+
+    changeParentKey(parentKey: string) {
+      this.selectedParentKey.next(parentKey);
+    }
+
+    changeChildKey(childKey: string) {
+      this.selectedChildKey.next(childKey);
+    }
+
+    authorize(isAuthorized: boolean) {
+      this.authorized.next(isAuthorized);
     }
 
     dataRequestTest(urlKey,parameter,key): any{
@@ -776,6 +798,8 @@ export class Web3Service {
                    (err, res) => {;
                        if (err.toString() !== 'Error: account is locked') {
                            this.unlockedAccount = this.web3.eth.accounts[0];
+                           // this.authorized.next(true);
+
                            this.update.emit(null);
                            console.log('Connected to account: ' + this.unlockedAccount);
                            resolve(true);
@@ -787,6 +811,8 @@ export class Web3Service {
                );
            } else {
                this.unlockedAccount = this.web3.eth.accounts[0];
+               // this.authorized.next(true);
+
                console.log('Connected to account: ' + this.unlockedAccount)
                resolve(false);
            }
@@ -807,6 +833,7 @@ export class Web3Service {
    connectToNode(): void { // Don't unlock until you send a transaction
       console.log('connecting: ',window['web3'])
       console.log('connecting: ',localStorage['nodeIP'])
+      // this.authorized.next(false);
 
        if (typeof window['web3'] !== 'undefined' && (!localStorage['nodeIP'] || this.nodeIP === 'MetaMask')) {
            localStorage['nodeIP'] = this.nodeIP;
@@ -822,6 +849,7 @@ export class Web3Service {
            localStorage['nodeIP'] = this.nodeIP;
            console.log('Using HTTP node;', this.nodeIP);
            this.unlockedAccount = undefined;
+
            this.web3 = new this.Web3(new this.Web3.providers.HttpProvider(this.nodeIP));
            this.handleConnection(this.web3.isConnected());
        }

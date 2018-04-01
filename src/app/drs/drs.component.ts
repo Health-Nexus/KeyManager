@@ -46,6 +46,10 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     }
   }
 
+  pickParentKey(parentKey: string) {
+    this.web3Service.changeParentKey(parentKey);
+  }
+
   displayData(){
     this.services=this.web3Service.getServices()
     this.keys=this.web3Service.getKeys()

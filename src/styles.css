@@ -20,13 +20,15 @@ body {
   background-color: var(--light-gray-color);
 }
 
-/* body:before {
-  content: "";
-  height: 100%;
-  float: left;
-  width: 0;
-  margin-top: -32767px;
-} */
+body {
+   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+   font-weight: 300;
+}
+
+img.center {
+  margin: auto;
+  display: block;
+}
 
 .hidden {
     display: none;
@@ -42,7 +44,7 @@ body {
   float: right;
 }
 
-.float-right {
+.float-left {
   float: left;
 }
 
@@ -54,8 +56,20 @@ body {
   width: 90%;
 }
 
+.col-6 {
+  width: 60%;
+}
+
+.padding-xl {
+  padding: 50px;
+}
+
 .padding-lg {
   padding: 30px;
+}
+
+.padding-md {
+  padding: 20px;
 }
 
 .padding-sm {
@@ -64,6 +78,32 @@ body {
 
 .padding-top-lg {
   padding-top: 30px;
+}
+
+.padding-top-md {
+  padding-top: 20px;
+}
+
+.padding-top-sm {
+  padding-top: 10px;
+}
+
+.padding-bottom-lg {
+  padding-bottom: 30px;
+}
+
+.padding-bottom-md {
+  padding-bottom: 20px;
+}
+
+.padding-v-lg {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.padding-v-md {
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .margin-top-md {
@@ -79,8 +119,8 @@ body {
   margin-bottom: 10px;
 }
 
-.padding-xl {
-  padding: 50px;
+.text-sm {
+  font-size: 12px;
 }
 
 .text-white {
@@ -90,6 +130,19 @@ body {
 .bold {
   font-size: 20px;
   font-weight: 600;
+}
+
+.brand-blue {
+  background-color: #6baacc;
+
+}
+
+.text-brand-blue {
+  color: #6baacc;
+}
+
+.border-bottom {
+  border-bottom: 2px solid #d9d9d9;
 }
 
 .content {

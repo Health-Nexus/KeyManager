@@ -4,8 +4,8 @@
     <button class="form-control" (click)="balances()">Generate</button>
     <div class="row padding-top-lg">
       <span>My parent keys</span>
-      <span class="clickable margin-v-sm">abcde</span>
-      <span class="clickable margin-v-sm">asdsdfsa</span>
+      <span class="clickable margin-v-sm" (click)="pickParentKey('23s')">abcde</span>
+      <span class="clickable margin-v-sm" (click)="pickParentKey('jade')">asdsdfsa</span>
       <div class="col-9 padding-top-lg">
         <span>Purchase keys</span>
         <input type="text" class="drs form-control" placeholder="Key to purchase" name="addr" #addr>
@@ -17,19 +17,32 @@
         <input type="number" class="drs form-control" placeholder="Key to trade for" name="amount" #amount>
       </div>
       <div class="col-9 padding-top-lg">
-        <div class="border-bottom">
-          <span>Outstanding trade offers</span>
-          <span class="bold margin-v-sm">absaklsa2js923cde</span>
-          <span class="inline clickable float-right padding-sm">View</span><span class="float-left inline">|</span><span class="inline float-left clickable padding-sm">Cancel</span>
-          <span class="bold margin-v-sm">absaklsa2js923cde</span>
-          <span class="inline clickable float-right padding-sm">View</span><span class="float-left inline">|</span><span class="inline float-left clickable padding-sm">Cancel</span>
+        <div class="border-bottom padding-v-lg">
+          <div class="col-6">
+            <span>Outstanding trade offers</span>
+            <div class="padding-sm">
+              <span class="bold margin-v-sm inline">absaklsa2js923cde</span>
+              <span class="inline float-right clickable padding-sm">Cancel</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-sm">View</span>
+            </div>
+            <div class="padding-sm">
+              <span class="bold margin-v-sm inline">absaklsa2js923cde</span>
+              <span class="inline float-right clickable padding-sm">Cancel</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-sm">View</span>
+            </div>
+          </div>
         </div>
-        <div class="border-bottom">
-          <span>Incoming trade offers</span>
-          <span class="bold margin-v-sm">absaklsa2js923cde</span>
-          <span class="inline clickable float-right padding-sm">View</span><span class="float-left inline">|</span><span class="inline float-left clickable padding-sm">Cancel</span>
-          <span class="bold margin-v-sm">absaklsa2js923cde</span>
-          <span class="inline clickable float-right padding-sm">View</span><span class="float-left inline">|</span><span class="inline float-left clickable padding-sm">Cancel</span>
+        <div class="border-bottom padding-v-lg">
+          <div class="col-6">
+            <span>Incoming trade offers</span>
+            <div class="padding-sm">
+              <span class="bold margin-v-sm inline">absaklsa2js923cde</span>
+              <span class="inline float-right clickable padding-sm">Decline</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-sm">Accept</span>
+            </div>
+
+            <div class="padding-sm">
+              <span class="bold margin-v-sm inline">absaklsa2js923cde</span>
+              <span class="inline float-right clickable padding-sm">Decline</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-sm">Accept</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
