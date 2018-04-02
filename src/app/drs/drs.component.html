@@ -1,11 +1,12 @@
 <div class="container">
   <div class="row drs" [hidden]="selectedParentKey">
     <span>Create new parent key</span>
-    <button class="form-control" (click)="balances()">Generate</button>
+    <button class="form-control" (click)="createKey('test')">Generate</button>
     <div class="row padding-top-lg">
-      <span>My parent keys</span>
-      <span class="clickable margin-v-sm" (click)="pickParentKey('23s')">abcde</span>
-      <span class="clickable margin-v-sm" (click)="pickParentKey('jade')">asdsdfsa</span>
+      <span [ngClass]="{'hidden': !loaded, 'inline': loaded}">My parent keys</span>
+      <div *ngFor="let service of services">
+        <span class="clickable margin-v-sm" (click)="pickParentKey(service._service)">{{ service._service }}</span>
+      </div>
       <div class="col-9 padding-top-lg">
         <span>Purchase keys</span>
         <input type="text" class="half form-control" placeholder="Key to purchase" name="keyPurchase" #keyPurchase>
@@ -13,8 +14,8 @@
       </div>
       <div class="col-9 padding-top-lg">
         <span>Make trade offer</span>
-        <input type="text" class="half form-control" placeholder="Key to trade" name="addr" #addr>
-        <input type="number" class="half form-control" placeholder="Key to trade for" name="amount" #amount>
+        <input type="text" class="half form-control" placeholder="Key to trade" name="keyTrade" #keyTrade>
+        <input type="text" class="half form-control" placeholder="Key to trade for" name="keyToTrade" #keyToTrade>
       </div>
       <div class="col-9 padding-top-lg">
         <div class="border-bottom padding-v-lg">
@@ -49,22 +50,29 @@
   </div>
 
   <div [hidden]="!selectedParentKey">
+    <!-- PARENT KEY VIEW -->
     <div class="row" [hidden]="selectedChildKey">
       <span class="padding-bottom-md">Managing parent key</span>
-      <span class="bold"> {{ selectedParentKey }} </span>
-      <span class="padding-v-lg">Child keys</span>
-      <button class="form-control">Generate new</button>
-      <span class="clickable" (click)="pickChildKey('1234')"> 1234 </span>
-      <span class="clickable" (click)="pickChildKey('5678')"> 5678 </span>
+      <span class="bold"> {{ selectedParentKey && selectedParentKey._service }} </span>
+      <span class="padding-top-lg">Child keys</span>
+      <button class="form-control" (click)="createKey(selectedParentKey && selectedParentKey._service)">Generate new</button>
+      <div *ngIf="selectedParentKey && selectedParentKey.keys">
+        <div *ngFor="let key of selectedParentKey.keys">
+          <span class="clickable padding-v-sm" (click)="pickChildKey(key.id)"> {{ key.id }}</span>
+        </div>
+      </div>
     </div>
+
+
+    <!-- CHILD KEY VIEW -->
     <div class="row" [hidden]="!selectedChildKey">
       <span class="padding-bottom-md">Managing child key</span>
-      <span class="bold">{{ selectedChildKey }}</span>
-      <span class="padding-top-lg">Retreive child key ata</span>
+      <span class="bold">{{ selectedChildKey && selectedChildKey.id }}</span>
+      <span class="padding-top-lg">Retreive child key data</span>
       <span class="warning margin-v-sm">Warning: not verified for sensitive data; any data may be unsanitized</span>
       <div>
-        <input type="text" class="form-control" placeholder="Insert parameter to send" name="canspend">
-        <button class="form-control" (click)="balances()">Retrieve</button>
+        <input type="text" class="form-control" placeholder="Insert parameter to send" name="Parameter" #Parameter>
+        <button class="form-control" (click)="retrieveData(keyShared.url,Parameter.value,keyShared.key)">Retrieve</button>
       </div>
 
 
@@ -73,7 +81,9 @@
         <div class="col-6">
           <div class="padding-sm">
             <span class="bold margin-v-sm inline">Share</span>
-            <span class="inline float-right clickable padding-h-sm">Off</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-h-sm">On</span>
+            <span class="inline float-right clickable padding-h-sm">Off</span>
+            <span class="float-right inline">|</span>
+            <span class="inline clickable float-right padding-h-sm">On</span>
           </div>
         </div>
       </div>
@@ -82,7 +92,9 @@
         <div class="col-6">
           <div class="padding-sm">
             <span class="bold margin-v-sm inline">Sell</span>
-            <span class="inline float-right clickable padding-h-sm">Off</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-h-sm">On</span>
+            <span class="inline float-right clickable padding-h-sm">Off</span>
+            <span class="float-right inline">|</span>
+            <span class="inline clickable float-right padding-h-sm">On</span>
           </div>
         </div>
       </div>
@@ -91,7 +103,9 @@
         <div class="col-6">
           <div class="padding-sm">
             <span class="bold margin-v-sm inline">Trade</span>
-            <span class="inline float-right clickable padding-h-sm">Off</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-h-sm">On</span>
+            <span class="inline float-right clickable padding-h-sm">Off</span>
+            <span class="float-right inline">|</span>
+            <span class="inline clickable float-right padding-h-sm">On</span>
           </div>
         </div>
       </div>
@@ -99,16 +113,16 @@
 
 
 
-      <div class="col-9 padding-top-lg">
+      <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share">
         <span>Share keys</span>
-        <input type="text" class="half form-control" placeholder="Share with" name="keyPurchase" #keyPurchase>
+        <input type="text" class="half form-control" placeholder="Share with" name="share" #share>
         <input type="number" class="half form-control" placeholder="Amount" name="amount" #amount>
       </div>
 
-      <div class="col-9 padding-top-lg">
+      <div class="col-9 padding-top-lg" *ngIf="actionAllowed('sell', selectedChildKey)">
         <span>Make sale offer</span>
-        <input type="text" class="half form-control" placeholder="Sell to" name="keyPurchase" #keyPurchase>
-        <input type="number" class="half form-control" placeholder="Amount" name="amount" #amount>
+        <input type="text" class="half form-control" placeholder="Sell to"  name="buyer" #buyer>
+        <input type="number" class="half form-control" placeholder="Amount" name="price" #price>
       </div>
 
 
