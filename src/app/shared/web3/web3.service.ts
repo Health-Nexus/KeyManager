@@ -85,9 +85,8 @@ export class Web3Service {
                      console.log('services',results);
                      results.forEach(function(result) {
 
-                       // if(result.args._owner==self.unlockedAccount)
+                       // if(result.args._owner==self.unlockedAccount) *JADE uncomment
                        self.services.push(result.args);
-                       // console.log('jade adding service', self.services.length)
                      }, self);
                      next();
                    })
@@ -108,7 +107,7 @@ export class Web3Service {
                           });
                         },
                         function getInfo(done) {
-                          // if(args._owner==self.unlockedAccount){
+                          // if(args._owner==self.unlockedAccount){ *JADE uncomment
                           self.getKeyInfo(args._key).then(function(info) {
                           self.keys.push({
                             key:args._key,
@@ -121,7 +120,7 @@ export class Web3Service {
                           self.keysData.push(info);
                           done();
                         });
-                        // }
+                        // } *JADE uncomment
                         // else{
                         //   //getUrlFromKey
                         //      self.isKeyOwner(log.args._key,self.unlockedAccount).then(function(resultOwner) {
@@ -157,7 +156,6 @@ export class Web3Service {
                     })
                  }
                ], function(err) {
-                 console.log('jade load')
                  self.loaded.next(true);
                })
 

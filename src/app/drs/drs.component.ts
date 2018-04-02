@@ -135,8 +135,8 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
     this.zone.run(() => {
         this.services = updatedServices;
-        console.log('jade updat')
     });
+
     console.log('DD services',updatedServices)
     console.log('DD keys',this.keys.length)
     console.log('DD keysAccess',this.keyAccessArray)
