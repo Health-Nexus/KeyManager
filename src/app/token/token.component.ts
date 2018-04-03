@@ -19,7 +19,6 @@ export class TokenComponent implements OnInit {
   ngOnInit() {
     this.healthcashService.currentBalance.subscribe(balance => this.balance = balance)
     this.healthcashService.allowedToSpend.subscribe(canspend => this.canspend = canspend)
-    // this.canspend = 50000;  * JADE using canspend as the value (use amount instead?)
   }
 
   balances(): any{

@@ -1,17 +1,20 @@
 <app-header></app-header>
 <div id="main" class="padding-xl">
-  <div *ngIf="authorized">
-    <app-tabs>
-        <app-tab tabTitle="My Tokens">
-          <app-token></app-token>
-        </app-tab>
-        <app-tab tabTitle="My Keys">
-          <app-drs ></app-drs>
-        </app-tab>
-    </app-tabs>
-  </div>
-  <div *ngIf="!authorized">
+  <div [hidden]="authorized">
     <app-welcome></app-welcome>
+  </div>
+
+  <div [hidden]="!authorized">
+    <div>
+      <app-tabs>
+          <app-tab tabTitle="My Tokens">
+            <app-token></app-token>
+          </app-tab>
+          <app-tab tabTitle="My Keys">
+            <app-drs></app-drs>
+          </app-tab>
+      </app-tabs>
+    </div>
   </div>
 </div>
 <app-footer></app-footer>

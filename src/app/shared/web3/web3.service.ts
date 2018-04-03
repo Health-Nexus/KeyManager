@@ -1,7 +1,10 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 // const Web3 = require('web3');
 import { Http, Response,Headers, RequestOptions,URLSearchParams } from '@angular/http';
+import * as async from 'async';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import 'rxjs/add/operator/map';
 
@@ -31,6 +34,16 @@ export class Web3Service {
    private keyNumber:number;
    private keyAccess:any;
 
+   private selectedParentKey = new Subject<string>();
+   private selectedChildKey = new Subject<string>();
+   private authorized = new BehaviorSubject<boolean>(false);
+   private loaded = new BehaviorSubject<boolean>(false);
+
+   parentKeyChanged$ = this.selectedParentKey.asObservable();
+   childKeyChanged$ = this.selectedChildKey.asObservable();
+   loginChanged$ = this.authorized.asObservable();
+   onLoad$ = this.loaded.asObservable();
+
          // Current unlocked account
    // Application Binary Interface so we can use the question contract
    //private ABI  = [{'constant':false,'inputs':[{'name':'queryID','type':'bytes32'},{'name':'result','type':'string'}],'name':'__callback','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'','type':'uint256'}],'name':'questions','outputs':[{'name':'contractAddress','type':'address'},{'name':'site','type':'string'},{'name':'questionID','type':'uint256'},{'name':'winnerAddress','type':'address'},{'name':'winnerID','type':'uint256'},{'name':'acceptedAnswerID','type':'uint256'},{'name':'updateDelay','type':'uint256'},{'name':'expiryDate','type':'uint256'},{'name':'ownedFee','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[],'name':'kill','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'},{'name':'_sponsorAddr','type':'address'}],'name':'getSponsorBalance','outputs':[{'name':'sponsorBalance','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'handleQuestion','outputs':[],'type':'function'},{'constant':false,'inputs':[{'name':'_i','type':'uint256'}],'name':'increaseBounty','outputs':[],'type':'function'},{'constant':true,'inputs':[],'name':'contractBalance','outputs':[{'name':'','type':'uint256'}],'type':'function'},{'constant':true,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'getAddressOfQuestion','outputs':[{'name':'questionAddr','type':'address'}],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'}],'name':'getSponsors','outputs':[{'name':'sponsorList','type':'address[]'}],'type':'function'},{'inputs':[],'type':'constructor'},{'anonymous':false,'inputs':[{'indexed':false,'name':'questionAddr','type':'address'}],'name':'QuestionAdded','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyIncreased','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyPaid','type':'event'}];
@@ -47,33 +60,109 @@ export class Web3Service {
        }
 
        ngOnInit() {
+         var self = this;
          console.log('http1', this.http)
+         console.log('async', async)
 
          this.contract = this.http.get("./data/HealthDRS.json")
             .map(response => response.json() )
-            .subscribe(result =>{
+            .subscribe(result => {
               this.contract=result;
               this._contract=this.web3.eth.contract(this.contract.abi)
 
-        if (this.web3.version.network == 1 ) {
-          //User Main net contract Address
-          this.contractAddr = this.mainContractAddr;
-        }
+              if (this.web3.version.network == 1 ) {
+                //User Main net contract Address
+                this.contractAddr = this.mainContractAddr;
+              }
 
-        let serviceEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, {fromBlock: 1649845, toBlock: 'latest'},(err, event) => {
-          // console.log(err, event)
-        })
-        serviceEvent.get((error, logs) => {
-          // we have the logs, now print them
-          console.log('services',logs)
-          logs.forEach(function(log) {
+               async.parallel([
+                 function loadServices(next) {
+                   let serviceEvent = self.web3.eth.contract(self.contract.abi).at(self.contractAddr).ServiceCreated({}, {fromBlock: 1649845, toBlock: 'latest'},(err, event) => {
+                     // console.log(err, event)
+                   })
+                   serviceEvent.get((error, results) => {
+                     // we have the results, now print them
+                     console.log('services',results);
+                     results.forEach(function(result) {
 
-            if(log.args._owner==this.unlockedAccount)
-              this.services.push(log.args);
-          }, this)
-        })
+                       // if(result.args._owner==self.unlockedAccount) *JADE uncomment
+                       self.services.push(result.args);
+                     }, self);
+                     next();
+                   })
+                 },
+                 function loadKeys(next) {
+                   let keyEvent = self.web3.eth.contract(self.contract.abi).at(self.contractAddr).KeyCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
+                     //console.log(err, event)
+                   })
+                   keyEvent.get((error, results) => {
+                     // we have the results, now print them
+                     async.each(results, function(result, nextResult) {
+                     let args = result && result.args || {};
+                      async.series([
+                        function getOwners(done) {
+                          self.getKeyOwners(args._key,0,[]).then(function(result) {
+                            self.keyOwners[args._key]=result;
+                            done();
+                          });
+                        },
+                        function getInfo(done) {
+                          // if(args._owner==self.unlockedAccount){ *JADE uncomment
+                          self.getKeyInfo(args._key).then(function(info) {
+                          self.keys.push({
+                            key:args._key,
+                            owner:args._owner,
+                            share:info[1],
+                            trade:info[2],
+                            sell:info[3],
+                            service:info[4]
+                          });
+                          self.keysData.push(info);
+                          done();
+                        });
+                        // } *JADE uncomment
+                        // else{
+                        //   //getUrlFromKey
+                        //      self.isKeyOwner(log.args._key,self.unlockedAccount).then(function(resultOwner) {
+                        //       if(resultOwner){
+                        //         self.keyAccess[log.args._key]={'key':log.args._key};
+                        //         self.getUrlFromKey(log.args._key).then(function(resultUrl) {
+                        //           self.keyAccess[log.args._key]['url']=resultUrl;
+                        //           console.log('key urls: ',self.keyAccess)
+                        //           }.bind(self));
+                        //         self.getKeyInfo(log.args._key).then(function(keyResult) {
+                        //           self.keyAccess[log.args._key]['share']=keyResult[1];
+                        //           self.keyAccess[log.args._key]['trade']=keyResult[2];
+                        //           self.keyAccess[log.args._key]['sell']=keyResult[3];
+                        //           self.keyAccess[log.args._key]['service']=keyResult[4];
+                        //           }.bind(self));
+                        //         }
+                        //       }.bind(self));
+                        // }
+                        }
+                      ], nextResult);
+                    }, next);
+                   })
+                 },
+                 function loadServiceList(next) {
+                   self._contract=self.web3.eth.contract(self.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+
+                   self._contract.at(self.contractAddr).serviceList(3,(error, eventResult) => {
+                     next();
+                      if (error)
+                        console.log('3Error in myEvent event handler: ' + error);
+                      else
+                        console.log('3myEvent: ' + eventResult);
+                    })
+                 }
+               ], function(err) {
+                 self.loaded.next(true);
+               })
+
+
+
         new Promise<any>((resolve, reject) => {
-          console.log("drs contract: ", this._contract)
+          console.log("drs contract: ", self._contract)
           this._contract.at(this.contractAddr).getKeyCount((error, result) => {
             if (!error) {
               console.log('result contract key count:', result)
@@ -86,58 +175,15 @@ export class Web3Service {
             });
 
           });
-        let keyEvent = this.web3.eth.contract(this.contract.abi).at(this.contractAddr).KeyCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
-          //console.log(err, event)
-        })
-        keyEvent.get((error, logs) => {
-          // we have the logs, now print them
-          logs.forEach(function(log) {
-
-            this.getKeyOwners(log.args._key,0,[]).then(function(result) {
-              this.keyOwners[log.args._key]=result;
-            }.bind(this));
-
-            if(log.args._owner==this.unlockedAccount){
-              this.getKeyInfo(log.args._key).then(function(result) {
-                this.keys.push({key:log.args._key,
-                  owner:log.args._owner,
-                  share:result[1],
-                  trade:result[2],
-                  sell:result[3],
-                  service:result[4]
-                 });
-                this.keysData.push(result);
-              }.bind(this));
-            }
-            else{
-              //getUrlFromKey
-                 this.isKeyOwner(log.args._key,this.unlockedAccount).then(function(resultOwner) {
-                  if(resultOwner){
-                    this.keyAccess[log.args._key]={'key':log.args._key};
-                    this.getUrlFromKey(log.args._key).then(function(resultUrl) {
-                      this.keyAccess[log.args._key]['url']=resultUrl;
-                      console.log('key urls: ',this.keyAccess)
-                      }.bind(this));
-                    this.getKeyInfo(log.args._key).then(function(keyResult) {
-                      this.keyAccess[log.args._key]['share']=keyResult[1];
-                      this.keyAccess[log.args._key]['trade']=keyResult[2];
-                      this.keyAccess[log.args._key]['sell']=keyResult[3];
-                      this.keyAccess[log.args._key]['service']=keyResult[4];
-                      }.bind(this));
-                    }
-                  }.bind(this));
-            }
-          }, this)
-        })
-        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
-
-        this._contract.at(this.contractAddr).serviceList(3,(error, eventResult) => {
-           if (error)
-             console.log('3Error in myEvent event handler: ' + error);
-           else
-             console.log('3myEvent: ' + eventResult);
-         })
       });
+    }
+
+    changeParentKey(parentKey: string) {
+      this.selectedParentKey.next(parentKey);
+    }
+
+    changeChildKey(childKey: string) {
+      this.selectedChildKey.next(childKey);
     }
 
     dataRequestTest(urlKey,parameter,key): any{
@@ -776,6 +822,10 @@ export class Web3Service {
                    (err, res) => {;
                        if (err.toString() !== 'Error: account is locked') {
                            this.unlockedAccount = this.web3.eth.accounts[0];
+                           if (this.unlockedAccount) {
+                             this.authorized.next(true);
+                           }
+
                            this.update.emit(null);
                            console.log('Connected to account: ' + this.unlockedAccount);
                            resolve(true);
@@ -787,6 +837,10 @@ export class Web3Service {
                );
            } else {
                this.unlockedAccount = this.web3.eth.accounts[0];
+               if (this.unlockedAccount) {
+                 this.authorized.next(true);
+               }
+
                console.log('Connected to account: ' + this.unlockedAccount)
                resolve(false);
            }
@@ -822,6 +876,7 @@ export class Web3Service {
            localStorage['nodeIP'] = this.nodeIP;
            console.log('Using HTTP node;', this.nodeIP);
            this.unlockedAccount = undefined;
+
            this.web3 = new this.Web3(new this.Web3.providers.HttpProvider(this.nodeIP));
            this.handleConnection(this.web3.isConnected());
        }
