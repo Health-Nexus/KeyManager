@@ -1,5 +1,9 @@
+/**
+ * @fileoverview File to interact with Web3
+ * @package
+ */
+
 import { Injectable, EventEmitter, Output } from '@angular/core';
-// const Web3 = require('web3');
 import { Http, Response,Headers, RequestOptions,URLSearchParams } from '@angular/http';
 import * as async from 'async';
 import { HttpClient, HttpResponse } from '@angular/common/http';
@@ -8,6 +12,10 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import 'rxjs/add/operator/map';
 
+
+/**
+ * Class to handle DRS Contract interactions
+ */
 @Injectable()
 export class Web3Service {
 
@@ -21,7 +29,6 @@ export class Web3Service {
    private web3Instance: any;                                                   // Current instance of web3
    private unlockedAccount: string;
    private addr: string;
-   private privateKey: string;
    private address: string;
    private abi:any = [ {} ]; // redacted on purpose
    private abiArray:any = this.abi;
@@ -44,10 +51,11 @@ export class Web3Service {
    loginChanged$ = this.authorized.asObservable();
    onLoad$ = this.loaded.asObservable();
 
-         // Current unlocked account
-   // Application Binary Interface so we can use the question contract
-   //private ABI  = [{'constant':false,'inputs':[{'name':'queryID','type':'bytes32'},{'name':'result','type':'string'}],'name':'__callback','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'','type':'uint256'}],'name':'questions','outputs':[{'name':'contractAddress','type':'address'},{'name':'site','type':'string'},{'name':'questionID','type':'uint256'},{'name':'winnerAddress','type':'address'},{'name':'winnerID','type':'uint256'},{'name':'acceptedAnswerID','type':'uint256'},{'name':'updateDelay','type':'uint256'},{'name':'expiryDate','type':'uint256'},{'name':'ownedFee','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[],'name':'kill','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'},{'name':'_sponsorAddr','type':'address'}],'name':'getSponsorBalance','outputs':[{'name':'sponsorBalance','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'handleQuestion','outputs':[],'type':'function'},{'constant':false,'inputs':[{'name':'_i','type':'uint256'}],'name':'increaseBounty','outputs':[],'type':'function'},{'constant':true,'inputs':[],'name':'contractBalance','outputs':[{'name':'','type':'uint256'}],'type':'function'},{'constant':true,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'getAddressOfQuestion','outputs':[{'name':'questionAddr','type':'address'}],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'}],'name':'getSponsors','outputs':[{'name':'sponsorList','type':'address[]'}],'type':'function'},{'inputs':[],'type':'constructor'},{'anonymous':false,'inputs':[{'indexed':false,'name':'questionAddr','type':'address'}],'name':'QuestionAdded','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyIncreased','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyPaid','type':'event'}];
 
+   /**
+    * Constructor function.  Initializes array and calls on init
+    * @param Http http
+    */
 
        constructor(private http: Http) {
          this.services=[];
@@ -59,30 +67,34 @@ export class Web3Service {
          this.ngOnInit();
        }
 
+       /**
+        * ngOnInit function.  Loads all initial data needed
+        * @param Http http
+        */
+
+
        ngOnInit() {
          var self = this;
-         console.log('http1', this.http)
-         console.log('async', async)
-
          this.contract = this.http.get("./data/HealthDRS.json")
             .map(response => response.json() )
             .subscribe(result => {
               this.contract=result;
               this._contract=this.web3.eth.contract(this.contract.abi)
 
-              if (this.web3.version.network == 1 ) {
+              if ( this.web3.version.network == 1 ) {
                 //User Main net contract Address
                 this.contractAddr = this.mainContractAddr;
               }
 
                async.parallel([
                  function loadServices(next) {
+                   //gets a list of services
                    let serviceEvent = self.web3.eth.contract(self.contract.abi).at(self.contractAddr).ServiceCreated({}, {fromBlock: 1649845, toBlock: 'latest'},(err, event) => {
                      // console.log(err, event)
                    })
+                   //
                    serviceEvent.get((error, results) => {
                      // we have the results, now print them
-                     console.log('services',results);
                      results.forEach(function(result) {
 
                        // if(result.args._owner==self.unlockedAccount) *JADE uncomment
@@ -145,7 +157,7 @@ export class Web3Service {
                    })
                  },
                  function loadServiceList(next) {
-                   self._contract=self.web3.eth.contract(self.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+                   self._contract=self.web3.eth.contract(self.contract.abi)
 
                    self._contract.at(self.contractAddr).serviceList(3,(error, eventResult) => {
                      next();
@@ -165,11 +177,10 @@ export class Web3Service {
           console.log("drs contract: ", self._contract)
           this._contract.at(this.contractAddr).getKeyCount((error, result) => {
             if (!error) {
-              console.log('result contract key count:', result)
               this.keyNumber=result.c[0];
               // resolve(result);
             } else {
-              console.log('error from key count:',error)
+              console.log('error from key count:',error);
               // reject(error)
             }
             });
@@ -186,41 +197,33 @@ export class Web3Service {
       this.selectedChildKey.next(childKey);
     }
 
+    /**
+     * dataRequestTest function.  Sends signed message to a gatekeeper, based on key, parameter and key url, to retrive data.
+     * @param urlKey:  The data form the key to be treated as a url to call
+     * @param parameter:  Pareamter to use in the request
+     * @param key:  The id of the key to use to unlock the data
+     * @return {json | file} returns Json or a file
+     */
+     //TODO:  Break into a function for json and a function for sharing
     dataRequestTest(urlKey,parameter,key): any{
-    //def data(request, address_id, signature_id, message_hash, parameter, key):
 
-      var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0] ;
+      //determines signer and message
+      var signature;
+      var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0];
       var original_message = "DRS Message";
       var message_hash = this.web3.sha3(
         '\u0019Ethereum Signed Message:\n' +
         original_message.length.toString() +
         original_message
       );
-      // message_hash=this.web3.eth.accounts.hashMessage(original_message)
-      var signature;
-      console.log('web sign:',this.web3)
-//     this.web3.personal.sign(message_hash,signer function(err, res) {
       let p = new Promise<any>((resolve, reject) => {this.web3.eth.sign(signer,message_hash, function(err, res) {
         if (err) console.error(err);
         signature = res;
-        console.log({
-          "signer": signer,
-          "message": message_hash,
-          "message_hash": message_hash,
-          "signature": signature,
-        })
         var headers = new Headers({ 'Content-Type': 'application/json'  });
         var options = new RequestOptions({ headers: headers });
-        //    path('<str:address_id>/<str:signature_id>/<str:message_hash>/<str:parameter>', views.data, name='data'),
-        //'http://localhost:8000/gatekeeper/'
         var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
-        console.log(urlKey);
-        console.log(url);
-        return this.http.get(url, options)//,  {search: params})
-                  // .map((res: Response): any =>
-                  // res.json() )
+        return this.http.get(url, options)
                   .subscribe(result =>{
-                    console.log(result, result.headers.get("Content-Type"));
                     if(result.headers.get("Content-Type") !='image/jpeg' && result.headers.get("Content-Type") !='audio/mpeg')
                     {
                       resolve(result.json())
@@ -229,11 +232,10 @@ export class Web3Service {
                     {
                       const blob = new Blob([result], { type: 'audio/mpeg' });
                       const url= window.URL.createObjectURL(blob);
-                      console.log('auido url',url, blob)
                       window.open(url);
                      }
 
-                      resolve(result)
+                      resolve(result);
 
                   })
 
@@ -242,109 +244,129 @@ export class Web3Service {
 
   }
 
-
+  /**
+   * initializeWeb3 function.  initalizes web3
+   */
    initializeWeb3(): void {
        this.nodeIP = 'MetaMask';//localStorage['nodeIP'] || this.defaultNodeIP;
-      // this.web3 = new Web3(this.web3.currentProvider);
        this.connectToNode(); // Connect to whatever's available
    }
 
+   /**
+    * getServices function.  Returns all services on the drs contract
+    * @return {Array<json>} returns an array of json obejcts of all the services
+    */
    getServices(): any {
-     console.log(this._contract);
 
      return this.services;
    }
 
-
+   /**
+    * getKeys function.  Returns all keys on the drs contract
+    * @return {Array<json>} returns an array of json obejcts of all the keys
+    */
    getKeys(): any {
      return this.keys;
    }
 
+   /**
+    * getKeys function.  Returns all key owners on the drs contract
+    * @return {Array<json>} returns an array of json obejcts of all the keys
+    */
    returnKeyOwners(): any {
      return this.keyOwners;
    }
 
 
+      /**
+       * getKeysData function.  Returns all key data on the drs contract
+       * @return {Array<json>} returns an array of json obejcts of all the keys
+       */
    getKeysData(): any {
      return this.keysData;
    }
 
-
+   /**
+    * getKeysData function.  Returns all keyAccess(owners/sharers) data
+    * @return {Array<json>} returns an array of json obejcts of all the keyAccess
+    */
    getkeyAccess(): any {
      return this.keyAccess;
    }
 
-
-   test(): any {
-    // let p = new Promise<any>((resolve, reject) => {
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+   /**
+    * authorizedToSpend function.  retrieves how much HLTH a user is allowed to spend
+    * @return {jso>} returns an error or success
+    */
+   authorizedToSpend(): any {
+       this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).authorizedToSpend((error, result) => {
              if (!error) {
-               console.log('result contract test1:', result)
                resolve(result);
              } else {
-               console.log('error from test1:',error)
-               reject(error)   }
+                reject(error);
+             }
              });
 
            });
            return p;
    }
 
-
+   /**
+    * createservice function.  creates a service with the given string
+    * @param url:  String to be stored with the service, suggested url
+    * @return {json} success or error
+    */
    createservice(url): any {
-    // let p = new Promise<any>((resolve, reject) => {
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+       this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).createService(url,(error, result) => {
              if (!error) {
 
-               let result2=this.web3.toAscii(result)
-              //  this.web3.eth.contract(this.contract.abi).at(this.contractAddr).ServiceCreated({}, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
-              //    if (error)
-              //      console.log('2Error in myEvent event handler: ' + error);
-              //    else
-              //      console.log('2myEvent: ' + JSON.stringify(eventResult.args));
-              //  });
+               let result2=this.web3.toAscii(result);
               resolve(result2);
 
              } else {
-               console.log('error from test2:',error)
-               reject(error)   }
+               reject(error);
+             }
              });
 
            });
            return p;
    }
 
-
+   /**
+    * getServiceCount function.  Gets a count on the number of services
+    * @return {json} error or success.  Success contains number of services
+    */
    getServiceCount(): any {
-    // let p = new Promise<any>((resolve, reject) => {
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+       this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).getServiceCount((error, result) => {
              if (!error) {
                resolve(result);
              } else {
-               console.log('error from test3:',error)
-               reject(error) ;  }
+               console.log('error from:',error)
+               reject(error);
+             }
              });
 
            });
            return p;
    }
 
-
+   /**
+    * getKeyOwners function.  Retreive array of owners of keys
+    * @return {json} error or success.  Success contains an array of key owners
+    */
    getKeyOwners(key,index,finalResult): any {
-    // let p = new Promise<any>((resolve, reject) => {
-    // console.log('getKeyOwners test: ',key,' ; ',index, ': ',finalResult)
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+
+       this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).owners(key,index,(error, result) => {
              if (!error) {
                if(result!='0x'){
-                console.log('push',result)
                 finalResult.push(result)
                 resolve(this.getKeyOwners(key,index+1,finalResult));
                }
@@ -352,15 +374,20 @@ export class Web3Service {
                 resolve(finalResult);
               }
              } else {
-               console.log('error from test3:',error)
-               reject(error) ;  }
+               console.log('error from:',error)
+               reject(error);
+             }
              });
 
            });
            return p;
    }
 
-
+   /**
+    * getServiceIds function.  Retreive array of owners of keys
+    * @param index:  int index of service to get
+    * @return {json} error or success.  Success contains a service object
+    */
    getServiceIds(index): any {
      let p = new Promise<any>((resolve, reject) => {
         this._contract.at(this.contractAddr).serviceList(index,(error, result) => {
@@ -368,7 +395,7 @@ export class Web3Service {
             resolve(result);
           } else {
             console.log(error)
-            reject(error)
+            reject(error);
           }
           });
         })
@@ -377,7 +404,12 @@ export class Web3Service {
 
    }
 
-
+   /**
+    * isKeyOwner function.  Determines if user is a key owner of given key
+    * @param key:  id of key to check for ownership
+    * @param account:  address of user to check for ownership
+    * @return {json} error or success.  Success contains a boolean of if its a owner or not
+    */
    isKeyOwner(key, account): any {
      let p = new Promise<any>((resolve, reject) => {
         this._contract.at(this.contractAddr).isKeyOwner(key,account,(error, result) => {
@@ -385,7 +417,7 @@ export class Web3Service {
             resolve(result);
           } else {
             console.log(error)
-            reject(error)
+            reject(error);
           }
           });
         })
@@ -394,15 +426,19 @@ export class Web3Service {
 
    }
 
-
+   /**
+    * getServiceURL function.  Retrieves URL for service
+    * @param id:  id of service to retrieve url
+    * @return {json} error or success.  Success contains a json object with the url
+    */
    getServiceURL(id): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getUrl(id,(error, result) => {
          if (!error) {
            resolve(result);
          } else {
-           console.log('error from test4:',error)
-           reject(error)
+           console.log('error:',error)
+           reject(error);
          }
        });
      })
@@ -410,7 +446,11 @@ export class Web3Service {
 
    }
 
-
+   /**
+    * isServiceOwner function.  Determines if user is a service owner of given service
+    * @param id:  id of service to check for ownership
+    * @return {json} error or success.  Success contains a boolean of if its a owner or not
+    */
    isServiceOwner(id): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).isServiceOwner(id,this.unlockedAccount,(error, result) => {
@@ -425,7 +465,12 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * shareService function.  Shares a key with another usere
+    * @param id:  id of key to share
+    * @param account:  id of acount to share with
+    * @return {json} error or success.
+    */
    shareService(id,account): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).shareService(id,account,(error, result) => {

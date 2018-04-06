@@ -9,10 +9,10 @@ import 'rxjs/add/operator/map';
 export class HealthcashService {
   @Output() update = new EventEmitter();
    private rinkebyContractAddr: string = '0xAB6cee678340A12ee72d41D472300f6A2befA1EB'
-   private mainContractAddr: string = ''   
+   private mainContractAddr: string = ''
    private contractAddr: string;
    private rinkebyDrsAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'
-   private mainDrsAddr: string = ''      
+   private mainDrsAddr: string = ''
    private drsAddr: string;
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
@@ -21,16 +21,14 @@ export class HealthcashService {
    private web3Instance: any;                                                   // Current instance of web3
    private unlockedAccount: string;
    private addr: string;
-   private privateKey: string;
-   private address: string;
    private abi:any = [ {} ]; // redacted on purpose
    private abiArray:any = this.abi;
    private contract: any;
    private _contract: any;
    private balance = new BehaviorSubject<number>(0);
-   private canspend = new BehaviorSubject<number>(0);   
+   private canspend = new BehaviorSubject<number>(0);
    currentBalance = this.balance.asObservable();
-   allowedToSpend = this.canspend.asObservable();    
+   allowedToSpend = this.canspend.asObservable();
 
          // Current unlocked account
    // Application Binary Interface so we can use the question contract
@@ -44,16 +42,16 @@ export class HealthcashService {
          switch(this.web3.version.network) {
           case '1':
             this.contractAddr = this.mainContractAddr;
-            this.drsAddr = this.mainDrsAddr;              
+            this.drsAddr = this.mainDrsAddr;
             break;
           default:
             this.contractAddr = this.rinkebyContractAddr;
             this.drsAddr = this.rinkebyDrsAddr;
-        }          
+        }
        }
 
        ngOnInit() {
-         
+
          let p = new Promise<any>((resolve, reject) => {
            this.http.get("./data/HealthCash.json")
             .map(response => response.json() )
@@ -131,17 +129,17 @@ export class HealthcashService {
     console.log('drs account: ', this.drsAddr)
     let p = new Promise<any>((resolve, reject) => {
           this._contract.at(this.contractAddr)
-          .allowance(this.unlockedAccount, 
+          .allowance(this.unlockedAccount,
                      this.drsAddr,
                      (error, result) => {
             if (!error) {
              console.log(result)
-             this.canspend.next(result.c[0])             
+             this.canspend.next(result.c[0])
              this.allowedToSpend=result.c[0]
              resolve(result.c[0]);
             } else {
              console.log('error from allowance:',error)
-             reject(error)   
+             reject(error)
             }
             });
           });
