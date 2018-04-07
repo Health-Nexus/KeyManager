@@ -15,24 +15,26 @@ export class DrsComponent implements OnInit {
   @Input() tokenServices: any;
   @Input() drsServices: any;
    private _window: Window;
-   services:any= [];
+   services: any= [];
    serviceIndex: any = {};
-   keys:any= [];
-   data:any;
-   dataOnKey:any;
-   dataToDisplay:any;
-   keysData:any= [];
-   keyOwners:any={};
-   keyAccess:any={};
+   keys: any= [];
+   keysIndex: any= {};
+   data: any;
+   dataOnKey: any;
+   dataToDisplay: any;
+   keysData: any = [];
+   keyOwners: any = {};
+   keyAccess: any = {};
    urls: any={};
    keyAccessArray: any=[];
    image: any;
    selectedParentKey?: any;
    selectedChildKey?: any;
-   childParams?: any= {};
-   childParamsArray?: any= [];
-   loaded: boolean = false
-   editingPermissions: boolean = false
+   childParams?: any = {};
+   childParamsArray?: any = [];
+   loaded: boolean = false;
+   editingPermissions: boolean = false;
+   editingParam?: any = {};
 
 constructor(private web3Service:Web3Service,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService, private zone: NgZone) {
   this._window = windowRef.nativeWindow;
@@ -48,9 +50,11 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
     this.web3Service.childKeyChanged$.subscribe(
     selectedChild => {
-      var childKey = this.selectedParentKey && this.selectedParentKey.keyIndex[selectedChild];
+      let childKeyOfParent = this.selectedParentKey && this.selectedParentKey.keyIndex[selectedChild];
+      let sharedKey = this.keyAccess && this.keyAccess[selectedChild];
+      let ownedKey = this.keysIndex && this.keysIndex[selectedChild];
 
-      this.selectedChildKey = childKey;
+      this.selectedChildKey = childKeyOfParent || sharedKey || ownedKey;
     });
 
     this.web3Service.onLoad$.subscribe(
@@ -62,129 +66,152 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     });
   }
 
+  displayData() {
+    var updatedServices = this.web3Service.getServices();
+
+    this.keys = this.web3Service.getKeys();
+    console.log('keys:',this.keys);
+    this.keyOwners = this.web3Service.returnKeyOwners();
+    console.log('Display Data keyOwners:',this.keyOwners);
+
+    this.keyAccess = this.web3Service.getkeyAccess();
+    this.keyAccessArray = [];
+    console.log('keyAccessTemp; ', this.keyAccess)
+    for (var json in this.keyAccess) {
+      console.log('json; ', json);
+      let currentKeyAccess = this.keyAccess[json];
+      this.keyAccessArray.push({
+        'key' : json,
+        'url' : currentKeyAccess.url.trim(),
+        'share' : currentKeyAccess.share,
+        'trade' : currentKeyAccess.trade,
+        'sell' : currentKeyAccess.sell,
+        'service' : currentKeyAccess.service
+      });
+    }
+
+    for (var i = 0; i < updatedServices.length; i++) {
+      let currentService = updatedServices[i];
+      let url = this.web3Service.getServiceURL(currentService._service);
+      currentService.keys = [];
+      currentService.keysExist = false;
+      currentService.url = url;
+      this.urls[currentService._service] = url;
+
+      var length = this.keys.length;
+      for (var j = 0; j < length; j++) {
+        let currentKey = this.keys[j];
+        this.keysIndex[currentKey.key] = currentKey;
+        if (currentService._service == currentKey.service) {
+          var serviceKey = {
+            'owner': currentKey.owner,
+            'share': currentKey.share,
+            'trade': currentKey.trade,
+            'sell': currentKey.sell,
+            'id': currentKey.key
+          };
+          currentService.keys.push(serviceKey);
+          if (!currentService.keyIndex) {
+            currentService.keyIndex = {};
+          };
+          currentService.keyIndex[serviceKey.id] = serviceKey;
+          currentService.keysExist = true;
+        }
+      }
+      this.serviceIndex[currentService._service] = currentService;
+    };
+
+    this.zone.run(() => {
+        this.services = updatedServices;
+    });
+
+    console.log('DD services', updatedServices);
+    console.log('DD keys', this.keys.length);
+    console.log('DD keysAccess', this.keyAccessArray);
+
+  }
+
+  log(val) { console.log(val); }
+
+
+  /* KEYS TAB */
+  createService(url): any {
+    this.web3Service.createservice(url);
+  }
+
   pickParentKey(parentKey: string) {
     this.web3Service.changeParentKey(parentKey);
+  }
+
+  purchaseKey(key): any {
+    this.web3Service.purchaseKey(key);
+  }
+
+  /* PARENT KEY VIEW */
+  createParentKey(url): any {
+    this.web3Service.createKey(url);
   }
 
   pickChildKey(childKey: string) {
     this.web3Service.changeChildKey(childKey);
   }
 
-  displayData() {
-    var updatedServices = this.web3Service.getServices();
-    this.keys=this.web3Service.getKeys()
-    console.log('keys:',this.keys);
-    this.keyOwners=this.web3Service.returnKeyOwners();
-    console.log('Display Data keyOwners:',this.keyOwners);
-    var keyAccessTemp=this.web3Service.getkeyAccess()
-    this.keyAccessArray=[];
-    console.log('keyAccessTemp; ', keyAccessTemp)
-    let sharedKey = {};
+  dwnld() {
+    let url = "https://images.pexels.com/photos/159541/wildlife-photography-pet-photography-dog-animal-159541.jpeg?auto=compress&cs=tinysrgb&h=350";
+    // Source: http://pixelscommander.com/en/javascript/javascript-file-download-ignore-content-type/
+    this.downloadFile(url);
+  }
 
-    for(var json in keyAccessTemp){
-      console.log('json; ', json)
-      sharedKey = {'key':json,
-                    'url':keyAccessTemp[json].url.trim(),
-                    'share':keyAccessTemp[json].share,
-                    'trade':keyAccessTemp[json].trade,
-                    'sell':keyAccessTemp[json].sell,
-                    'service':keyAccessTemp[json].service}
-      this.keyAccessArray.push(sharedKey);
-    }
+  downloadFile(sUrl: string) {
 
-    for(var i = 0; i < updatedServices.length; i++) {
-       updatedServices[i].keys=[];
-       updatedServices[i].keysExist=false;
-      this.urls[updatedServices[i]._service]=this.web3Service.getServiceURL(updatedServices[i]._service);
-      updatedServices[i].url=this.web3Service.getServiceURL(updatedServices[i]._service);
-      var length=this.keys.length
-      for(var j=0;j<length;j++){
+      //iOS devices do not support downloading. We have to inform user about this.
+      if (/(iP)/g.test(navigator.userAgent)) {
+        //alert('Your device does not support files downloading. Please try again in desktop browser.');
+        window.open(sUrl, '_blank');
+        return false;
+      }
 
-        if(updatedServices[i]._service==this.keys[j].service){
-          var serviceKey=<any>{}
-          serviceKey['owner']=this.keys[j].owner;
-          serviceKey['share']=this.keys[j].share;
-          serviceKey['trade']=this.keys[j].trade;
-          serviceKey['sell']=this.keys[j].sell;
-          serviceKey['id']=this.keys[j].key;
-          //this.keys.splice(j,1);
-          //j--;
-          //length--;
-          updatedServices[i].keys.push(serviceKey);
-          if (!updatedServices[i].keyIndex) {
-            updatedServices[i].keyIndex = {};
-          }
-          updatedServices[i].keyIndex[serviceKey.id] = serviceKey;
-          updatedServices[i].keysExist=true;
+      //If in Chrome or Safari - download via virtual link click
+      if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1 || navigator.userAgent.toLowerCase().indexOf('safari') > -1) {
+        //Creating new link node.
 
+        var link = document.createElement('a');
+        link.href = sUrl;
+        link.setAttribute('target','_blank');
+        debugger
+        if (link.download !== undefined) {
+          //Set HTML5 download attribute. This will prevent file from opening if supported.
+          var fileName = sUrl.substring(sUrl.lastIndexOf('/') + 1, sUrl.length);
+          link.download = fileName;
         }
 
+        //Dispatching click event.
+        if (document.createEvent) {
+          var e = document.createEvent('MouseEvents');
+          e.initEvent('click', true, true);
+          link.dispatchEvent(e);
+          return true;
+        }
       }
-      var currentService = updatedServices[i];
-      this.serviceIndex[currentService._service] = currentService;
+
+    // Force file download (whether supported by server).
+    if (sUrl.indexOf('?') === -1) {
+      sUrl += '?download';
     }
 
-    this.zone.run(() => {
-        this.services = updatedServices;
-    });
-
-    console.log('DD services',updatedServices)
-    console.log('DD keys',this.keys.length)
-    console.log('DD keysAccess',this.keyAccessArray)
-
+    window.open(sUrl, '_blank');
+    return true;
   }
 
-  log(val) { console.log(val); }
-
-  createService(url): any {
-    this.web3Service.createservice(url);
-  }
-
-  setData(type, parameter): any {
-    this.paramName = null;
-    this.paramValue = null;
-    var selected = this.selectedChildKey && this.selectedChildKey;
-    console.log('here', parameter, ' : ', typeof parameter)
-    // this.dataOnKey = this.web3Service.setKeyData(selected.id, type, parameter);
-    if (selected) {
-      if (!parameter) {
-        delete this.childParams[type];
-      } else {
-        this.childParams[type] = parameter;
-      }
-      this.zone.run(() => {
-          console.log('jade full', this.childParams);
-          console.log('jade here', Object.keys(this.childParams));
-          this.childParamsArray = Object.keys(this.childParams);
-      });
-    }
-    console.log('retrieved data DRS', this.dataOnKey)
-  }
-
-  getData(type): any {
-    var keyId = this.selectedChildKey && this.selectedChildKey.id;
-    this.dataOnKey=this.web3Service.getKeyData(keyId, type);
-    console.log(this.data)
-  }
-
-  togglePane(event): any {
-     let el = event.target.nextElementSibling
-     if (el.classList.contains('hidden')) {
-      el.classList.remove('hidden');
-     } else {
-      el.classList.add('hidden');
-     }
-  }
-
-  retrieveData(parameter): any{
+  /* CHILD KEY VIEW */
+  retrieveData(parameter): any {
     var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
     var keyId = this.selectedChildKey && this.selectedChildKey.id;
     console.log('retrieve: ',urlKey);
     this.dataToDisplay=this.web3Service.dataRequestTest(urlKey, parameter, keyId).then(function(value){
     // Do things after onload
       console.log('this.dataToDisplay: ',value)
-      if(value.headers.get("Content-Type") =='image/jpeg')
-      {
+      if (value.headers.get("Content-Type") =='image/jpeg') {
 
         // var trust=this._sanitizer.sanitize(SecurityContext.RESOURCE_URL,'data:image/jpg;base64,'
         //            + value._body);
@@ -214,9 +241,48 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     console.log(this.dataToDisplay);
   }
 
+  changePermissions(): any {
+    this.editingPermissions = false;
+    var selected = this.selectedChildKey && this.selectedChildKey || {};
+    var id = selected.id;
+    var share = selected.share;
+    var trade = selected.trade;
+    var sell = selected.sell;
+    this.web3Service.permissionKey(id, share, trade, sell);
+  }
+
   setActive(key, value) {
-      this.editingPermissions = true;
-      this.selectedChildKey[key] = value;
+    this.editingPermissions = true;
+    this.selectedChildKey[key] = value;
+  }
+
+  editParam(key) {
+    this.editingParam = {};
+    this.editingParam[key] = true;
+  }
+
+  getData(type): any {
+    var keyId = this.selectedChildKey && this.selectedChildKey.id;
+    this.dataOnKey = this.web3Service.getKeyData(keyId, type);
+    console.log(this.data)
+  }
+
+  setData(type, parameter): any {
+    var selected = this.selectedChildKey && this.selectedChildKey;
+    console.log('here', parameter, ' : ', typeof parameter)
+    // this.dataOnKey = this.web3Service.setKeyData(selected.id, type, parameter);
+    if (selected) {
+      if (!parameter) {
+        delete this.childParams[type];
+      } else {
+        this.childParams[type] = parameter;
+      }
+      this.zone.run(() => {
+          this.childParamsArray = Object.keys(this.childParams);
+      });
+      this.editingParam = {};
+    }
+    console.log('retrieved data DRS', this.dataOnKey)
   }
 
   shareKey(id, account): any {
@@ -227,29 +293,6 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     this.web3Service.unshareKey(id, account);
   }
 
-  tradeKeyOffer(key, keyToTrade): any {
-    this.web3Service.tradeKey(key,keyToTrade);
-  }
-
-  cancelTradeKeyOffer(key): any {
-    this.web3Service.CancelTradeKey(key);
-  }
-
-  tradeKey(key,keyTrade): any {
-    this.web3Service.CreateTradeKeyOffer(key,keyTrade);
-
-  }
-
-  sellKeyOffer(buyer, price, sellPermission): any {
-    var selected = this.selectedChildKey && this.selectedChildKey || {};
-    var keyId = selected.id;
-    this.web3Service.createSalesOffer(keyId, buyer, price, sellPermission);
-  }
-
-  cancelSellKeyOffer(key): any {
-    this.web3Service.cancelSalesOffer(key);
-  }
-
   canMakeSaleOffer(): boolean {
     return this.selectedChildKey && this.selectedChildKey.sell && !this.keyHasOwner(this.selectedChildKey);
   }
@@ -258,21 +301,37 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     return this.keyOwners[key] && this.keyOwners[key].length > 0;
   }
 
-  purchaseKey(key): any {
-    this.web3Service.purchaseKey(key);
-  }
-
-  changePermission(): any {
-    this.editingPermissions = false;
+  sellKeyOffer(buyer, price, sellPermission): any {
     var selected = this.selectedChildKey && this.selectedChildKey || {};
-    var id = selected.id;
-    var share = selected.share;
-    var trade = selected.trade;
-    var sell = selected.sell;
-    this.web3Service.permissionKey(id, share, trade, sell);
+    var keyId = selected.id;
+    this.web3Service.createSalesOffer(keyId, buyer, price, sellPermission);
   }
 
-  createKey(url): any {
-    this.web3Service.createKey(url);
+  cancelTradeKeyOffer(key): any {
+    this.web3Service.CancelTradeKey(key);
+  }
+
+
+
+
+  togglePane(event): any {
+     let el = event.target.nextElementSibling
+     if (el.classList.contains('hidden')) {
+      el.classList.remove('hidden');
+     } else {
+      el.classList.add('hidden');
+     }
+  }
+
+  tradeKeyOffer(key, keyToTrade): any {
+    this.web3Service.tradeKey(key,keyToTrade);
+  }
+
+  tradeKey(key,keyTrade): any {
+    this.web3Service.CreateTradeKeyOffer(key,keyTrade);
+  }
+
+  cancelSellKeyOffer(key): any {
+    this.web3Service.cancelSalesOffer(key);
   }
 }

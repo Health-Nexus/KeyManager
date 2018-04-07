@@ -51,15 +51,15 @@ export class HealthcashService {
        }
 
        ngOnInit() {
-
          let p = new Promise<any>((resolve, reject) => {
            this.http.get("./data/HealthCash.json")
             .map(response => response.json() )
-            .subscribe(result =>{
+            .subscribe(result => {
               this.contract=result;
               this._contract=this.web3.eth.contract(this.contract.abi)
               console.log('balance of init ')
               this.balanceOf();
+              this.drsApprovedFor();
               resolve(result);
             });
           });
@@ -108,7 +108,6 @@ export class HealthcashService {
 
 
    transfer( _to,  _value): any {
-
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).transfer(_to,_value,(error, result) => {
@@ -125,6 +124,9 @@ export class HealthcashService {
    }
 
    drsApprovedFor(): any {
+     if (!this.unlockedAccount) {
+       return;
+     }
     console.log('approved for start ')
     console.log('drs account: ', this.drsAddr)
     let p = new Promise<any>((resolve, reject) => {
@@ -133,7 +135,7 @@ export class HealthcashService {
                      this.drsAddr,
                      (error, result) => {
             if (!error) {
-             console.log(result)
+             console.log('drsApprovedFor', result);
              this.canspend.next(result.c[0])
              this.allowedToSpend=result.c[0]
              resolve(result.c[0]);
@@ -148,13 +150,16 @@ export class HealthcashService {
 
 
    balanceOf(): any {
+     if (!this.unlockedAccount) {
+       return;
+     }
      console.log('balanceof start ')
 
      console.log('balance account: ', this.unlockedAccount)
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          console.log('balance contract: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at(this.contractAddr).balanceOf(this.unlockedAccount,(error, result) => {
+           this._contract.at(this.contractAddr).balanceOf(this.unlockedAccount, (error, result) => {
              if (!error) {
               console.log('result contract balance:', result.c[0])
               this.balance.next(result.c[0])

@@ -280,6 +280,33 @@ div.disabled button.form-control{
   background-color: lightgray;
 }
 
+.flexContainer {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid grey;
+  padding: 0px;
+  width: 175px;
+  height: 30px;
+  margin: 1px;
+  border-radius: 10px;
+}
+
+.flexContainer input {
+  flex-grow: 2;
+  border: none;
+  width: 68px;
+    border-radius: 10px 0px 0px 10px
+}
+
+.flexContainer button {
+  border: 1px solid #3f819e;
+  background: #3f819e;
+  color: white;
+  font-size: 20px;
+  padding: 5px;
+  border-radius: 0px 10px 10px 0px;
+}
+
 .warning {
   color: red;
   font-style: italic;

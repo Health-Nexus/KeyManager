@@ -103,7 +103,7 @@
                 Can Share: <input type="checkbox" name="sharePermission" #sharePermission>
                 Can Trade: <input type="checkbox" name="tradePermission" #tradePermission>
                 Can Sell: <input type="checkbox" name="sellPermission" #sellPermission>
-                <button (click)="changePermission(key.id,sharePermission.checked,tradePermission.checked,sellPermission.checked)">Change Permissions</button>
+                <button (click)="changePermissions(key.id,sharePermission.checked,tradePermission.checked,sellPermission.checked)">Change Permissions</button>
                 <br>
               </div>
         </ul>
@@ -170,7 +170,7 @@
                   Can Share: <input type="checkbox" name="sharePermission" #sharePermission>
                   Can Trade: <input type="checkbox" name="tradePermission" #tradePermission>
                   Can Sell: <input type="checkbox" name="sellPermission" #sellPermission>
-                  <button (click)="changePermission(key.key,sharePermission.checked,tradePermission.checked,sellPermission.checked)">Change Permissions</button>
+                  <button (click)="changePermissions(key.key,sharePermission.checked,tradePermission.checked,sellPermission.checked)">Change Permissions</button>
                   <br>
              </div>
           </li>

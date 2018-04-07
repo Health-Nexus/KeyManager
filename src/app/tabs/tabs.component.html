@@ -1,13 +1,15 @@
-<ul [hidden]="selectedParentKey" class="tab">
+<ul [hidden]="selectedParentKey || selectedChildKey" class="tab">
   <li *ngFor="let tab of tabs">
     <button [class.active]="tab.active" class="tablinks" (click)="selectTab(tab)">{{ tab.tabTitle }}</button>
   </li>
 </ul>
-<div [hidden]="!selectedParentKey">
+<div [hidden]="!selectedParentKey && !selectedChildKey">
   <div class="padding-v-md">
     <span class="inline clickable" (click)="clearSelectedKeys()">My Keys</span>
-    <span class="inline bold"> > </span>
-    <span class="inline" [ngClass]="{'bold': !selectedChildKey, 'clickable': selectedChildKey}" (click)="clearChildKey()">Parent Key</span>
+    <span [ngClass]="{'hidden': !selectedParentKey, 'inline': selectedParentKey}">
+      <span class="inline bold"> > </span>
+      <span class="inline" [ngClass]="{'bold': !selectedChildKey, 'clickable': selectedChildKey}" (click)="clearChildKey()">Parent Key</span>
+    </span>
     <span class="bold" [ngClass]="{'hidden': !selectedChildKey, 'inline': selectedChildKey}"> > </span>
     <span class="bold" [ngClass]="{'hidden': !selectedChildKey, 'inline': selectedChildKey}">Child Key</span>
   </div>

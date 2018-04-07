@@ -35,8 +35,6 @@ export class TokenComponent implements OnInit {
   }
 
   approveHLTH(value): any {
-    console.log('jade value here', value);
     this.healthcashService.approve(value)
   }
-
 }

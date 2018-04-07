@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="row drs" [hidden]="selectedParentKey">
+  <div class="row drs" [hidden]="selectedParentKey || selectedChildKey">
     <span>Create new parent key</span>
     <input type="text" class="form-control" placeholder="Enter parent key value here" name="url" #url>
     <button class="form-control" (click)="createService(url.value)">Generate</button>
@@ -12,7 +12,16 @@
       <div class="col-9 padding-top-lg">
         <span>Purchase keys</span>
         <input type="text" class="half form-control" placeholder="Key to purchase" name="keyPurchase" #keyPurchase>
-        <input type="number" class="half form-control" placeholder="Amount" name="amount" #amount>
+        <button class="form-control" (click)="purchaseKey(keyPurchase.value)">Purchase</button>
+      </div>
+      <div class="col-9 padding-top-lg">
+        <span>Owned/Shared keys</span>
+        <div *ngFor="let key of keys">
+          <span class="clickable margin-v-sm" (click)="pickChildKey(key.key)">{{ key.key }}</span>
+        </div>
+        <div *ngFor="let keyShared of keyAccessArray">
+          <span class="clickable margin-v-sm" (click)="pickChildKey(keyShared.key)">{{ keyShared.key }}: {{ keyShared.url }}</span>
+        </div>
       </div>
       <!-- <div class="col-9 padding-top-lg">
         <span>Make trade offer</span>
@@ -51,13 +60,13 @@
     </div>
   </div>
 
-  <div [hidden]="!selectedParentKey">
+  <div [hidden]="!selectedParentKey && !selectedChildKey">
     <!-- PARENT KEY VIEW -->
     <div class="row" [hidden]="selectedChildKey">
       <span class="padding-bottom-md">Managing parent key</span>
       <span class="bold"> {{ selectedParentKey && selectedParentKey._service }}: {{ selectedParentKey && selectedParentKey.url | async }} </span>
       <span class="padding-top-lg">Child keys</span>
-      <button class="form-control" (click)="createKey(selectedParentKey && selectedParentKey._service)">Generate new</button>
+      <button class="form-control" (click)="createParentKey(selectedParentKey && selectedParentKey._service)">Generate new</button>
       <div *ngIf="selectedParentKey && selectedParentKey.keys">
         <div *ngFor="let key of selectedParentKey.keys">
           <span class="clickable padding-v-sm" (click)="pickChildKey(key.id)"> {{ key.id }}</span>
@@ -68,20 +77,22 @@
     <!-- CHILD KEY VIEW -->
     <div class="row" [hidden]="!selectedChildKey">
       <span class="padding-bottom-md">Managing child key</span>
-      <span class="bold">{{ selectedChildKey && selectedChildKey.id }}</span>
+      <span class="bold">{{ selectedChildKey && selectedChildKey.id || selectedChildKey && selectedChildKey.key }}</span>
       <span class="padding-top-lg">Retreive child key data</span>
       <span class="warning margin-v-sm">Warning: not verified for sensitive data; any data may be unsanitized</span>
       <div>
         <input type="text" class="form-control" placeholder="Insert parameter to send" name="Parameter" #Parameter>
-        <button class="form-control" (click)="retrieveData(Parameter.value)">Retrieve</button>
+        <!-- <button class="form-control" (click)="retrieveData(Parameter.value)">Retrieve</button> -->
+        <button class="form-control" (click)="dwnld()">Retrieve</button>
+        <a href="/assets/bkg_blue_footer.jpg" download="MyGoogleLogo">download me</a>
       </div>
 
 
-      <div class="permissions clearfix">
+      <div class="permissions clearfix" [hidden]="!selectedParentKey">
         <span class="padding-top-lg inline">Managing child key permissions</span>
-        <span class="text-brand-blue clickablefloat-right"
+        <span class="text-brand-blue clickable float-right"
           [hidden]="!editingPermissions"
-          (click)="changePermission()">Save Permissions</span>
+          (click)="changePermissions()">Save Permissions</span>
         <div class="border-bottom">
           <div class="padding-sm clearfix">
             <div class="col-6 float-left">
@@ -133,13 +144,25 @@
               <div class="col-6 float-left">
                 <span class="bold margin-v-sm inline">{{ keyParamName }}</span>
               </div>
-              <span class="inline clickable float-left padding-h-sm" (click)="setActive('trade', true)">{{ childParams[keyParamName] }}</span>
+              <span class="inline clickable float-left padding-h-sm"
+              title="click to update value"
+              [ngClass]="{'hidden': editingParam[keyParamName], 'inline': !editingParam[keyParamName]}"
+              (click)="editParam(keyParamName)">{{ childParams[keyParamName] }}</span>
+              <div class="float-left padding-h-sm"
+              [ngClass]="{'hidden': !editingParam[keyParamName], 'flexContainer': editingParam[keyParamName]}">
+                <input name="new-{{keyParamName}}" type="text" placeholder="New value" #newParamValue>
+                <button (click)="setData(keyParamName, newParamValue.value)">&#10003;</button>
+              </div>
               <span class="float-left inline">|</span>
               <span class="inline float-left clickable padding-h-sm" (click)="setData(keyParamName, null)">Remove</span>
             </div>
           </div>
         </div>
-
+        <div class="editing">
+          <input type="text" class="half form-control" placeholder="Enter parameter name to get" name="getParamName" #getParamName>
+          <button class="form-control" (click)="getData(paramName.value)">Get</button>
+          {{ dataOnKey | async }}
+        </div>
         <div class="editing">
           <input type="text" class="half form-control" placeholder="Enter parameter name" name="paramName" #paramName>
           <input type="text" class="half form-control" placeholder="Enter parameter value" name="paramValue" #paramValue>
@@ -148,7 +171,7 @@
       </div>
 
       <!-- Child key management section -->
-      <div>
+      <div [hidden]="!selectedParentKey">
         <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share" [ngClass]="{'disabled': editingPermissions}">
           <span>Share keys</span>
           <input type="text" class="form-control" placeholder="Share with" name="share" #share>
