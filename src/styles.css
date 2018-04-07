@@ -60,6 +60,11 @@ img.center {
   width: 60%;
 }
 
+.col-4 {
+  width: 40%;
+}
+
+
 .padding-xl {
   padding: 50px;
 }
@@ -131,6 +136,10 @@ img.center {
 
 .text-sm {
   font-size: 12px;
+}
+
+.text-md {
+  font-size: 18px;
 }
 
 .text-white {

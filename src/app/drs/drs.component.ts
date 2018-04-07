@@ -29,6 +29,8 @@ export class DrsComponent implements OnInit {
    image: any;
    selectedParentKey?: any;
    selectedChildKey?: any;
+   childParams?: any= {};
+   childParamsArray?: any= [];
    loaded: boolean = false
    editingPermissions: boolean = false
 
@@ -134,20 +136,34 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   log(val) { console.log(val); }
 
-  createService(url): any{
-    console.log('here')
+  createService(url): any {
     this.web3Service.createservice(url);
   }
 
-  setData(key,type,parameter): any{
-    console.log('here',parameter, ' : ', typeof parameter)
-    this.dataOnKey=this.web3Service.setKeyData(key, type, parameter);
-    console.log('retrieved data DRS',this.dataOnKey)
+  setData(type, parameter): any {
+    this.paramName = null;
+    this.paramValue = null;
+    var selected = this.selectedChildKey && this.selectedChildKey;
+    console.log('here', parameter, ' : ', typeof parameter)
+    // this.dataOnKey = this.web3Service.setKeyData(selected.id, type, parameter);
+    if (selected) {
+      if (!parameter) {
+        delete this.childParams[type];
+      } else {
+        this.childParams[type] = parameter;
+      }
+      this.zone.run(() => {
+          console.log('jade full', this.childParams);
+          console.log('jade here', Object.keys(this.childParams));
+          this.childParamsArray = Object.keys(this.childParams);
+      });
+    }
+    console.log('retrieved data DRS', this.dataOnKey)
   }
 
-  getData(key,type): any{
-    console.log('here')
-    this.dataOnKey=this.web3Service.getKeyData(key, type);
+  getData(type): any {
+    var keyId = this.selectedChildKey && this.selectedChildKey.id;
+    this.dataOnKey=this.web3Service.getKeyData(keyId, type);
     console.log(this.data)
   }
 
@@ -160,9 +176,11 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
      }
   }
 
-  retrieveData(urlKey,parameter,key): any{
-    console.log('retrieve: ',urlKey)
-    this.dataToDisplay=this.web3Service.dataRequestTest(urlKey,parameter,key).then(function(value){
+  retrieveData(parameter): any{
+    var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
+    var keyId = this.selectedChildKey && this.selectedChildKey.id;
+    console.log('retrieve: ',urlKey);
+    this.dataToDisplay=this.web3Service.dataRequestTest(urlKey, parameter, keyId).then(function(value){
     // Do things after onload
       console.log('this.dataToDisplay: ',value)
       if(value.headers.get("Content-Type") =='image/jpeg')
@@ -201,67 +219,60 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       this.selectedChildKey[key] = value;
   }
 
-  shareKey(id,account): any{
-    this.web3Service.shareKey(id,account);
+  shareKey(id, account): any {
+    this.web3Service.shareKey(id, account);
   }
 
-  unshareKey(id,account): any{
-    this.web3Service.unshareKey(id,account);
-
+  unshareKey(id, account): any {
+    this.web3Service.unshareKey(id, account);
   }
 
-  tradeKeyOffer(key,keyToTrade): any{
+  tradeKeyOffer(key, keyToTrade): any {
     this.web3Service.tradeKey(key,keyToTrade);
-
   }
 
-  cancelTradeKeyOffer(key): any{
+  cancelTradeKeyOffer(key): any {
     this.web3Service.CancelTradeKey(key);
-
   }
 
-  tradeKey(key,keyTrade): any{
+  tradeKey(key,keyTrade): any {
     this.web3Service.CreateTradeKeyOffer(key,keyTrade);
 
   }
 
-  sellKeyOffer(key,buyer,price,sellPermission): any{
-    this.web3Service.createSalesOffer(key,buyer,price,sellPermission);
-
+  sellKeyOffer(buyer, price, sellPermission): any {
+    var selected = this.selectedChildKey && this.selectedChildKey || {};
+    var keyId = selected.id;
+    this.web3Service.createSalesOffer(keyId, buyer, price, sellPermission);
   }
 
-  cancelSellKeyOffer(key): any{
+  cancelSellKeyOffer(key): any {
     this.web3Service.cancelSalesOffer(key);
   }
 
-  actionAllowed(action: string, key: string): boolean {
-    return this.selectedChildKey && this.selectedChildKey[action] && !this.keyHasOwner(key);
+  canMakeSaleOffer(): boolean {
+    return this.selectedChildKey && this.selectedChildKey.sell && !this.keyHasOwner(this.selectedChildKey);
   }
 
   keyHasOwner(key: string): boolean {
     return this.keyOwners[key] && this.keyOwners[key].length > 0;
   }
 
-  purchaseKey(key): any{
+  purchaseKey(key): any {
     this.web3Service.purchaseKey(key);
   }
 
   changePermission(): any {
     this.editingPermissions = false;
-    let selected = this.selectedChildKey && this.selectedChildKey;
-    let id = selected.id;
-    let share = selected.share;
-    let trade = selected.trade;
-    let sell = selected.sell;
+    var selected = this.selectedChildKey && this.selectedChildKey || {};
+    var id = selected.id;
+    var share = selected.share;
+    var trade = selected.trade;
+    var sell = selected.sell;
     this.web3Service.permissionKey(id, share, trade, sell);
   }
 
-  createKey(url): any{
+  createKey(url): any {
     this.web3Service.createKey(url);
   }
-
-  expand(service): any{
-
-  }
-
 }

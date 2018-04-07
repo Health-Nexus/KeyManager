@@ -73,99 +73,109 @@
       <span class="warning margin-v-sm">Warning: not verified for sensitive data; any data may be unsanitized</span>
       <div>
         <input type="text" class="form-control" placeholder="Insert parameter to send" name="Parameter" #Parameter>
-        <button class="form-control" (click)="retrieveData(keyShared.url,Parameter.value,keyShared.key)">Retrieve</button>
+        <button class="form-control" (click)="retrieveData(Parameter.value)">Retrieve</button>
       </div>
 
 
       <div class="permissions clearfix">
-        <span class="padding-top-lg">Managing child key permissions</span>
-        <div class="border-bottom">
-          <div class="col-6">
-            <div class="padding-sm">
-              <span class="bold margin-v-sm inline">Share</span>
-              <span class="inline float-right clickable padding-h-sm"
-              (click)="setActive('share', false)"
-              [ngClass]="{'active': selectedChildKey && !selectedChildKey.share }">Off</span>
-              <span class="float-right inline">|</span>
-              <span class="inline clickable float-right padding-h-sm"
-              (click)="setActive('share', true)"
-              [ngClass]="{'active': selectedChildKey && selectedChildKey.share }">On</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="border-bottom">
-          <div class="col-6">
-            <div class="padding-sm">
-              <span class="bold margin-v-sm inline">Sell</span>
-              <span class="inline float-right clickable padding-h-sm"
-              (click)="setActive('sell', false)"
-              [ngClass]="{'active': selectedChildKey && !selectedChildKey.sell }">Off</span>
-              <span class="float-right inline">|</span>
-              <span class="inline clickable float-right padding-h-sm"
-              (click)="setActive('sell', true)"
-              [ngClass]="{'active': selectedChildKey && selectedChildKey.sell }">On</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="border-bottom">
-          <div class="col-6">
-            <div class="padding-sm">
-              <span class="bold margin-v-sm inline">Trade</span>
-              <span class="inline float-right clickable padding-h-sm"
-              (click)="setActive('trade', false)"
-              [ngClass]="{'active': selectedChildKey && !selectedChildKey.trade }">Off</span>
-              <span class="float-right inline">|</span>
-              <span class="inline clickable float-right padding-h-sm"
-              (click)="setActive('trade', true)"
-              [ngClass]="{'active': selectedChildKey && selectedChildKey.trade }">On</span>
-            </div>
-          </div>
-        </div>
-        <span class="text-brand-blue clickable padding-top-lg float-right"
+        <span class="padding-top-lg inline">Managing child key permissions</span>
+        <span class="text-brand-blue clickablefloat-right"
           [hidden]="!editingPermissions"
           (click)="changePermission()">Save Permissions</span>
-      </div>
-
-
-
-      <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share" [ngClass]="{'disabled': editingPermissions}">
-        <span>Share keys</span>
-        <input type="text" class="form-control" placeholder="Share with" name="share" #share>
-        <button class="form-control"
-          [disabled]="editingPermissions"
-          (click)="shareKey(selectedChildKey && selectedChildKey.id, share.value)">Share</button>
-      </div>
-
-      <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share" [ngClass]="{'disabled': editingPermissions}">
-        <span>Unshare keys</span>
-        <input type="text" class="form-control" placeholder="Unshare with" name="unshare" #unshare>
-        <button class="form-control"
-          [disabled]="editingPermissions"
-          (click)="approveHLTH(amount.value)">Unshare</button>
-      </div>
-
-      <div class="col-9 padding-top-lg" *ngIf="actionAllowed('sell', selectedChildKey)" [ngClass]="{'disabled': editingPermissions}">
-        <span>Make sale offer</span>
-        <input type="text" class="half form-control" placeholder="Sell to"  name="buyer" #buyer>
-          <input type="number" class="half form-control" placeholder="Amount" name="price" #price>
-        <button class="form-control"
-          [disabled]="editingPermissions"
-          (click)="approveHLTH(amount.value)">Send</button>
-      </div>
-
-      <span class="text-brand-blue can-click padding-top-lg" (click)="cancelTradeKeyOffer(selectedChildKey && selectedChildKey.id)">Cancel all outstanding trade offers</span>
-
-      <!-- <span class="padding-top-lg">Outstanding sale offers</span>
-      <div class="border-bottom">
-        <div class="col-6">
-          <div class="padding-sm">
-            <span class="bold margin-v-sm inline">blahlskasdfaf</span>
-            <span class="inline float-right clickable padding-h-sm">Cancel</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-h-sm">View</span>
+        <div class="border-bottom">
+          <div class="padding-sm clearfix">
+            <div class="col-6 float-left">
+              <span class="bold margin-v-sm inline">Share</span>
+            </div>
+            <span class="inline clickable float-left padding-h-sm"
+            (click)="setActive('share', true)"
+            [ngClass]="{'active': selectedChildKey && selectedChildKey.share }">On</span>
+            <span class="float-left inline">|</span>
+            <span class="inline float-left clickable padding-h-sm"
+            (click)="setActive('share', false)"
+            [ngClass]="{'active': selectedChildKey && !selectedChildKey.share }">Off</span>
           </div>
         </div>
-      </div> -->
+
+        <div class="border-bottom">
+          <div class="padding-sm clearfix">
+            <div class="col-6 float-left">
+              <span class="bold margin-v-sm inline">Sell</span>
+            </div>
+            <span class="inline clickable float-left padding-h-sm"
+            (click)="setActive('sell', true)"
+            [ngClass]="{'active': selectedChildKey && selectedChildKey.sell }">On</span>
+            <span class="float-left inline">|</span>
+            <span class="inline float-left clickable padding-h-sm"
+            (click)="setActive('sell', false)"
+            [ngClass]="{'active': selectedChildKey && !selectedChildKey.sell }">Off</span>
+          </div>
+        </div>
+
+        <div class="border-bottom">
+          <div class="padding-sm clearfix">
+            <div class="col-6 float-left">
+              <span class="bold margin-v-sm inline">Trade</span>
+            </div>
+            <span class="inline clickable float-left padding-h-sm"
+            (click)="setActive('trade', true)"
+            [ngClass]="{'active': selectedChildKey && selectedChildKey.trade }">On</span>
+            <span class="float-left inline">|</span>
+            <span class="inline float-left clickable padding-h-sm"
+            (click)="setActive('trade', false)"
+            [ngClass]="{'active': selectedChildKey && !selectedChildKey.trade }">Off</span>
+          </div>
+        </div>
+
+        <div *ngIf="childParamsArray">
+          <div *ngFor="let keyParamName of childParamsArray" class="border-bottom">
+            <div class="padding-sm clearfix">
+              <div class="col-6 float-left">
+                <span class="bold margin-v-sm inline">{{ keyParamName }}</span>
+              </div>
+              <span class="inline clickable float-left padding-h-sm" (click)="setActive('trade', true)">{{ childParams[keyParamName] }}</span>
+              <span class="float-left inline">|</span>
+              <span class="inline float-left clickable padding-h-sm" (click)="setData(keyParamName, null)">Remove</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="editing">
+          <input type="text" class="half form-control" placeholder="Enter parameter name" name="paramName" #paramName>
+          <input type="text" class="half form-control" placeholder="Enter parameter value" name="paramValue" #paramValue>
+          <button class="form-control" (click)="setData(paramName.value, paramValue.value)">Add</button>
+        </div>
+      </div>
+
+      <!-- Child key management section -->
+      <div>
+        <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share" [ngClass]="{'disabled': editingPermissions}">
+          <span>Share keys</span>
+          <input type="text" class="form-control" placeholder="Share with" name="share" #share>
+          <button class="form-control"
+          [disabled]="editingPermissions"
+          (click)="shareKey(selectedChildKey && selectedChildKey.id, share.value)">Share</button>
+        </div>
+
+        <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share" [ngClass]="{'disabled': editingPermissions}">
+          <span>Unshare keys</span>
+          <input type="text" class="form-control" placeholder="Unshare with" name="unshare" #unshare>
+          <button class="form-control"
+          [disabled]="editingPermissions"
+          (click)="unshareKey(selectedChildKey && selectedChildKey.id, unshare.value)">Unshare</button>
+        </div>
+
+        <div class="col-9 padding-top-lg" *ngIf="canMakeSaleOffer()" [ngClass]="{'disabled': editingPermissions}">
+          <span>Make sale offer</span>
+          <input type="text" class="half form-control" placeholder="Sell to"  name="buyer" #buyer>
+          <input type="number" class="half form-control" placeholder="Amount" name="price" #price>
+          <span class="inline text-md">Can sell: <input type="checkbox" name="sellPermission" #sellPermission></span>
+          <button class="form-control"
+          [disabled]="editingPermissions"
+          (click)="sellKeyOffer(buyer.value, price.value, sellPermission.checked)">Send</button>
+        </div>
+        <span class="text-brand-blue can-click padding-top-lg" (click)="cancelTradeKeyOffer(selectedChildKey && selectedChildKey.id)">Cancel all outstanding trade offers</span>
+      </div>
     </div>
   </div>
 </div>
