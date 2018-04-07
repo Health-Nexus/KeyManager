@@ -48,7 +48,7 @@
                 Using the default client to retrieve sensitive medical data is not advised. This is an example implementaiton for use with non-sensitive data only.
               </div>
               <br>
-              
+
               <div *ngIf="keyOwners[key.id].length>0">
                 Shared With: {{keyOwners[key.id]}}
               </div>
@@ -109,7 +109,7 @@
         </ul>
     </ul>
     <br>
-   
+
     <div *ngIf="keys.length>0">
       <h3>Owned Keys:</h3>
       <br>
@@ -135,11 +135,11 @@
                   Share With: <input type="text" name="share" #share>
                   <button (click)="shareKey(key.key,share.value)">Share Key</button>
                   <br>
-  
+
                   Unshare With: <input type="text" name="unshare" #unshare>
                   <button (click)="shareKey(key.key,unshare.value)">Unshare Key</button>
                   <br>
-  
+
                 </div>
                 <br>
                 Trading Status: {{key.trade}}
@@ -160,7 +160,7 @@
                   Buyer Address: <input type="text" name="buyer" #buyer>
                   Price: <input type="number" name="price" #price>
                   Can Sell: <input type="checkbox" name="sellPermission" #sellPermission>
-                  <button (click)="sellKeyOffer(key.key,buyer.value,price.value,sellPermission.checked)">Sell Key Offer</button>
+                  <button (click)="sellKeyOffer(key.key, buyer.value, price.value,sellPermission.checked)">Sell Key Offer</button>
                   <br>
                   <button (click)="cancelSellKeyOffer(key.key)">Cancel Sell Key Offer</button>
                 </div>

@@ -254,11 +254,6 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     this.web3Service.purchaseKey(key);
   }
 
-  approveHLTH(value): any {
-    this.healthcashService.approve(value)
-  }
-
-
   changePermission(id,share,trade,sell): any{
     this.web3Service.permissionKey(id,share,trade,sell);
   }

@@ -34,4 +34,9 @@ export class TokenComponent implements OnInit {
     this.healthcashService.transfer(addr, amount);
   }
 
+  approveHLTH(value): any {
+    console.log('jade value here', value);
+    this.healthcashService.approve(value)
+  }
+
 }

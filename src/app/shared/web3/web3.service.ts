@@ -97,7 +97,7 @@ export class Web3Service {
                      // we have the results, now print them
                      results.forEach(function(result) {
 
-                       // if(result.args._owner==self.unlockedAccount) *JADE uncomment
+                       if(result.args._owner==self.unlockedAccount)
                        self.services.push(result.args);
                      }, self);
                      next();
@@ -119,7 +119,7 @@ export class Web3Service {
                           });
                         },
                         function getInfo(done) {
-                          // if(args._owner==self.unlockedAccount){ *JADE uncomment
+                          if (args._owner == self.unlockedAccount) {
                           self.getKeyInfo(args._key).then(function(info) {
                           self.keys.push({
                             key:args._key,
@@ -132,25 +132,24 @@ export class Web3Service {
                           self.keysData.push(info);
                           done();
                         });
-                        // } *JADE uncomment
-                        // else{
-                        //   //getUrlFromKey
-                        //      self.isKeyOwner(log.args._key,self.unlockedAccount).then(function(resultOwner) {
-                        //       if(resultOwner){
-                        //         self.keyAccess[log.args._key]={'key':log.args._key};
-                        //         self.getUrlFromKey(log.args._key).then(function(resultUrl) {
-                        //           self.keyAccess[log.args._key]['url']=resultUrl;
-                        //           console.log('key urls: ',self.keyAccess)
-                        //           }.bind(self));
-                        //         self.getKeyInfo(log.args._key).then(function(keyResult) {
-                        //           self.keyAccess[log.args._key]['share']=keyResult[1];
-                        //           self.keyAccess[log.args._key]['trade']=keyResult[2];
-                        //           self.keyAccess[log.args._key]['sell']=keyResult[3];
-                        //           self.keyAccess[log.args._key]['service']=keyResult[4];
-                        //           }.bind(self));
-                        //         }
-                        //       }.bind(self));
-                        // }
+                        } else {
+                          //getUrlFromKey
+                             self.isKeyOwner(args._key,self.unlockedAccount).then(function(resultOwner) {
+                              if(resultOwner){
+                                self.keyAccess[args._key]={'key':args._key};
+                                self.getUrlFromKey(args._key).then(function(resultUrl) {
+                                  self.keyAccess[args._key]['url']=resultUrl;
+                                  console.log('key urls: ',self.keyAccess)
+                                  }.bind(self));
+                                self.getKeyInfo(args._key).then(function(keyResult) {
+                                  self.keyAccess[args._key]['share']=keyResult[1];
+                                  self.keyAccess[args._key]['trade']=keyResult[2];
+                                  self.keyAccess[args._key]['sell']=keyResult[3];
+                                  self.keyAccess[args._key]['service']=keyResult[4];
+                                  }.bind(self));
+                                }
+                              }.bind(self));
+                        }
                         }
                       ], nextResult);
                     }, next);

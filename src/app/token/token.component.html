@@ -2,12 +2,12 @@
   <div class="row tokens">
     <span>Current HNexus token balance: <span class="inline text-bold">{{ balance }}</span></span>
     <div class="row">
-      <div class="col-9 padding-top-lg">
+      <!-- <div class="col-9 padding-top-lg">
         <span>Send tokens</span>
         <input type="text" class="form-control" placeholder="Enter to: address here" name="addr" #addr>
         <input type="number" class="form-control" placeholder="Enter amount here" name="amount" #amount>
         <button class="form-control" (click)="transfer(addr.value,amount.value)">Send</button>
-      </div>
+      </div> -->
       <div class="col-9 padding-top-lg">
         <span>
           Max number of tokens that can be used for key purchases
@@ -16,8 +16,8 @@
           </span>
         </span>
         <div *ngIf="canspend === 0 || editing" [class.editing]="editing">
-          <input type="number" class="form-control" placeholder="Enter # of tokens here; not to exceed current token balance" name="canspend">
-          <button class="form-control" (click)="balances()">Send</button>
+          <input type="number" class="form-control" placeholder="Enter # of tokens here; not to exceed current token balance" name="amount" #amount>
+          <button class="form-control" (click)="approveHLTH(amount.value)">Send</button>
         </div>
       </div>
     </div>
