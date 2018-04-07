@@ -119,7 +119,7 @@ export class Web3Service {
                           });
                         },
                         function getInfo(done) {
-                          if (args._owner == self.unlockedAccount) {
+                          if (true || args._owner == self.unlockedAccount) {
                           self.getKeyInfo(args._key).then(function(info) {
                           self.keys.push({
                             key:args._key,

@@ -26,11 +26,11 @@ export class DrsComponent implements OnInit {
    keyAccess:any={};
    urls: any={};
    keyAccessArray: any=[];
-   isRinkeby: boolean;
    image: any;
    selectedParentKey?: any;
    selectedChildKey?: any;
    loaded: boolean = false
+   editingPermissions: boolean = false
 
 constructor(private web3Service:Web3Service,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService, private zone: NgZone) {
   this._window = windowRef.nativeWindow;
@@ -38,17 +38,6 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
 
   ngOnInit() {
-    switch(this.web3Service.web3.version.network) {
-      case '1':
-       this.isRinkeby = false;
-       break;
-      case '4':
-      this.isRinkeby = true;
-       break;
-      default:
-      this.isRinkeby = false;
-    }
-
     this.web3Service.parentKeyChanged$.subscribe(
     selectedParent => {
       var parentService = this.serviceIndex[selectedParent];
@@ -205,7 +194,11 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     }.bind(this));
 
     console.log(this.dataToDisplay);
+  }
 
+  setActive(key, value) {
+      this.editingPermissions = true;
+      this.selectedChildKey[key] = value;
   }
 
   shareKey(id,account): any{
@@ -239,7 +232,6 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   cancelSellKeyOffer(key): any{
     this.web3Service.cancelSalesOffer(key);
-
   }
 
   actionAllowed(action: string, key: string): boolean {
@@ -254,8 +246,14 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     this.web3Service.purchaseKey(key);
   }
 
-  changePermission(id,share,trade,sell): any{
-    this.web3Service.permissionKey(id,share,trade,sell);
+  changePermission(): any {
+    this.editingPermissions = false;
+    let selected = this.selectedChildKey && this.selectedChildKey;
+    let id = selected.id;
+    let share = selected.share;
+    let trade = selected.trade;
+    let sell = selected.sell;
+    this.web3Service.permissionKey(id, share, trade, sell);
   }
 
   createKey(url): any{

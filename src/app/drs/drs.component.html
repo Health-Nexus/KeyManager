@@ -1,18 +1,20 @@
 <div class="container">
   <div class="row drs" [hidden]="selectedParentKey">
     <span>Create new parent key</span>
-    <button class="form-control" (click)="createKey('test')">Generate</button>
+    <input type="text" class="form-control" placeholder="Enter parent key value here" name="url" #url>
+    <button class="form-control" (click)="createService(url.value)">Generate</button>
+
     <div class="row padding-top-lg">
       <span [ngClass]="{'hidden': !loaded, 'inline': loaded}">My parent keys</span>
       <div *ngFor="let service of services">
-        <span class="clickable margin-v-sm" (click)="pickParentKey(service._service)">{{ service._service }}</span>
+        <span class="clickable margin-v-sm" (click)="pickParentKey(service._service)">{{ service._service }}: {{ service.url | async }}</span>
       </div>
       <div class="col-9 padding-top-lg">
         <span>Purchase keys</span>
         <input type="text" class="half form-control" placeholder="Key to purchase" name="keyPurchase" #keyPurchase>
         <input type="number" class="half form-control" placeholder="Amount" name="amount" #amount>
       </div>
-      <div class="col-9 padding-top-lg">
+      <!-- <div class="col-9 padding-top-lg">
         <span>Make trade offer</span>
         <input type="text" class="half form-control" placeholder="Key to trade" name="keyTrade" #keyTrade>
         <input type="text" class="half form-control" placeholder="Key to trade for" name="keyToTrade" #keyToTrade>
@@ -45,7 +47,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 
@@ -53,7 +55,7 @@
     <!-- PARENT KEY VIEW -->
     <div class="row" [hidden]="selectedChildKey">
       <span class="padding-bottom-md">Managing parent key</span>
-      <span class="bold"> {{ selectedParentKey && selectedParentKey._service }} </span>
+      <span class="bold"> {{ selectedParentKey && selectedParentKey._service }}: {{ selectedParentKey && selectedParentKey.url | async }} </span>
       <span class="padding-top-lg">Child keys</span>
       <button class="form-control" (click)="createKey(selectedParentKey && selectedParentKey._service)">Generate new</button>
       <div *ngIf="selectedParentKey && selectedParentKey.keys">
@@ -62,7 +64,6 @@
         </div>
       </div>
     </div>
-
 
     <!-- CHILD KEY VIEW -->
     <div class="row" [hidden]="!selectedChildKey">
@@ -76,58 +77,87 @@
       </div>
 
 
-      <span class="padding-top-lg">Managing child key permissions</span>
-      <div class="border-bottom">
-        <div class="col-6">
-          <div class="padding-sm">
-            <span class="bold margin-v-sm inline">Share</span>
-            <span class="inline float-right clickable padding-h-sm">Off</span>
-            <span class="float-right inline">|</span>
-            <span class="inline clickable float-right padding-h-sm">On</span>
+      <div class="permissions clearfix">
+        <span class="padding-top-lg">Managing child key permissions</span>
+        <div class="border-bottom">
+          <div class="col-6">
+            <div class="padding-sm">
+              <span class="bold margin-v-sm inline">Share</span>
+              <span class="inline float-right clickable padding-h-sm"
+              (click)="setActive('share', false)"
+              [ngClass]="{'active': selectedChildKey && !selectedChildKey.share }">Off</span>
+              <span class="float-right inline">|</span>
+              <span class="inline clickable float-right padding-h-sm"
+              (click)="setActive('share', true)"
+              [ngClass]="{'active': selectedChildKey && selectedChildKey.share }">On</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="border-bottom">
-        <div class="col-6">
-          <div class="padding-sm">
-            <span class="bold margin-v-sm inline">Sell</span>
-            <span class="inline float-right clickable padding-h-sm">Off</span>
-            <span class="float-right inline">|</span>
-            <span class="inline clickable float-right padding-h-sm">On</span>
+        <div class="border-bottom">
+          <div class="col-6">
+            <div class="padding-sm">
+              <span class="bold margin-v-sm inline">Sell</span>
+              <span class="inline float-right clickable padding-h-sm"
+              (click)="setActive('sell', false)"
+              [ngClass]="{'active': selectedChildKey && !selectedChildKey.sell }">Off</span>
+              <span class="float-right inline">|</span>
+              <span class="inline clickable float-right padding-h-sm"
+              (click)="setActive('sell', true)"
+              [ngClass]="{'active': selectedChildKey && selectedChildKey.sell }">On</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="border-bottom">
-        <div class="col-6">
-          <div class="padding-sm">
-            <span class="bold margin-v-sm inline">Trade</span>
-            <span class="inline float-right clickable padding-h-sm">Off</span>
-            <span class="float-right inline">|</span>
-            <span class="inline clickable float-right padding-h-sm">On</span>
+        <div class="border-bottom">
+          <div class="col-6">
+            <div class="padding-sm">
+              <span class="bold margin-v-sm inline">Trade</span>
+              <span class="inline float-right clickable padding-h-sm"
+              (click)="setActive('trade', false)"
+              [ngClass]="{'active': selectedChildKey && !selectedChildKey.trade }">Off</span>
+              <span class="float-right inline">|</span>
+              <span class="inline clickable float-right padding-h-sm"
+              (click)="setActive('trade', true)"
+              [ngClass]="{'active': selectedChildKey && selectedChildKey.trade }">On</span>
+            </div>
           </div>
         </div>
+        <span class="text-brand-blue clickable padding-top-lg float-right"
+          [hidden]="!editingPermissions"
+          (click)="changePermission()">Save Permissions</span>
       </div>
 
 
 
-
-      <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share">
+      <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share" [ngClass]="{'disabled': editingPermissions}">
         <span>Share keys</span>
-        <input type="text" class="half form-control" placeholder="Share with" name="share" #share>
-        <input type="number" class="half form-control" placeholder="Amount" name="amount" #amount>
+        <input type="text" class="form-control" placeholder="Share with" name="share" #share>
+        <button class="form-control"
+          [disabled]="editingPermissions"
+          (click)="shareKey(selectedChildKey && selectedChildKey.id, share.value)">Share</button>
       </div>
 
-      <div class="col-9 padding-top-lg" *ngIf="actionAllowed('sell', selectedChildKey)">
+      <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share" [ngClass]="{'disabled': editingPermissions}">
+        <span>Unshare keys</span>
+        <input type="text" class="form-control" placeholder="Unshare with" name="unshare" #unshare>
+        <button class="form-control"
+          [disabled]="editingPermissions"
+          (click)="approveHLTH(amount.value)">Unshare</button>
+      </div>
+
+      <div class="col-9 padding-top-lg" *ngIf="actionAllowed('sell', selectedChildKey)" [ngClass]="{'disabled': editingPermissions}">
         <span>Make sale offer</span>
         <input type="text" class="half form-control" placeholder="Sell to"  name="buyer" #buyer>
-        <input type="number" class="half form-control" placeholder="Amount" name="price" #price>
+          <input type="number" class="half form-control" placeholder="Amount" name="price" #price>
+        <button class="form-control"
+          [disabled]="editingPermissions"
+          (click)="approveHLTH(amount.value)">Send</button>
       </div>
 
+      <span class="text-brand-blue can-click padding-top-lg" (click)="cancelTradeKeyOffer(selectedChildKey && selectedChildKey.id)">Cancel all outstanding trade offers</span>
 
-
-      <span class="padding-top-lg">Outstanding sale offers</span>
+      <!-- <span class="padding-top-lg">Outstanding sale offers</span>
       <div class="border-bottom">
         <div class="col-6">
           <div class="padding-sm">
@@ -135,7 +165,7 @@
             <span class="inline float-right clickable padding-h-sm">Cancel</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-h-sm">View</span>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </div>

@@ -17,7 +17,7 @@
         </span>
         <div *ngIf="canspend === 0 || editing" [class.editing]="editing">
           <input type="number" class="form-control" placeholder="Enter # of tokens here; not to exceed current token balance" name="amount" #amount>
-          <button class="form-control" (click)="approveHLTH(amount.value)">Send</button>
+          <button class="form-control" (click)="approveHLTH(amount.value)">Approve</button>
         </div>
       </div>
     </div>

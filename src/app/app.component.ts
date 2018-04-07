@@ -9,6 +9,7 @@ import { HealthcashService } from './shared/web3/healthcash.service';
 })
 export class AppComponent implements OnInit {
   title = 'Health Nexus Wallet';
+  isRinkeby: boolean;
   authorized: boolean = false;
 
   constructor(private web3Service:Web3Service,private healthcashService:HealthcashService) {
@@ -21,6 +22,17 @@ export class AppComponent implements OnInit {
     authed => {
       this.authorized = authed;
     });
+
+    switch(this.web3Service.web3.version.network) {
+      case '1':
+       this.isRinkeby = false;
+       break;
+      case '4':
+      this.isRinkeby = true;
+       break;
+      default:
+      this.isRinkeby = false;
+    }
   }
 
   balance(): any{
