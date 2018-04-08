@@ -83,7 +83,7 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       let currentKeyAccess = this.keyAccess[json];
       this.keyAccessArray.push({
         'key' : json,
-        'url' : currentKeyAccess.url.trim(),
+        'url' : currentKeyAccess.url,//.trim(),
         'share' : currentKeyAccess.share,
         'trade' : currentKeyAccess.trade,
         'sell' : currentKeyAccess.sell,
@@ -220,14 +220,17 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   getData(type): any {
     var keyId = this.selectedChildKey && this.selectedChildKey.id;
+    console.log('getData',type)
     this.dataOnKey = this.web3Service.getKeyData(keyId, type);
-    console.log(this.data)
+    console.log(this.dataOnKey)
   }
 
   setData(type, parameter): any {
     var selected = this.selectedChildKey && this.selectedChildKey;
-    console.log('here', parameter, ' : ', typeof parameter)
+    console.log('here', selected, ' : ',  parameter)
     // this.dataOnKey = this.web3Service.setKeyData(selected.id, type, parameter);
+    this.dataOnKey=this.web3Service.setKeyData(selected.id, type, parameter);
+
     if (selected) {
       if (!parameter) {
         delete this.childParams[type];

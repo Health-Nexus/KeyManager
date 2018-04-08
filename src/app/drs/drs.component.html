@@ -162,7 +162,7 @@
         </div>
         <div class="editing">
           <input type="text" class="half form-control" placeholder="Enter parameter name to get" name="getParamName" #getParamName>
-          <button class="form-control" (click)="getData(paramName.value)">Get</button>
+          <button class="form-control" (click)="getData(getParamName.value)">Get</button>
           {{ dataOnKey | async }}
         </div>
         <div class="editing">
