@@ -210,7 +210,7 @@ export class Web3Service {
      * @return {json | file} returns Json or a file
      */
      //TODO:  Break into a function for json and a function for sharing
-    dataRequestTest(urlKey,parameter,key): any{
+    dataRequestTest(urlKey,parameter,key): any {
 
       //determines signer and message
       var signature;
@@ -221,32 +221,34 @@ export class Web3Service {
         original_message.length.toString() +
         original_message
       );
-      let p = new Promise<any>((resolve, reject) => {this.web3.eth.sign(signer,message_hash, function(err, res) {
-        if (err) console.error(err);
-        signature = res;
-        var headers = new Headers({ 'Content-Type': 'application/json'  });
-        var options = new RequestOptions({ headers: headers });
-        var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
-        return this.http.get(url, options)
-                  .subscribe(result =>{
-                    if(result.headers.get("Content-Type") !='image/jpeg' && result.headers.get("Content-Type") !='audio/mpeg')
-                    {
-                      resolve(result.json())
-                    }
-                    if(result.headers.get("Content-Type") =='audio/mpeg')
-                    {
-                      const blob = new Blob([result], { type: 'audio/mpeg' });
-                      const url= window.URL.createObjectURL(blob);
-                      window.open(url);
-                     }
-
+      let p = new Promise<any>((resolve, reject) => {
+        // jade: TODO: remove this code/comments once backend is up
+        // resolve({
+        //   'test': 'here'
+        // })
+        // return;
+        this.web3.eth.sign(signer,message_hash, function(err, res) {
+          if (err) console.error(err);
+          signature = res;
+          var headers = new Headers({ 'Content-Type': 'application/json'  });
+          var options = new RequestOptions({ headers: headers });
+          var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
+          return this.http.get(url, options)
+                    .subscribe(result => {
+                      let contentType = result.headers.get("Content-Type");
+                      if (contentType !='image/jpeg' && contentType !='audio/mpeg') {
+                        resolve(result.json())
+                      } else if (contentType =='audio/mpeg') {
+                        const blob = new Blob([result], { type: contentType });
+                        const url = window.URL.createObjectURL(blob);
+                        window.open(url);
+                      }
                       resolve(result);
+                    })
+        }.bind(this));
+      });
 
-                  })
-
-      }.bind(this)) });
       return p;
-
   }
 
   /**

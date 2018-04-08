@@ -28,6 +28,7 @@ export class DrsComponent implements OnInit {
    urls: any={};
    keyAccessArray: any=[];
    image: any;
+   json: string;
    selectedParentKey?: any;
    selectedChildKey?: any;
    childParams?: any = {};
@@ -156,61 +157,17 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     this.web3Service.changeChildKey(childKey);
   }
 
-  dwnld() {
-    let url = "https://images.pexels.com/photos/159541/wildlife-photography-pet-photography-dog-animal-159541.jpeg?auto=compress&cs=tinysrgb&h=350";
-    // Source: http://pixelscommander.com/en/javascript/javascript-file-download-ignore-content-type/
-    this.downloadFile(url);
-  }
-
-  downloadFile(sUrl: string) {
-
-      //iOS devices do not support downloading. We have to inform user about this.
-      if (/(iP)/g.test(navigator.userAgent)) {
-        //alert('Your device does not support files downloading. Please try again in desktop browser.');
-        window.open(sUrl, '_blank');
-        return false;
-      }
-
-      //If in Chrome or Safari - download via virtual link click
-      if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1 || navigator.userAgent.toLowerCase().indexOf('safari') > -1) {
-        //Creating new link node.
-
-        var link = document.createElement('a');
-        link.href = sUrl;
-        link.setAttribute('target','_blank');
-        debugger
-        if (link.download !== undefined) {
-          //Set HTML5 download attribute. This will prevent file from opening if supported.
-          var fileName = sUrl.substring(sUrl.lastIndexOf('/') + 1, sUrl.length);
-          link.download = fileName;
-        }
-
-        //Dispatching click event.
-        if (document.createEvent) {
-          var e = document.createEvent('MouseEvents');
-          e.initEvent('click', true, true);
-          link.dispatchEvent(e);
-          return true;
-        }
-      }
-
-    // Force file download (whether supported by server).
-    if (sUrl.indexOf('?') === -1) {
-      sUrl += '?download';
-    }
-
-    window.open(sUrl, '_blank');
-    return true;
-  }
-
   /* CHILD KEY VIEW */
   retrieveData(parameter): any {
     var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
     var keyId = this.selectedChildKey && this.selectedChildKey.id;
     console.log('retrieve: ',urlKey);
-    this.dataToDisplay=this.web3Service.dataRequestTest(urlKey, parameter, keyId).then(function(value){
+    this.dataToDisplay = this.web3Service.dataRequestTest(urlKey, parameter, keyId).then(function(value) {
+      // jade: TODO: remove this code/comments once backend is up
+      // this.json = JSON.stringify(value);
+      // return
     // Do things after onload
-      console.log('this.dataToDisplay: ',value)
+      console.log('this.dataToDisplay:', value);
       if (value.headers.get("Content-Type") =='image/jpeg') {
 
         // var trust=this._sanitizer.sanitize(SecurityContext.RESOURCE_URL,'data:image/jpg;base64,'
