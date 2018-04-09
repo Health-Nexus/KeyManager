@@ -16,9 +16,9 @@
       </div>
       <div class="col-9 padding-top-lg">
         <span>Owned/Shared keys</span>
-        <div *ngFor="let key of keys">
+        <!-- <div *ngFor="let key of keys">
           <span class="clickable margin-v-sm" (click)="pickChildKey(key.key)">{{ key.key }}</span>
-        </div>
+        </div> -->
         <div *ngFor="let keyShared of keyAccessArray">
           <span class="clickable margin-v-sm" (click)="pickChildKey(keyShared.key)">{{ keyShared.key }}: {{ keyShared.url }}</span>
         </div>

@@ -159,39 +159,85 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   /* CHILD KEY VIEW */
   retrieveData(parameter): any {
+    var self = this;
     var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
     var keyId = this.selectedChildKey && this.selectedChildKey.id;
     console.log('retrieve: ',urlKey);
     this.dataToDisplay = this.web3Service.dataRequestTest(urlKey, parameter, keyId).then(function(value) {
-      // jade: TODO: remove this code/comments once backend is up
-      // this.json = JSON.stringify(value);
-      // return
-    // Do things after onload
+      // Do things after onload
       console.log('this.dataToDisplay:', value);
-      if (value.headers.get("Content-Type") =='image/jpeg') {
+      let contentType = value.headers.get("Content-Type");
+      var blob = new Blob([value._body], {type: contentType });
 
-        // var trust=this._sanitizer.sanitize(SecurityContext.RESOURCE_URL,'data:image/jpg;base64,'
-        //            + value._body);
-        //            console.log(trust);
-      this.image = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'
-                 + value._body);
+      if (this._window.navigator && this._window.navigator.msSaveOrOpenBlob) {
+       this._window.navigator.msSaveOrOpenBlob(blob, parameter);
+      } else {
+       var a = document.createElement('a');
+       a.href = this._window.URL.createObjectURL(blob);
+       // a.href = URL.createObjectURL(blob);
+       a.download = parameter;
+       document.body.appendChild(a);
+       a.click();
+       document.body.removeChild(a);
+      }
 
-        //This allows the conditional viewing of the returned image.
-        if (this._window.confirm("We retrieved an image from the data service. The image is unfiltered and could be innappropriate. Press 'OK' to view the image.")) {
-          var image = new Image();
-          image.src = "data:image/jpg;base64," + value._body;
-          var w = this._window.open("");
-          w.document.write(image.outerHTML);
-        } else {
-          console.log(this.image)
+      // Do things after onload
+        console.log('this.dataToDisplay: ',value)
+        if(value.headers.get("Content-Type") =='image/jpeg')
+        {
+
+          // var trust=this._sanitizer.sanitize(SecurityContext.RESOURCE_URL,'data:image/jpg;base64,'
+          //            + value._body);
+          //            console.log(trust);
+        this.image = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'
+                   + value._body);
+
+          //This allows the conditional viewing of the returned image.
+          if (this._window.confirm("We retrieved an image from the data service. The image is unfiltered and could be innappropriate. Press 'OK' to view the image.")) {
+            var image = new Image();
+            image.src = "data:image/jpg;base64," + value._body;
+            var w = this._window.open("");
+            w.document.write(image.outerHTML);
+          } else {
+            console.log(this.image)
+          }
+
+        }
+        if(value.headers.get("Content-Type") =="audio/mpeg"){
+          // this.audio = new Audio();
+          // this.audio.src =value._body;
+          // this.audio.load();
+          // this.audio.play();
         }
 
-      }
-      if(value.headers.get("Content-Type") =="audio/mpeg"){
-        // this.audio = new Audio();
-        // this.audio.src =value._body;
-        // this.audio.load();
-        // this.audio.play();
+
+      switch(contentType) {
+        case 'image/jpeg':
+        var image = new Image();
+        image.src = "data:image/jpg;base64," + value._body;
+        var w = this._window.open("");
+        w.document.write(image.outerHTML);
+            // var trust=this._sanitizer.sanitize(SecurityContext.RESOURCE_URL,'data:image/jpg;base64,'
+            //            + value._body);
+            //            console.log(trust);
+
+            //This allows the conditional viewing of the returned image.
+            // if (this._window.confirm("We retrieved an image from the data service. The image is unfiltered and could be innappropriate. Press 'OK' to download the image.")) {
+              self.image = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value._body);
+            // } else {
+            //   console.log(this.image);
+            // }
+            break;
+        // case 'audio/mpeg':
+        //   const blob = new Blob([value], { type: contentType });
+        //   const url = window.URL.createObjectURL(blob);
+        //   break;
+        //   // this.audio = new Audio();
+        //   // this.audio.src =value._body;
+        //   // this.audio.load();
+        //   // this.audio.play();
+        default:
+          self.json = value.json();
       }
     }.bind(this));
 
@@ -227,10 +273,8 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   setData(type, parameter): any {
     var selected = this.selectedChildKey && this.selectedChildKey;
-    console.log('here', selected, ' : ',  parameter)
-    // this.dataOnKey = this.web3Service.setKeyData(selected.id, type, parameter);
-    this.dataOnKey=this.web3Service.setKeyData(selected.id, type, parameter);
-
+    console.log('here', parameter, ' : ', typeof parameter)
+    this.dataOnKey = this.web3Service.setKeyData(selected.id, type, parameter);
     if (selected) {
       if (!parameter) {
         delete this.childParams[type];
