@@ -210,87 +210,33 @@ export class Web3Service {
      * @return {json | file} returns Json or a file
      */
      //TODO:  Break into a function for json and a function for sharing
-     dataRequestTest(urlKey,parameter,key): any{
-//def data(request, address_id, signature_id, message_hash, parameter, key):
-  var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0] ;
-  var original_message = "DRS Message";
-  var message_hash = this.web3.sha3(
-    '\u0019Ethereum Signed Message:\n' +
-    original_message.length.toString() +
-    original_message
-  );
-  // message_hash=this.web3.eth.accounts.hashMessage(original_message)
-  var signature;
-  console.log('web sign:',this.web3)
-//     this.web3.personal.sign(message_hash,signer function(err, res) {
-  let p = new Promise<any>((resolve, reject) => {this.web3.eth.sign(signer,message_hash, function(err, res) {
-    if (err) console.error(err);
-    signature = res;
-    console.log({
-      "signer": signer,
-      "message": message_hash,
-      "message_hash": message_hash,
-      "signature": signature,
-    })
-    var headers = new Headers({ 'Content-Type': 'application/json'  });
-    var options = new RequestOptions({ headers: headers });
-    //    path('<str:address_id>/<str:signature_id>/<str:message_hash>/<str:parameter>', views.data, name='data'),
-    //'http://localhost:8000/gatekeeper/'
-    var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
-    console.log(urlKey);
-    console.log(url);
-    return this.http.get(url, options)//,  {search: params})
-              // .map((res: Response): any =>
-              // res.json() )
-              .subscribe(result =>{
-                console.log(result, result.headers.get("Content-Type"));
-                if(result.headers.get("Content-Type") !='image/jpeg' && result.headers.get("Content-Type") !='audio/mpeg')
-                {
-                  resolve(result.json())
-                }
-                if(result.headers.get("Content-Type") =='audio/mpeg')
-                {
-                  const blob = new Blob([result], { type: 'audio/mpeg' });
-                  const url= window.URL.createObjectURL(blob);
-                  console.log('auido url',url, blob)
-                  window.open(url);
-                 }
+    dataRequestTest(urlKey,parameter,key): any {
 
-                  resolve(result)
+      //determines signer and message
+      var signature;
+      var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0];
+      var original_message = "DRS Message";
+      var message_hash = this.web3.sha3(
+        '\u0019Ethereum Signed Message:\n' +
+        original_message.length.toString() +
+        original_message
+      );
+      let p = new Promise<any>((resolve, reject) => {
+        this.web3.eth.sign(signer,message_hash, function(err, res) {
+          if (err) console.error(err);
+          signature = res;
+          var headers = new Headers({ 'Content-Type': 'application/json' });
+          var options = new RequestOptions({ headers: headers });
+          var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
+          return this.http.get(url, options)
+                    .subscribe(result => {
+                      resolve(result);
+                    })
+        }.bind(this));
+      });
 
-              })
-
-  }.bind(this)) });
-  return p;
-
-}
-  //   dataRequestTest(urlKey,parameter,key): any {
-  //
-  //     //determines signer and message
-  //     var signature;
-  //     var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0];
-  //     var original_message = "DRS Message";
-  //     var message_hash = this.web3.sha3(
-  //       '\u0019Ethereum Signed Message:\n' +
-  //       original_message.length.toString() +
-  //       original_message
-  //     );
-  //     let p = new Promise<any>((resolve, reject) => {
-  //       this.web3.eth.sign(signer,message_hash, function(err, res) {
-  //         if (err) console.error(err);
-  //         signature = res;
-  //         var headers = new Headers({ 'Content-Type': 'application/json' });
-  //         var options = new RequestOptions({ headers: headers })//, responseType: ResponseContentType.Blob });
-  //         var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
-  //         return this.http.get(url, options)
-  //                   .subscribe(result => {
-  //                     resolve(result);
-  //                   })
-  //       }.bind(this));
-  //     });
-  //
-  //     return p;
-  // }
+      return p;
+  }
 
   /**
    * initializeWeb3 function.  initalizes web3
