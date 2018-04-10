@@ -83,7 +83,7 @@
         <img [src]="image" />
       </div>
       <div *ngIf="json"> {{ json }}</div>
-      <span class="warning margin-v-sm">Warning: not verified for sensitive data; any data may be unsanitized</span>
+      <span class="warning margin-v-sm">Warning: not verified for sensitive data; any data may be unsanitized.  Additionally, make sure to only download data from trusted sources.  We are not verifing the safety of the data</span>
       <div>
         <input type="text" class="form-control" placeholder="Insert parameter to send" name="Parameter" #Parameter>
         <button class="form-control" (click)="retrieveData(Parameter.value)">Retrieve</button>
