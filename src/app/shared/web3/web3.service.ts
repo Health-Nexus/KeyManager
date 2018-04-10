@@ -4,7 +4,7 @@
  */
 
 import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Http, Response,Headers, RequestOptions,URLSearchParams } from '@angular/http';
+import { Http, Response,Headers, RequestOptions,URLSearchParams,ResponseContentType } from '@angular/http';
 import * as async from 'async';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Subject } from 'rxjs/Subject';
@@ -25,7 +25,7 @@ export class Web3Service {
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
-   private adding: boolean = false;                                             // If we're adding a question
+  //  private adding: boolean = false;                                             // If we're adding a question
    private web3Instance: any;                                                   // Current instance of web3
    private unlockedAccount: string;
    private addr: string;
@@ -56,7 +56,6 @@ export class Web3Service {
     * Constructor function.  Initializes array and calls on init
     * @param Http http
     */
-
        constructor(private http: Http) {
          this.services=[];
          this.keys=[];
@@ -69,10 +68,8 @@ export class Web3Service {
 
        /**
         * ngOnInit function.  Loads all initial data needed
-        * @param Http http
+        *
         */
-
-
     ngOnInit() {
       var self = this;
       this.contract = this.http.get("./data/HealthDRS.json")
@@ -90,7 +87,6 @@ export class Web3Service {
         }
 
         new Promise<any>((resolve, reject) => {
-          console.log("drs contract: ", self._contract)
           this._contract.at(this.contractAddr).getKeyCount((error, result) => {
             if (!error) {
               this.keyNumber = result.c[0];
@@ -161,7 +157,6 @@ export class Web3Service {
                      self.keyAccess[args._key]={'key':args._key};
                      self.getUrlFromKey(args._key).then(function(resultUrl) {
                        self.keyAccess[args._key]['url']=resultUrl;
-                       console.log('key urls: ',self.keyAccess)
                        }.bind(self));
                      self.getKeyInfo(args._key).then(function(keyResult) {
                        self.keyAccess[args._key]['share']=keyResult[1];
@@ -183,10 +178,13 @@ export class Web3Service {
 
           self._contract.at(self.contractAddr).serviceList(3, (error, eventResult) => {
             next();
-             if (error)
+             if (error){
                console.log('3Error in myEvent event handler: ' + error);
-             else
-               console.log('3myEvent: ' + eventResult);
+
+             }
+             else{
+
+             }
            });
         }
       ], function(err) {
@@ -225,8 +223,12 @@ export class Web3Service {
         this.web3.eth.sign(signer,message_hash, function(err, res) {
           if (err) console.error(err);
           signature = res;
-          var headers = new Headers({ 'Content-Type': 'application/json' });
-          var options = new RequestOptions({ headers: headers });
+          var headers = new Headers({ 'Content-Type': 'application/octet-stream',
+        });
+          var options = new RequestOptions({ //headers: headers,
+            responseType : ResponseContentType.ArrayBuffer
+
+           });
           var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
           return this.http.get(url, options)
                     .subscribe(result => {
@@ -450,7 +452,6 @@ export class Web3Service {
        this._contract.at(this.contractAddr).isServiceOwner(id,this.unlockedAccount,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -470,7 +471,6 @@ export class Web3Service {
        this._contract.at(this.contractAddr).shareService(id,account,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -479,13 +479,17 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * unshareService function. Unshares a given service
+    * @param id:  id of service to share
+    * @param account:  address of user to share with
+    * @return {json} error or success.  Success contains a boolean for successful unsharing
+    */
    unshareService(id,account): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).unshareService(id,account,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -494,13 +498,17 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * updateURL function. Updates the URL of a given service
+    * @param id:  id of service to update
+    * @param url:  Url to update to
+    * @return {json} error or success.  Success contains a boolean for successful update
+    */
    updateURL(id,url): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).updateUrl(id,url,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -509,13 +517,16 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * createKey function. Creates a key for the given service for the current user
+    * @param id:  id of the service to create a key for
+    * @return {json} error or success.  Success contains a boolean for successful create
+    */
    createKey(id): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).createKey(id,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -524,12 +535,17 @@ export class Web3Service {
      return p;
    }
 
+   /**
+    * issueKey function.  Creates a key for the given service for the current user
+    * @param id:  id of the service to create a key for
+    * @param address:  address of the user
+    * @return {json} error or success.  Success contains a boolean for successful create
+    */
    issueKey(id,address): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).issueKey(id,address,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -538,13 +554,19 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * permissionKey function.  Set permission on key for exchanging
+    * @param id:  id of the key to set permissions for
+    * @param canShare:  boolean for if the user can share
+    * @param canTrade:  boolean for if the user can trade
+    * @param canSell:  boolean for if the user can sell
+    * @return {json} error or success.
+    */
    permissionKey(id,canShare,canTrade,canSell): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).setKeyPermissions(id,canShare,canTrade,canSell,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -553,13 +575,17 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * shareKey function.  shares a key with the given account
+    * @param key:  id of the key to share
+    * @param account:  address of the account to share with
+    * @return {json} error or success.
+    */
    shareKey(key,account): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).shareKey(key,account,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            reject(error);
 
@@ -570,13 +596,17 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * unshareKey function. Unshares a given key
+    * @param id:  id of key to share
+    * @param account:  address of user to share with
+    * @return {json} error or success.  Success contains a boolean for successful unsharing
+    */
    unshareKey(key,account): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).unshareKey(key,account,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -585,17 +615,21 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * createSalesOffer function. creates a sales offer for a given key and buyer
+    * @param key:  id of key to offer
+    * @param buyer:  address of buyer to share with
+    * @param price:  amount to sell for
+    * @param canSell:  ability to sell
+    * @return {json} error or success.  Success contains a boolean for successful create sales offer
+    */
    createSalesOffer(key,buyer,price,canSell): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).createSalesOffer(key,buyer,price,canSell,(error, result) => {
          if (!error) {
            resolve(result);
-
-           console.log(result)
          } else {
            reject(error);
-
            console.log(error)
          }
         });
@@ -603,17 +637,18 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * cancelSalesOffer function. cancels all sales offers for a given key
+    * @param key:  id of key to cancel all offers for
+    * @return {json} error or success.  Success contains a boolean for successful cancel
+    */
    cancelSalesOffer(key): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).cancelSalesOffer(key,(error, result) => {
          if (!error) {
            resolve(result);
-
-           console.log(result)
          } else {
            reject(error);
-
            console.log(error)
          }
         });
@@ -621,14 +656,16 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * purchaseKey function. Purchase a key with an outstanding offer
+    * @param key:  id of key to purchase
+    * @return {json} error or success.  Success contains a boolean for successful unsharing
+    */
    purchaseKey(key): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).purchaseKey(key,(error, result) => {
          if (!error) {
            resolve(result);
-
-           console.log(result)
          } else {
            reject(error);
 
@@ -639,14 +676,17 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * tradeKey function. trades a key with a second key if there is a pending offer
+    * @param key1:  id of key1 to trade
+    * @param key2:  id of key2 to trade
+    * @return {json} error or success.  Success contains a boolean for successful trade
+    */
    tradeKey(key1, key2): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).tradeKey(key1, key2,(error, result) => {
          if (!error) {
            resolve(result);
-
-           console.log(result)
          } else {
            reject(error);
 
@@ -657,14 +697,17 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * CreateTradeKeyOffer function. creates a trade offer for a key and a second key
+    * @param key1:  id of key1 to trade
+    * @param key2:  id of key2 to trade
+    * @return {json} error or success.  Success contains a boolean for successful trade offer
+    */
    CreateTradeKeyOffer(key1, key2): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).createTradeOffer(key1, key2,(error, result) => {
          if (!error) {
            resolve(result);
-
-           console.log(result)
          } else {
            reject(error);
 
@@ -675,14 +718,17 @@ export class Web3Service {
      return p;
    }
 
-
-   CancelTradeKey(key): any {
+   /**
+    * cancelTradeKey function. cancels all trade offers for a given key
+    * @param key:  id of key to cancel trade offers
+    * @return {json} error or success.  Success contains a boolean for successful cancel
+    */
+   cancelTradeKey(key): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).cancelTradeOffer(key,(error, result) => {
          if (!error) {
            resolve(result);
 
-           console.log(result)
          } else {
            reject(error);
            console.log(error)
@@ -692,13 +738,18 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * setKeyData function. creates or updates a datavalue on a key
+    * @param key:  id of key to create data for
+    * @param dataKey:  parameter name of the data
+    * @param dataValue:  the data
+    * @return {json} error or success.  Success contains a boolean for creation
+    */
    setKeyData(key, dataKey, dataValue): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).setKeyData(key.toString(), dataKey, dataValue,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            reject(error);
 
@@ -709,12 +760,16 @@ export class Web3Service {
      return p;
    }
 
+   /**
+    * getKeyInfo function. gets basic infomraiton on key
+    * @param key:  id of key to get data on
+    * @return {json} error or success.  Json contains owner, canShare, canSell, canTrade, and parent service values
+    */
    getKeyInfo(key): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getKey(key,(error, result) => {
          if (!error) {
            result.push(key)
-
            resolve(result);
          } else {
            console.log(error)
@@ -726,7 +781,12 @@ export class Web3Service {
      return p;
    }
 
-    hex_to_ascii(str1): string{
+   /**
+    * hexToAscii function. Turns hex to ascii
+    * @param str1:  string to convert
+    * @return {str} ascii string
+    */
+    hexToAscii(str1): string{
    	  var hex  = str1.toString();
    	  var str = '';
    	  for (var n = 0; n < hex.length; n += 2) {
@@ -735,15 +795,18 @@ export class Web3Service {
    	   return str;
     }
 
+    /**
+     * getKeyData function. retrieves data on given parameter from given key
+     * @param key:  id of key to retrieve data on
+     * @param dataKey:  parameter to retrieve data on
+     * @return {json} contains the data of the parameter
+     */
    getKeyData(key, dataKey): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getKeyData(key, dataKey,(error, result) => {
          if (!error) {
-
-           console.log('getKeyData: ',result)
-           result=this.hex_to_ascii(result)
+           result=this.hexToAscii(result)
            resolve(result);
-           console.log(result)
          } else {
            reject(error);
            console.log(error)
@@ -753,13 +816,16 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * getUrlFromKey function. retrieves url tied to a given key
+    * @param key:  id of key to retrieve data on
+    * @return {json} contains the url for the key
+    */
    getUrlFromKey(key): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getUrlFromKey(key,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -768,13 +834,17 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * logAccess function. A service can log access from any of its keys.
+    * @param key:  id of key to log for
+    * @param data:  data to log
+    * @return {json}
+    */
    logAccess(key, data): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).logAccess(key, data,(error, result) => {
          if (!error) {
            resolve(result);
-         console.log(result)
          } else {
            console.log(error)
          }
@@ -783,13 +853,19 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * message function. services and keys can log messages to each other
+    * @param from:  Sender of message
+    * @param to:  retriever of message
+    * @param category:  category of message
+    * @param data:  data to be sent
+    * @return {json} contains the url for the key
+    */
    message(from, to, category, data): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).message(from, to, category, data,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -798,13 +874,17 @@ export class Web3Service {
      return p;
    }
 
-
-   log(from,data): any {
+   /**
+    * log function. any key or service can log
+    * @param from:  who logged hte message
+    * @param data:  data to log
+    * @return {json} contains the url for the key
+    */
+   log(from, data): any {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).log(from,data,(error, result) => {
          if (!error) {
            resolve(result);
-           console.log(result)
          } else {
            console.log(error)
          }
@@ -813,14 +893,22 @@ export class Web3Service {
      return p;
    }
 
-
+   /**
+    * weiToEth function. any key or service can log
+    * @param wei:  amount to convert
+    * @return {number} converted wei to Eth
+    */
    weiToEth(wei: number): number {
        return parseFloat(this.web3.fromWei(wei, 'ether'));
    }
 
 
 
-
+   /**
+    * sendTransaction function. Transaction to test connection to network
+    *
+    *
+    */
    sendTransaction(): any {
      var data = this.contract.transfer.getData(this.contractAddr, 10000, {from: this.addr});
      var gasPrice = this.web3.eth.gasPrice;
@@ -834,21 +922,20 @@ export class Web3Service {
        "value": "0",
        "data": data,
     "chainId": ''
-  };
-
-  // var tx = new Tx(rawTransaction);
-  //
-  // tx.sign(privKey);
-  // var serializedTx = tx.serialize();
-
-  this.web3.eth.sendTransaction(rawTransaction, function(err, hash) {
-    if (!err)
-      console.log(hash);
-      else
-      console.log(err);
-    });
+    };
+    this.web3.eth.sendTransaction(rawTransaction, function(err, hash) {
+      if (!err)
+        console.log(hash);
+        else
+        console.log(err);
+      });
    }
 
+   /**
+    * connected function. tests connection
+    *
+    *
+    */
    connected(): Promise<any> {
        let p = new Promise<any>((resolve, reject) => {
 
@@ -857,7 +944,6 @@ export class Web3Service {
 
 
                this.web3.eth.sendTransaction({from: this.web3.eth.defaultAccount, to: this.web3.eth.defaultAccount, value: 0, gas: 0, gasPrice: 0 },
-            //this.web3.eth.sendTransaction({from: this.web3.eth.accounts[0], to: this.web3.eth.accounts[0], value: 0, gas: 0, gasPrice: 0 },
                    (err, res) => {;
                        if (err.toString() !== 'Error: account is locked') {
                            this.unlockedAccount = this.web3.eth.accounts[0];
@@ -890,6 +976,11 @@ export class Web3Service {
        return p;
    }
 
+   /**
+    * handleConnection function.
+    * @param connect:
+    *
+    */
    handleConnection(connect: boolean): void {
        if (connect) {
            this.connected();
@@ -900,13 +991,14 @@ export class Web3Service {
        this.nodeConnected = connect;
    }
 
+   /**
+    * connectToNode function:  Connects to a node
+    *
+    */
    connectToNode(): void { // Don't unlock until you send a transaction
-      console.log('connecting: ',window['web3'])
-      console.log('connecting: ',localStorage['nodeIP'])
 
        if (typeof window['web3'] !== 'undefined' && (!localStorage['nodeIP'] || this.nodeIP === 'MetaMask')) {
            localStorage['nodeIP'] = this.nodeIP;
-           console.log('Using injected web3');
            this.web3 = new this.Web3(window['web3'].currentProvider);
            this.nodeIP = 'MetaMask';
            this.nodeConnected = true;
@@ -916,7 +1008,6 @@ export class Web3Service {
 
        } else {
            localStorage['nodeIP'] = this.nodeIP;
-           console.log('Using HTTP node;', this.nodeIP);
            this.unlockedAccount = undefined;
 
            this.web3 = new this.Web3(new this.Web3.providers.HttpProvider(this.nodeIP));
@@ -924,27 +1015,53 @@ export class Web3Service {
        }
    }
 
-
+   /**
+    * isConnected function:  checks connection status
+    *
+    */
    get isConnected(): boolean {
        return this.nodeConnected;
    }
 
+   /**
+    * web3 function:  starts and gets web3
+    *
+    */
    get web3(): any {
        if (!this.web3Instance) {
            this.initializeWeb3();
        }
        return this.web3Instance;
    }
+
+   /**
+    * web3 function:  sets web3
+    *
+    */
    set web3(web3: any) {
        this.web3Instance = web3;
    }
 
+   /**
+    * currentAcc function: gets current account
+    *
+    */
    get currentAcc(): string {
        return this.unlockedAccount;
    }
+
+   /**
+    * currentAddr function: gets current address
+    *
+    */
    get currentAddr(): string {
        return this.contractAddr;
    }
+
+   /**
+    * currentAddr function: sets current address
+    *
+    */
    set currentAddr(contractAddr: string) {
        if (contractAddr.length === 42 || contractAddr.length === 40) {
            this.contractAddr = contractAddr;
@@ -952,19 +1069,37 @@ export class Web3Service {
            console.log('Invalid address used');
        }
    }
+
+   /**
+    * currentNode function: gets current node
+    *
+    */
    get currentNode(): string {
        return this.nodeIP;
    }
+
+   /**
+    * currentAddr function: sets current node
+    *
+    */
    set currentNode(nodeIP: string) {
        this.nodeIP = nodeIP;
    }
 
+   /**
+    * Web3 function: retunrs web3 in the window
+    *
+    */
    get Web3(): any {
        return window['Web3'];
    }
 
-   get addingQuestion(): boolean {
-       return this.adding;
-   }
+  //  /**
+  //   * addingQuestion function: sets current address
+  //   *
+  //   */
+  //  get addingQuestion(): boolean {
+  //      return this.adding;
+  //  }
 
 }

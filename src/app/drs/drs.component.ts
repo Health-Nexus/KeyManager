@@ -71,15 +71,11 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     var updatedServices = this.web3Service.getServices();
 
     this.keys = this.web3Service.getKeys();
-    console.log('keys:',this.keys);
     this.keyOwners = this.web3Service.returnKeyOwners();
-    console.log('Display Data keyOwners:',this.keyOwners);
 
     this.keyAccess = this.web3Service.getkeyAccess();
     this.keyAccessArray = [];
-    console.log('keyAccessTemp; ', this.keyAccess)
     for (var json in this.keyAccess) {
-      console.log('json; ', json);
       let currentKeyAccess = this.keyAccess[json];
       this.keyAccessArray.push({
         'key' : json,
@@ -126,9 +122,7 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
         this.services = updatedServices;
     });
 
-    console.log('DD services', updatedServices);
-    console.log('DD keys', this.keys.length);
-    console.log('DD keysAccess', this.keyAccessArray);
+
 
   }
 
@@ -162,10 +156,8 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     var self = this;
     var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
     var keyId = this.selectedChildKey && this.selectedChildKey.id;
-    console.log('retrieve: ',urlKey);
     this.dataToDisplay = this.web3Service.dataRequestTest(urlKey, parameter, keyId).then(function(value) {
       // Do things after onload
-      console.log('this.dataToDisplay:', value);
       let contentType = value.headers.get("Content-Type");
       var blob = new Blob([value._body], {type: contentType });
 
@@ -180,12 +172,9 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
          document.body.removeChild(a);
       }
 
-      // if (contentType =='image/jpeg') {
-      //   self.image = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpeg;base64,' + value._body);
-      // }
+
     }.bind(this));
 
-    console.log(this.dataToDisplay);
   }
 
   changePermissions(): any {
@@ -210,15 +199,12 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   getData(type): any {
     var keyId = this.selectedChildKey && this.selectedChildKey.id;
-    console.log('getData',type)
     this.dataOnKey = this.web3Service.getKeyData(keyId, type);
-    console.log(this.dataOnKey)
   }
 
   setData(type, parameter): any {
     var selected = this.selectedChildKey && this.selectedChildKey;
-    console.log('here', parameter, ' : ', typeof parameter)
-    this.dataOnKey = this.web3Service.setKeyData(selected.id, type, parameter);
+    this.web3Service.setKeyData(selected.id, type, parameter);
     if (selected) {
       if (!parameter) {
         delete this.childParams[type];
@@ -230,7 +216,6 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       });
       this.editingParam = {};
     }
-    console.log('retrieved data DRS', this.dataOnKey)
   }
 
   shareKey(id, account): any {
@@ -256,7 +241,7 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
   }
 
   cancelTradeKeyOffer(key): any {
-    this.web3Service.CancelTradeKey(key);
+    this.web3Service.cancelTradeKey(key);
   }
 
 

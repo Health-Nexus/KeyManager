@@ -12,7 +12,6 @@ export class LoginComponent {
 
 
   chooseWallet(type) {
-    console.log(type);
     this.wallet=type;
   }
 

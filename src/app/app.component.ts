@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
 
 
   transferOwnership(): any{
-    this.healthcashService.transferOwnership();
+    this.healthcashService.transferOwnership('');
   }
 
   getNumberService(): any{
