@@ -155,14 +155,16 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
   retrieveData(parameter): any {
     var self = this;
     
-    //var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
-    //var keyId = this.selectedChildKey && this.selectedChildKey.id;
+    var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
+    var keyId = this.selectedChildKey && this.selectedChildKey.id;
+    
     //console.log('childkey',this.selectedChildKey);
     //console.log('urlKey',urlKey);
-    
-    var urlKey = this.selectedChildKey.url;
-    var keyId = this.selectedChildKey.key;
-    
+    if (typeof urlKey === "undefined") {
+      urlKey = this.selectedChildKey.url;
+      keyId = this.selectedChildKey.key;
+    }
+
     this.dataToDisplay = this.web3Service.dataRequestTest(urlKey, parameter, keyId).then(function(value) {
       // Do things after onload
       let contentType = value.headers.get("Content-Type");
