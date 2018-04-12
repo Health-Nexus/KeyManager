@@ -1,12 +1,25 @@
-<p>
-  Current Token Balance: {{balance}} <br>
-  Contract Allowed to Spend: {{canspend}}  
-  <br>
-  <button (click)="balances()">Update Balance</button>
-  <br>
-  Transfer Tokens
-  <br>
-  Address: <input type="text" name="addr" #addr><br>
-  amount: <input type="number" name="amount" #amount><br>
-  <button (click)="transfer(addr.value,amount.value)">Submit</button>
-</p>
+<div class="container">
+  <div class="row tokens">
+    <span>Current HNexus token balance: <span class="inline text-bold">{{ balance }}</span></span>
+    <div class="row padding-top-lg">
+      <!-- <div class="col-9 padding-top-lg">
+        <span>Send tokens</span>
+        <input type="text" class="form-control" placeholder="Enter to: address here" name="addr" #addr>
+        <input type="number" class="form-control" placeholder="Enter amount here" name="amount" #amount>
+        <button class="form-control" (click)="transfer(addr.value,amount.value)">Send</button>
+      </div> -->
+      <div class="col-9 padding-top-lg">
+        <span>
+          Max number of tokens that can be used for key purchases
+          <span class="inline" *ngIf="canspend > 0">: {{canspend | number}}
+            <span class="inline clickable" (click)="editCanSpend()">change</span>
+          </span>
+        </span>
+        <div *ngIf="canspend === 0 || editing" [class.editing]="editing">
+          <input type="number" class="form-control" placeholder="Enter # of tokens here; not to exceed current token balance" name="amount" #amount>
+          <button class="form-control" (click)="approveHLTH(amount.value)">Approve</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

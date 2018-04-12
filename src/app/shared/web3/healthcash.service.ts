@@ -5,81 +5,90 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 // const Web3 = require('web3');
 import 'rxjs/add/operator/map';
 
+/**
+ * Class to handle HLTH Cash Contract interactions
+ */
 @Injectable()
 export class HealthcashService {
   @Output() update = new EventEmitter();
    private rinkebyContractAddr: string = '0xAB6cee678340A12ee72d41D472300f6A2befA1EB'
-   private mainContractAddr: string = ''   
+   private mainContractAddr: string = ''
    private contractAddr: string;
    private rinkebyDrsAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'
-   private mainDrsAddr: string = ''      
+   private mainDrsAddr: string = ''
    private drsAddr: string;
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
-   private adding: boolean = false;                                             // If we're adding a question
+  //  private adding: boolean = false;                                             // If we're adding a question
    private web3Instance: any;                                                   // Current instance of web3
    private unlockedAccount: string;
    private addr: string;
-   private privateKey: string;
-   private address: string;
    private abi:any = [ {} ]; // redacted on purpose
    private abiArray:any = this.abi;
    private contract: any;
    private _contract: any;
    private balance = new BehaviorSubject<number>(0);
-   private canspend = new BehaviorSubject<number>(0);   
+   private canspend = new BehaviorSubject<number>(0);
    currentBalance = this.balance.asObservable();
-   allowedToSpend = this.canspend.asObservable();    
-
-         // Current unlocked account
-   // Application Binary Interface so we can use the question contract
-   //private ABI  = [{'constant':false,'inputs':[{'name':'queryID','type':'bytes32'},{'name':'result','type':'string'}],'name':'__callback','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'','type':'uint256'}],'name':'questions','outputs':[{'name':'contractAddress','type':'address'},{'name':'site','type':'string'},{'name':'questionID','type':'uint256'},{'name':'winnerAddress','type':'address'},{'name':'winnerID','type':'uint256'},{'name':'acceptedAnswerID','type':'uint256'},{'name':'updateDelay','type':'uint256'},{'name':'expiryDate','type':'uint256'},{'name':'ownedFee','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[],'name':'kill','outputs':[],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'},{'name':'_sponsorAddr','type':'address'}],'name':'getSponsorBalance','outputs':[{'name':'sponsorBalance','type':'uint256'}],'type':'function'},{'constant':false,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'handleQuestion','outputs':[],'type':'function'},{'constant':false,'inputs':[{'name':'_i','type':'uint256'}],'name':'increaseBounty','outputs':[],'type':'function'},{'constant':true,'inputs':[],'name':'contractBalance','outputs':[{'name':'','type':'uint256'}],'type':'function'},{'constant':true,'inputs':[{'name':'_questionID','type':'uint256'},{'name':'_site','type':'string'}],'name':'getAddressOfQuestion','outputs':[{'name':'questionAddr','type':'address'}],'type':'function'},{'constant':true,'inputs':[{'name':'_i','type':'uint256'}],'name':'getSponsors','outputs':[{'name':'sponsorList','type':'address[]'}],'type':'function'},{'inputs':[],'type':'constructor'},{'anonymous':false,'inputs':[{'indexed':false,'name':'questionAddr','type':'address'}],'name':'QuestionAdded','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyIncreased','type':'event'},{'anonymous':false,'inputs':[],'name':'BountyPaid','type':'event'}];
+   allowedToSpend = this.canspend.asObservable();
 
 
+   /**
+    * Constructor function.  Initializes array and calls on init
+    * @param Http http
+    */
        constructor(private http: Http) {
          this.ngOnInit();
-         console.log('constructor', this.balance)
          //set our addresses based on the network
          switch(this.web3.version.network) {
           case '1':
             this.contractAddr = this.mainContractAddr;
-            this.drsAddr = this.mainDrsAddr;              
+            this.drsAddr = this.mainDrsAddr;
             break;
           default:
             this.contractAddr = this.rinkebyContractAddr;
             this.drsAddr = this.rinkebyDrsAddr;
-        }          
+        }
        }
 
+       /**
+        * ngOnInit function.  Loads all initial data needed
+        *
+        */
        ngOnInit() {
-         
          let p = new Promise<any>((resolve, reject) => {
            this.http.get("./data/HealthCash.json")
             .map(response => response.json() )
-            .subscribe(result =>{
+            .subscribe(result => {
               this.contract=result;
               this._contract=this.web3.eth.contract(this.contract.abi)
-              console.log('balance of init ')
               this.balanceOf();
+              this.drsApprovedFor();
               resolve(result);
             });
           });
       }
 
+      /**
+       * initializeWeb3 function.  Initializes web3
+       *
+       */
    initializeWeb3(): void {
      this.ngOnInit();
        this.nodeIP = 'MetaMask';//localStorage['nodeIP'] || this.defaultNodeIP;
        this.connectToNode(); // Connect to whatever's available
    }
 
+   /**
+    * setTransferAgent function.  sets future transfer agent
+    *
+    */
    setTransferAgent(): any {
-    // let p = new Promise<any>((resolve, reject) => {
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+       this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).setTransferAgent('0x1ba6cea196f186e6ee2d8ac46308e6d18018e910',true,(error, result) => {
              if (!error) {
-               console.log('result contract transfer agents:', result)
                resolve(result);
              } else {
                console.log('error from transfer agent:',error)
@@ -90,14 +99,14 @@ export class HealthcashService {
            return p;
    }
 
-
+   /**
+    * approve function. approves users hlth to be used by DRS to set amount
+    * @param amount:  amount to approve for
+    */
    approve(amount): any {
-    // let p = new Promise<any>((resolve, reject) => {
-       //this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).approve(this.drsAddr,amount,(error, result) => {
              if (!error) {
-               console.log('result contract transfer agents:', result)
                resolve(result);
              } else {
                console.log('error from transfer agent:',error)
@@ -108,17 +117,19 @@ export class HealthcashService {
    }
 
 
-
+   /**
+    * transfer function.  Transfers value to address in hlth
+    * @param _to:  address to transfer to
+    * @param _value:  amount to transfer for
+    */
    transfer( _to,  _value): any {
-
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).transfer(_to,_value,(error, result) => {
              if (!error) {
-               console.log('result contract test2:', result)
                resolve(result);
              } else {
-               console.log('error from test2:',error)
+               console.log('error from transfer:',error)
                reject(error)   }
              });
 
@@ -126,39 +137,46 @@ export class HealthcashService {
            return p;
    }
 
+   /**
+    * drsApprovedFor function. Retrieves how much user is approved for
+    * @param amount:  amount to approve for
+    * @return {int} amount user is approved for
+    */
    drsApprovedFor(): any {
-    console.log('approved for start ')
-    console.log('drs account: ', this.drsAddr)
+     if (!this.unlockedAccount) {
+       return;
+     }
     let p = new Promise<any>((resolve, reject) => {
           this._contract.at(this.contractAddr)
-          .allowance(this.unlockedAccount, 
+          .allowance(this.unlockedAccount,
                      this.drsAddr,
                      (error, result) => {
             if (!error) {
-             console.log(result)
-             this.canspend.next(result.c[0])             
+             this.canspend.next(result.c[0])
              this.allowedToSpend=result.c[0]
              resolve(result.c[0]);
             } else {
              console.log('error from allowance:',error)
-             reject(error)   
+             reject(error)
             }
             });
           });
     return p;
   }
 
-
+  /**
+   * balanceOf function. Retrieves Hlth balance
+   * @param amount:  amount to approve for
+   * @return {int} Hlth Balance
+   */
    balanceOf(): any {
-     console.log('balanceof start ')
-
-     console.log('balance account: ', this.unlockedAccount)
+     if (!this.unlockedAccount) {
+       return;
+     }
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
-         console.log('balance contract: ',this._contract)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at(this.contractAddr).balanceOf(this.unlockedAccount,(error, result) => {
+           this._contract.at(this.contractAddr).balanceOf(this.unlockedAccount, (error, result) => {
              if (!error) {
-              console.log('result contract balance:', result.c[0])
               this.balance.next(result.c[0])
               this.currentBalance=result.c[0]
                resolve(result.c[0]);
@@ -171,16 +189,18 @@ export class HealthcashService {
            return p;
    }
 
-
-   transferOwnership(): any {
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+   /**
+    * transferOwnership function. transfers ownership of contract if owner to addr
+    * @param addr: address to transfer ownership to
+    */
+   transferOwnership(addr): any {
+       this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at(this.contractAddr).transferOwnership('0xC6EBD9EfB9469555B3785bd09570571c7310bCb3',(error, result) => {
+           this._contract.at(this.contractAddr).transferOwnership(addr,(error, result) => {
              if (!error) {
-               console.log('result contract balance:', result)
                resolve(result);
              } else {
-               console.log('error from balance:',error)
+               console.log('error transfer ownership:',error)
                reject(error)   }
              });
 
@@ -188,7 +208,12 @@ export class HealthcashService {
            return p;
    }
 
-
+   /**
+    * transferFrom function. transfers HLTH from one address to another
+    * @param _from: address to transfer from
+    * @param _to: address to transferto
+    * @param _value: amount to transfer
+    */
    transferFrom( _from, _to,  _value): any {
 
        this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
@@ -206,14 +231,21 @@ export class HealthcashService {
            return p;
    }
 
-
+   /**
+    * weiToEth function. any key or service can log
+    * @param wei:  amount to convert
+    * @return {number} converted wei to Eth
+    */
    weiToEth(wei: number): number {
        return parseFloat(this.web3.fromWei(wei, 'ether'));
    }
 
 
-
-
+      /**
+       * sendTransaction function. Transaction to test connection to network
+       *
+       *
+       */
    sendTransaction(): any {
      var data = this.contract.transfer.getData(this.contractAddr, 10000, {from: this.addr});
      var gasPrice = this.web3.eth.gasPrice;
@@ -228,12 +260,6 @@ export class HealthcashService {
        "data": data,
     "chainId": ''
   };
-
-  // var tx = new Tx(rawTransaction);
-  //
-  // tx.sign(privKey);
-  // var serializedTx = tx.serialize();
-
   this.web3.eth.sendTransaction(rawTransaction, function(err, hash) {
     if (!err)
       console.log(hash);
@@ -242,6 +268,11 @@ export class HealthcashService {
     });
    }
 
+   /**
+    * connected function. tests connection
+    *
+    *
+    */
    connected(): Promise<any> {
        let p = new Promise<any>((resolve, reject) => {
 
@@ -272,6 +303,11 @@ export class HealthcashService {
        return p;
    }
 
+   /**
+    * handleConnection function.
+    * @param connect:
+    *
+    */
    handleConnection(connect: boolean): void {
        if (connect) {
            this.connected();
@@ -282,13 +318,14 @@ export class HealthcashService {
        this.nodeConnected = connect;
    }
 
+   /**
+    * connectToNode function:  Connects to a node
+    *
+    */
    connectToNode(): void { // Don't unlock until you send a transaction
-      console.log('connecting: ',window['web3'])
-      console.log('connecting: ',localStorage['nodeIP'])
 
        if (typeof window['web3'] !== 'undefined' && (!localStorage['nodeIP'] || this.nodeIP === 'MetaMask')) {
            localStorage['nodeIP'] = this.nodeIP;
-           console.log('Using injected web3');
            this.web3 = new this.Web3(window['web3'].currentProvider);
            this.nodeIP = 'MetaMask';
            this.nodeConnected = true;
@@ -298,34 +335,59 @@ export class HealthcashService {
 
        } else {
            localStorage['nodeIP'] = this.nodeIP;
-           console.log('Using HTTP node;', this.nodeIP);
            this.unlockedAccount = undefined;
            this.web3 = new this.Web3(new this.Web3.providers.HttpProvider(this.nodeIP));
            this.handleConnection(this.web3.isConnected());
        }
    }
 
-
+   /**
+    * isConnected function:  checks connection status
+    *
+    */
    get isConnected(): boolean {
        return this.nodeConnected;
    }
 
+   /**
+    * web3 function:  starts and gets web3
+    *
+    */
    get web3(): any {
        if (!this.web3Instance) {
            this.initializeWeb3();
        }
        return this.web3Instance;
    }
+
+   /**
+    * web3 function:  sets web3
+    *
+    */
    set web3(web3: any) {
        this.web3Instance = web3;
    }
 
+   /**
+    * currentAcc function: gets current account
+    *
+    */
    get currentAcc(): string {
        return this.unlockedAccount;
    }
+
+   /**
+    * currentAddr function: gets current address
+    *
+    */
    get currentAddr(): string {
        return this.contractAddr;
    }
+
+   /**
+    * currentAddr function: sets current address
+    *
+    */
    set currentAddr(contractAddr: string) {
        if (contractAddr.length === 42 || contractAddr.length === 40) {
            this.contractAddr = contractAddr;
@@ -333,19 +395,32 @@ export class HealthcashService {
            console.log('Invalid address used');
        }
    }
+   /**
+   * currentNode function: gets current node
+   *
+   */
    get currentNode(): string {
        return this.nodeIP;
    }
+
+   /**
+    * currentAddr function: sets current node
+    *
+    */
    set currentNode(nodeIP: string) {
        this.nodeIP = nodeIP;
    }
 
+   /**
+    * Web3 function: retunrs web3 in the window
+    *
+    */
    get Web3(): any {
        return window['Web3'];
    }
 
-   get addingQuestion(): boolean {
-       return this.adding;
-   }
+  //  get addingQuestion(): boolean {
+  //      return this.adding;
+  //  }
 
 }

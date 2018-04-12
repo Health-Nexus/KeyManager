@@ -1,4 +1,4 @@
-import { Component,SecurityContext, OnInit, Input, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component,SecurityContext, OnInit, Input, ViewChild, ViewContainerRef, NgZone } from '@angular/core';
 import { HealthcashService } from '../shared/web3/healthcash.service';
 import { Web3Service } from '../shared/web3/web3.service';
 import { WindowRefService } from '../shared/window-ref.service';
@@ -15,111 +15,246 @@ export class DrsComponent implements OnInit {
   @Input() tokenServices: any;
   @Input() drsServices: any;
    private _window: Window;
-   services:any= [];
-   keys:any= [];
-   data:any;
-   dataOnKey:any;
-   dataToDisplay:any;
-   keysData:any= [];
-   keyOwners:any={};
-   keyAccess:any={};
+   services: any= [];
+   serviceIndex: any = {};
+   keys: any= [];
+   keysIndex: any= {};
+   data: any;
+   dataOnKey: any;
+   dataToDisplay: any;
+   keysData: any = [];
+   keyOwners: any = {};
+   keyAccess: any = {};
    urls: any={};
    keyAccessArray: any=[];
-   isRinkeby: boolean;
    image: any;
+   json: string;
+   selectedParentKey?: any;
+   selectedChildKey?: any;
+   childParams?: any = {};
+   childParamsArray?: any = [];
+   loaded: boolean = false;
+   editingPermissions: boolean = false;
+   editingParam?: any = {};
 
-constructor(private web3Service:Web3Service,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService) {
+constructor(private web3Service:Web3Service,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService, private zone: NgZone) {
   this._window = windowRef.nativeWindow;
    }
 
 
   ngOnInit() {
-    switch(this.web3Service.web3.version.network) {
-      case '1':
-       this.isRinkeby = false;
-       break;
-      case '4':
-      this.isRinkeby = true;
-       break;
-      default:
-      this.isRinkeby = false;
-    }
+    this.web3Service.parentKeyChanged$.subscribe(
+    selectedParent => {
+      var parentService = this.serviceIndex[selectedParent];
+      this.selectedParentKey = parentService;
+    });
+
+    this.web3Service.childKeyChanged$.subscribe(
+    selectedChild => {
+      let childKeyOfParent = this.selectedParentKey && this.selectedParentKey.keyIndex[selectedChild];
+      let sharedKey = this.keyAccess && this.keyAccess[selectedChild];
+      let ownedKey = this.keysIndex && this.keysIndex[selectedChild];
+
+      this.selectedChildKey = childKeyOfParent || sharedKey || ownedKey;
+    });
+
+    this.web3Service.onLoad$.subscribe(
+    hasLoaded => {
+      this.loaded = hasLoaded;
+      if (this.loaded) {
+          this.displayData();
+      }
+    });
   }
 
-  displayData(){
-    this.services=this.web3Service.getServices()
-    this.keys=this.web3Service.getKeys()
-    console.log('keys:',this.keys.length);
-    this.keyOwners=this.web3Service.returnKeyOwners();
-    console.log('Display Data keyOwners:',this.keyOwners);
-    var keyAccessTemp=this.web3Service.getkeyAccess()
-    this.keyAccessArray=[];
-    console.log('keyAccessTemp; ', keyAccessTemp)
-    let sharedKey = {}
+  displayData() {
+    var updatedServices = this.web3Service.getServices();
 
-    for(var json in keyAccessTemp){
-      console.log('json; ', json)
-      sharedKey = {'key':json,
-                    'url':keyAccessTemp[json].url.trim(),
-                    'share':keyAccessTemp[json].share,
-                    'trade':keyAccessTemp[json].trade,
-                    'sell':keyAccessTemp[json].sell,
-                    'service':keyAccessTemp[json].service}
-      this.keyAccessArray.push(sharedKey);
+    this.keys = this.web3Service.getKeys();
+    this.keyOwners = this.web3Service.returnKeyOwners();
+
+    this.keyAccess = this.web3Service.getkeyAccess();
+    this.keyAccessArray = [];
+    for (var json in this.keyAccess) {
+      let currentKeyAccess = this.keyAccess[json];
+      this.keyAccessArray.push({
+        'key' : json,
+        'url' : currentKeyAccess.url,//.trim(),
+        'share' : currentKeyAccess.share,
+        'trade' : currentKeyAccess.trade,
+        'sell' : currentKeyAccess.sell,
+        'service' : currentKeyAccess.service
+      });
     }
 
-    for(var i=0;i<this.services.length;i++){
-       this.services[i].keys=[];
-       this.services[i].keysExist=false;
+    for (var i = 0; i < updatedServices.length; i++) {
+      let currentService = updatedServices[i];
+      let url = this.web3Service.getServiceURL(currentService._service);
+      currentService.keys = [];
+      currentService.keysExist = false;
+      currentService.url = url;
+      this.urls[currentService._service] = url;
 
-      this.urls[this.services[i]._service]=this.web3Service.getServiceURL(this.services[i]._service);
-      this.services[i].url=this.web3Service.getServiceURL(this.services[i]._service);
-      var length=this.keys.length
-      for(var j=0;j<length;j++){
-
-        if(this.services[i]._service==this.keys[j].service){
-          var serviceKey={}
-          serviceKey['owner']=this.keys[j].owner;
-          serviceKey['share']=this.keys[j].share;
-          serviceKey['trade']=this.keys[j].trade;
-          serviceKey['sell']=this.keys[j].sell;
-          serviceKey['id']=this.keys[j].key;
-          //this.keys.splice(j,1);
-          //j--;
-          //length--;
-          this.services[i].keys.push(serviceKey);
-          this.services[i].keysExist=true;
-
+      var length = this.keys.length;
+      for (var j = 0; j < length; j++) {
+        let currentKey = this.keys[j];
+        this.keysIndex[currentKey.key] = currentKey;
+        if (currentService._service == currentKey.service) {
+          var serviceKey = {
+            'owner': currentKey.owner,
+            'share': currentKey.share,
+            'trade': currentKey.trade,
+            'sell': currentKey.sell,
+            'id': currentKey.key
+          };
+          currentService.keys.push(serviceKey);
+          if (!currentService.keyIndex) {
+            currentService.keyIndex = {};
+          };
+          currentService.keyIndex[serviceKey.id] = serviceKey;
+          currentService.keysExist = true;
         }
-
       }
+      this.serviceIndex[currentService._service] = currentService;
+    };
 
-    }
+    this.zone.run(() => {
+        this.services = updatedServices;
+    });
 
-    console.log('DD services',this.services)
-    console.log('DD keys',this.keys.length)
-    console.log('DD keysAccess',this.keyAccessArray)
+
 
   }
 
   log(val) { console.log(val); }
 
-  createService(url): any{
-    console.log('here')
+
+  /* KEYS TAB */
+  createService(url): any {
     this.web3Service.createservice(url);
   }
 
-  setData(key,type,parameter): any{
-    console.log('here',parameter, ' : ', typeof parameter)
-    this.dataOnKey=this.web3Service.setKeyData(key, type, parameter);
-    console.log('retrieved data DRS',this.dataOnKey)
+  pickParentKey(parentKey: string) {
+    this.web3Service.changeParentKey(parentKey);
   }
 
-  getData(key,type): any{
-    console.log('here')
-    this.dataOnKey=this.web3Service.getKeyData(key, type);
-    console.log(this.data)
+  purchaseKey(key): any {
+    this.web3Service.purchaseKey(key);
   }
+
+  /* PARENT KEY VIEW */
+  createParentKey(url): any {
+    this.web3Service.createKey(url);
+  }
+
+  pickChildKey(childKey: string) {
+    this.web3Service.changeChildKey(childKey);
+  }
+
+  /* CHILD KEY VIEW */
+  retrieveData(parameter): any {
+    var self = this;
+    
+    var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
+    var keyId = this.selectedChildKey && this.selectedChildKey.id;
+    
+    //console.log('childkey',this.selectedChildKey);
+    //console.log('urlKey',urlKey);
+    if (typeof urlKey === "undefined") {
+      urlKey = this.selectedChildKey.url;
+      keyId = this.selectedChildKey.key;
+    }
+
+    this.dataToDisplay = this.web3Service.dataRequestTest(urlKey, parameter, keyId).then(function(value) {
+      // Do things after onload
+      let contentType = value.headers.get("Content-Type");
+      var blob = new Blob([value._body], {type: contentType });
+
+      if (this._window.navigator && this._window.navigator.msSaveOrOpenBlob) {
+       this._window.navigator.msSaveOrOpenBlob(blob, parameter);
+      } else {
+         var a = document.createElement('a');
+         a.href = URL.createObjectURL(blob);
+         a.download = parameter;
+         document.body.appendChild(a);
+         a.click();
+         document.body.removeChild(a);
+      }
+
+
+    }.bind(this));
+
+  }
+
+  changePermissions(): any {
+    this.editingPermissions = false;
+    var selected = this.selectedChildKey && this.selectedChildKey || {};
+    var id = selected.id;
+    var share = selected.share;
+    var trade = selected.trade;
+    var sell = selected.sell;
+    this.web3Service.permissionKey(id, share, trade, sell);
+  }
+
+  setActive(key, value) {
+    this.editingPermissions = true;
+    this.selectedChildKey[key] = value;
+  }
+
+  editParam(key) {
+    this.editingParam = {};
+    this.editingParam[key] = true;
+  }
+
+  getData(type): any {
+    var keyId = this.selectedChildKey && this.selectedChildKey.id;
+    this.dataOnKey = this.web3Service.getKeyData(keyId, type);
+  }
+
+  setData(type, parameter): any {
+    var selected = this.selectedChildKey && this.selectedChildKey;
+    this.web3Service.setKeyData(selected.id, type, parameter);
+    if (selected) {
+      if (!parameter) {
+        delete this.childParams[type];
+      } else {
+        this.childParams[type] = parameter;
+      }
+      this.zone.run(() => {
+          this.childParamsArray = Object.keys(this.childParams);
+      });
+      this.editingParam = {};
+    }
+  }
+
+  shareKey(id, account): any {
+    this.web3Service.shareKey(id, account);
+  }
+
+  unshareKey(id, account): any {
+    this.web3Service.unshareKey(id, account);
+  }
+
+  canMakeSaleOffer(): boolean {
+    return this.selectedChildKey && this.selectedChildKey.sell && !this.keyHasOwner(this.selectedChildKey);
+  }
+
+  keyHasOwner(key: string): boolean {
+    return this.keyOwners[key] && this.keyOwners[key].length > 0;
+  }
+
+  sellKeyOffer(buyer, price, sellPermission): any {
+    var selected = this.selectedChildKey && this.selectedChildKey || {};
+    var keyId = selected.id;
+    this.web3Service.createSalesOffer(keyId, buyer, price, sellPermission);
+  }
+
+  cancelTradeKeyOffer(key): any {
+    this.web3Service.cancelTradeKey(key);
+  }
+
+
+
 
   togglePane(event): any {
      let el = event.target.nextElementSibling
@@ -130,106 +265,15 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
      }
   }
 
-  retrieveData(urlKey,parameter,key): any{
-    console.log('retrieve: ',urlKey)
-    this.dataToDisplay=this.web3Service.dataRequestTest(urlKey,parameter,key).then(function(value){
-    // Do things after onload
-      console.log('this.dataToDisplay: ',value)
-      if(value.headers.get("Content-Type") =='image/jpeg')
-      {
-
-        // var trust=this._sanitizer.sanitize(SecurityContext.RESOURCE_URL,'data:image/jpg;base64,'
-        //            + value._body);
-        //            console.log(trust);
-      this.image = this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'
-                 + value._body);
-
-        //This allows the conditional viewing of the returned image. 
-        if (this._window.confirm("We retrieved an image from the data service. The image is unfiltered and could be innappropriate. Press 'OK' to view the image.")) {
-          var image = new Image();
-          image.src = "data:image/jpg;base64," + value._body;
-          var w = this._window.open("");
-          w.document.write(image.outerHTML);        
-        } else {
-          console.log(this.image)        
-        }
-        
-      }
-      if(value.headers.get("Content-Type") =="audio/mpeg"){
-        // this.audio = new Audio();
-        // this.audio.src =value._body;
-        // this.audio.load();
-        // this.audio.play();
-      }
-    }.bind(this));
-
-    console.log(this.dataToDisplay);
-
-  }
-
-
-  shareKey(id,account): any{
-    this.web3Service.shareKey(id,account);
-
-  }
-
-  unshareKey(id,account): any{
-    this.web3Service.unshareKey(id,account);
-
-  }
-
-
-  tradeKeyOffer(key,keyToTrade): any{
+  tradeKeyOffer(key, keyToTrade): any {
     this.web3Service.tradeKey(key,keyToTrade);
-
   }
 
-
-  cancelTradeKeyOffer(key): any{
-    this.web3Service.CancelTradeKey(key);
-
-  }
-
-
-  tradeKey(key,keyTrade): any{
+  tradeKey(key,keyTrade): any {
     this.web3Service.CreateTradeKeyOffer(key,keyTrade);
-
   }
 
-
-  sellKeyOffer(key,buyer,price,sellPermission): any{
-    this.web3Service.createSalesOffer(key,buyer,price,sellPermission);
-
-  }
-
-
-  cancelSellKeyOffer(key): any{
+  cancelSellKeyOffer(key): any {
     this.web3Service.cancelSalesOffer(key);
-
   }
-
-
-  purchaseKey(key): any{
-    this.web3Service.purchaseKey(key);
-  }
-
-  approveHLTH(value): any {
-    this.healthcashService.approve(value)
-  }
-
-
-changePermission(id,share,trade,sell): any{
-  console.log('here',id,share,trade,sell)
-  this.web3Service.permissionKey(id,share,trade,sell);
-}
-
-    createKey(url): any{
-      console.log('here')
-      this.web3Service.createKey(url);
-    }
-
-  expand(service): any{
-
-  }
-
 }
