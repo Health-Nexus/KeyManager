@@ -1,6 +1,6 @@
 import { Component,SecurityContext, OnInit, Input, ViewChild, ViewContainerRef, NgZone } from '@angular/core';
 import { HealthcashService } from '../shared/web3/healthcash.service';
-import { Web3Service } from '../shared/web3/web3.service';
+import { DrsService } from '../shared/web3/drs.service';
 import { WindowRefService } from '../shared/window-ref.service';
 import { AsyncPipe } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -37,19 +37,19 @@ export class DrsComponent implements OnInit {
    editingPermissions: boolean = false;
    editingParam?: any = {};
 
-constructor(private web3Service:Web3Service,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService, private zone: NgZone) {
+constructor(private drsService:DrsService,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService, private zone: NgZone) {
   this._window = windowRef.nativeWindow;
    }
 
 
   ngOnInit() {
-    this.web3Service.parentKeyChanged$.subscribe(
+    this.drsService.parentKeyChanged$.subscribe(
     selectedParent => {
       var parentService = this.serviceIndex[selectedParent];
       this.selectedParentKey = parentService;
     });
 
-    this.web3Service.childKeyChanged$.subscribe(
+    this.drsService.childKeyChanged$.subscribe(
     selectedChild => {
       let childKeyOfParent = this.selectedParentKey && this.selectedParentKey.keyIndex[selectedChild];
       let sharedKey = this.keyAccess && this.keyAccess[selectedChild];
@@ -58,7 +58,7 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       this.selectedChildKey = childKeyOfParent || sharedKey || ownedKey;
     });
 
-    this.web3Service.onLoad$.subscribe(
+    this.drsService.onLoad$.subscribe(
     hasLoaded => {
       this.loaded = hasLoaded;
       if (this.loaded) {
@@ -68,12 +68,12 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
   }
 
   displayData() {
-    var updatedServices = this.web3Service.getServices();
+    var updatedServices = this.drsService.getServices();
 
-    this.keys = this.web3Service.getKeys();
-    this.keyOwners = this.web3Service.returnKeyOwners();
+    this.keys = this.drsService.getKeys();
+    this.keyOwners = this.drsService.returnKeyOwners();
 
-    this.keyAccess = this.web3Service.getkeyAccess();
+    this.keyAccess = this.drsService.getkeyAccess();
     this.keyAccessArray = [];
     for (var json in this.keyAccess) {
       let currentKeyAccess = this.keyAccess[json];
@@ -89,7 +89,7 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
     for (var i = 0; i < updatedServices.length; i++) {
       let currentService = updatedServices[i];
-      let url = this.web3Service.getServiceURL(currentService._service);
+      let url = this.drsService.getServiceURL(currentService._service);
       currentService.keys = [];
       currentService.keysExist = false;
       currentService.url = url;
@@ -131,33 +131,33 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   /* KEYS TAB */
   createService(url): any {
-    this.web3Service.createservice(url);
+    this.drsService.createservice(url);
   }
 
   pickParentKey(parentKey: string) {
-    this.web3Service.changeParentKey(parentKey);
+    this.drsService.changeParentKey(parentKey);
   }
 
   purchaseKey(key): any {
-    this.web3Service.purchaseKey(key);
+    this.drsService.purchaseKey(key);
   }
 
   /* PARENT KEY VIEW */
   createParentKey(url): any {
-    this.web3Service.createKey(url);
+    this.drsService.createKey(url);
   }
 
   pickChildKey(childKey: string) {
-    this.web3Service.changeChildKey(childKey);
+    this.drsService.changeChildKey(childKey);
   }
 
   /* CHILD KEY VIEW */
   retrieveData(parameter): any {
     var self = this;
-    
+
     var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
     var keyId = this.selectedChildKey && this.selectedChildKey.id;
-    
+
     //console.log('childkey',this.selectedChildKey);
     //console.log('urlKey',urlKey);
     if (typeof urlKey === "undefined") {
@@ -165,7 +165,7 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
       keyId = this.selectedChildKey.key;
     }
 
-    this.dataToDisplay = this.web3Service.dataRequestTest(urlKey, parameter, keyId).then(function(value) {
+    this.dataToDisplay = this.drsService.dataRequestTest(urlKey, parameter, keyId).then(function(value) {
       // Do things after onload
       let contentType = value.headers.get("Content-Type");
       var blob = new Blob([value._body], {type: contentType });
@@ -193,7 +193,7 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
     var share = selected.share;
     var trade = selected.trade;
     var sell = selected.sell;
-    this.web3Service.permissionKey(id, share, trade, sell);
+    this.drsService.permissionKey(id, share, trade, sell);
   }
 
   setActive(key, value) {
@@ -208,12 +208,12 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
 
   getData(type): any {
     var keyId = this.selectedChildKey && this.selectedChildKey.id;
-    this.dataOnKey = this.web3Service.getKeyData(keyId, type);
+    this.dataOnKey = this.drsService.getKeyData(keyId, type);
   }
 
   setData(type, parameter): any {
     var selected = this.selectedChildKey && this.selectedChildKey;
-    this.web3Service.setKeyData(selected.id, type, parameter);
+    this.drsService.setKeyData(selected.id, type, parameter);
     if (selected) {
       if (!parameter) {
         delete this.childParams[type];
@@ -228,11 +228,11 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
   }
 
   shareKey(id, account): any {
-    this.web3Service.shareKey(id, account);
+    this.drsService.shareKey(id, account);
   }
 
   unshareKey(id, account): any {
-    this.web3Service.unshareKey(id, account);
+    this.drsService.unshareKey(id, account);
   }
 
   canMakeSaleOffer(): boolean {
@@ -246,11 +246,11 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
   sellKeyOffer(buyer, price, sellPermission): any {
     var selected = this.selectedChildKey && this.selectedChildKey || {};
     var keyId = selected.id;
-    this.web3Service.createSalesOffer(keyId, buyer, price, sellPermission);
+    this.drsService.createSalesOffer(keyId, buyer, price, sellPermission);
   }
 
   cancelTradeKeyOffer(key): any {
-    this.web3Service.cancelTradeKey(key);
+    this.drsService.cancelTradeKey(key);
   }
 
 
@@ -266,14 +266,14 @@ constructor(private web3Service:Web3Service,private healthcashService:Healthcash
   }
 
   tradeKeyOffer(key, keyToTrade): any {
-    this.web3Service.tradeKey(key,keyToTrade);
+    this.drsService.tradeKey(key,keyToTrade);
   }
 
   tradeKey(key,keyTrade): any {
-    this.web3Service.CreateTradeKeyOffer(key,keyTrade);
+    this.drsService.CreateTradeKeyOffer(key,keyTrade);
   }
 
   cancelSellKeyOffer(key): any {
-    this.web3Service.cancelSalesOffer(key);
+    this.drsService.cancelSalesOffer(key);
   }
 }

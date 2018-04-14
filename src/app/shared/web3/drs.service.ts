@@ -17,7 +17,7 @@ import 'rxjs/add/operator/map';
  * Class to handle DRS Contract interactions
  */
 @Injectable()
-export class Web3Service {
+export class DrsService {
 
   @Output() update = new EventEmitter();
    private mainContractAddr: string = '' //Main net
@@ -28,10 +28,6 @@ export class Web3Service {
   //  private adding: boolean = false;                                             // If we're adding a question
    private web3Instance: any;                                                   // Current instance of web3
    private unlockedAccount: string;
-   private addr: string;
-   private address: string;
-   private abi:any = [ {} ]; // redacted on purpose
-   private abiArray:any = this.abi;
    private contract: any;
    private _contract: any;
    private services: Array<{}>;
@@ -244,7 +240,7 @@ export class Web3Service {
    * initializeWeb3 function.  initalizes web3
    */
    initializeWeb3(): void {
-       this.nodeIP = 'MetaMask';//localStorage['nodeIP'] || this.defaultNodeIP;
+       this.nodeIP = 'MetaMask';
        this.connectToNode(); // Connect to whatever's available
    }
 
@@ -902,35 +898,6 @@ export class Web3Service {
        return parseFloat(this.web3.fromWei(wei, 'ether'));
    }
 
-
-
-   /**
-    * sendTransaction function. Transaction to test connection to network
-    *
-    *
-    */
-   sendTransaction(): any {
-     var data = this.contract.transfer.getData(this.contractAddr, 10000, {from: this.addr});
-     var gasPrice = this.web3.eth.gasPrice;
-     var gasLimit = 90000;
-
-     var rawTransaction = {
-       "from": this.addr,
-       "gasPrice": this.web3.toHex(gasPrice),
-       "gasLimit": this.web3.toHex(gasLimit),
-       "to": this.contractAddr,
-       "value": "0",
-       "data": data,
-    "chainId": ''
-    };
-    this.web3.eth.sendTransaction(rawTransaction, function(err, hash) {
-      if (!err)
-        console.log(hash);
-        else
-        console.log(err);
-      });
-   }
-
    /**
     * connected function. tests connection
     *
@@ -1093,13 +1060,5 @@ export class Web3Service {
    get Web3(): any {
        return window['Web3'];
    }
-
-  //  /**
-  //   * addingQuestion function: sets current address
-  //   *
-  //   */
-  //  get addingQuestion(): boolean {
-  //      return this.adding;
-  //  }
 
 }

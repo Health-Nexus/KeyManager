@@ -20,12 +20,8 @@ export class HealthcashService {
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
-  //  private adding: boolean = false;                                             // If we're adding a question
    private web3Instance: any;                                                   // Current instance of web3
    private unlockedAccount: string;
-   private addr: string;
-   private abi:any = [ {} ]; // redacted on purpose
-   private abiArray:any = this.abi;
    private contract: any;
    private _contract: any;
    private balance = new BehaviorSubject<number>(0);
@@ -76,7 +72,7 @@ export class HealthcashService {
        */
    initializeWeb3(): void {
      this.ngOnInit();
-       this.nodeIP = 'MetaMask';//localStorage['nodeIP'] || this.defaultNodeIP;
+       this.nodeIP = 'MetaMask';
        this.connectToNode(); // Connect to whatever's available
    }
 
@@ -123,7 +119,7 @@ export class HealthcashService {
     * @param _value:  amount to transfer for
     */
    transfer( _to,  _value): any {
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+       this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).transfer(_to,_value,(error, result) => {
              if (!error) {
@@ -173,7 +169,7 @@ export class HealthcashService {
      if (!this.unlockedAccount) {
        return;
      }
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+       this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).balanceOf(this.unlockedAccount, (error, result) => {
              if (!error) {
@@ -216,7 +212,7 @@ export class HealthcashService {
     */
    transferFrom( _from, _to,  _value): any {
 
-       this._contract=this.web3.eth.contract(this.contract.abi)//.at('0xbfBBd01Ae2eA4BFc777F6ea3A2Ad4843c7a104FB').authorizedToSpend((error, result) => {
+       this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
            this._contract.at(this.contractAddr).transferFrom(_from, _to,  _value,(error, result) => {
              if (!error) {
@@ -240,34 +236,6 @@ export class HealthcashService {
        return parseFloat(this.web3.fromWei(wei, 'ether'));
    }
 
-
-      /**
-       * sendTransaction function. Transaction to test connection to network
-       *
-       *
-       */
-   sendTransaction(): any {
-     var data = this.contract.transfer.getData(this.contractAddr, 10000, {from: this.addr});
-     var gasPrice = this.web3.eth.gasPrice;
-     var gasLimit = 90000;
-
-     var rawTransaction = {
-       "from": this.addr,
-       "gasPrice": this.web3.toHex(gasPrice),
-       "gasLimit": this.web3.toHex(gasLimit),
-       "to": this.contractAddr,
-       "value": "0",
-       "data": data,
-    "chainId": ''
-  };
-  this.web3.eth.sendTransaction(rawTransaction, function(err, hash) {
-    if (!err)
-      console.log(hash);
-      else
-      console.log(err);
-    });
-   }
-
    /**
     * connected function. tests connection
     *
@@ -281,7 +249,6 @@ export class HealthcashService {
 
 
                this.web3.eth.sendTransaction({from: this.web3.eth.defaultAccount, to: this.web3.eth.defaultAccount, value: 0, gas: 0, gasPrice: 0 },
-            //this.web3.eth.sendTransaction({from: this.web3.eth.accounts[0], to: this.web3.eth.accounts[0], value: 0, gas: 0, gasPrice: 0 },
                    (err, res) => {;
                        if (err.toString() !== 'Error: account is locked') {
                            this.unlockedAccount = this.web3.eth.accounts[0];
@@ -419,8 +386,5 @@ export class HealthcashService {
        return window['Web3'];
    }
 
-  //  get addingQuestion(): boolean {
-  //      return this.adding;
-  //  }
 
 }

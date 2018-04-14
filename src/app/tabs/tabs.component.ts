@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Tab } from 'app/tab/tab.interface';
-import { Web3Service } from '../shared/web3/web3.service';
+import { DrsService } from '../shared/web3/drs.service';
 
 @Component({
   selector: 'app-tabs',
@@ -13,16 +13,16 @@ export class TabsComponent implements OnInit {
   selectedParentKey?: string;
   selectedChildKey?: string;
 
-  constructor(private web3Service:Web3Service) { }
+  constructor(private drsService:DrsService) { }
 
 
   ngOnInit() {
-    this.web3Service.parentKeyChanged$.subscribe(
+    this.drsService.parentKeyChanged$.subscribe(
     selectedParent => {
       this.selectedParentKey = selectedParent;
     });
 
-    this.web3Service.childKeyChanged$.subscribe(
+    this.drsService.childKeyChanged$.subscribe(
     selectedChild => {
       this.selectedChildKey = selectedChild;
     });
@@ -43,11 +43,11 @@ export class TabsComponent implements OnInit {
   }
 
   clearSelectedKeys(): void {
-    this.web3Service.changeParentKey(undefined);
-    this.web3Service.changeChildKey(undefined);
+    this.drsService.changeParentKey(undefined);
+    this.drsService.changeChildKey(undefined);
   }
 
   clearChildKey(): void {
-    this.web3Service.changeChildKey(undefined);
+    this.drsService.changeChildKey(undefined);
   }
 }

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { Web3Service } from './shared/web3/web3.service';
+import { DrsService } from './shared/web3/drs.service';
 import { HealthcashService } from './shared/web3/healthcash.service';
 import { WindowRefService } from './shared/window-ref.service';
 import { AppComponent } from './app.component';
@@ -30,7 +30,7 @@ import { TabComponent } from './tab/tab.component';
   imports: [
     BrowserModule, HttpClientModule, HttpModule
   ],
-  providers: [Web3Service, HealthcashService, HttpClientModule, WindowRefService],
+  providers: [DrsService, HealthcashService, HttpClientModule, WindowRefService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
