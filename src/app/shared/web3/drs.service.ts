@@ -21,7 +21,7 @@ export class DrsService {
 
   @Output() update = new EventEmitter();
    private mainContractAddr: string = '' //Main net
-   private contractAddr: string = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'// Rinkeby Default
+   private contractAddr: string = '0x2c104bb9E7098Ccc5a537caF2daE52caC4E4e5B5'// Rinkeby Default
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
