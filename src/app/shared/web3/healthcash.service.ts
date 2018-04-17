@@ -11,10 +11,10 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class HealthcashService {
   @Output() update = new EventEmitter();
-   private rinkebyContractAddr: string = '0xE119fED04c8C51a489d20AED5B4145E717cB4De7'
+   private rinkebyContractAddr: string = '0x8a1eD83DfB3ea079ee7F057e1E7eCE964A1c6259'
    private mainContractAddr: string = ''
    private contractAddr: string;
-   private rinkebyDrsAddr: string = '0x2c104bb9E7098Ccc5a537caF2daE52caC4E4e5B5'
+   private rinkebyDrsAddr: string = '0xF54a6dE3F1FE973c73BfBb9a5B35D3695Ea277D2'
    private mainDrsAddr: string = ''
    private drsAddr: string;
    private defaultNodeIP: string = 'MetaMask';                    // Default node
@@ -83,7 +83,7 @@ export class HealthcashService {
    setTransferAgent(): any {
        this._contract=this.web3.eth.contract(this.contract.abi)
          let p = new Promise<any>((resolve, reject) => {
-           this._contract.at(this.contractAddr).setTransferAgent('0x1ba6cea196f186e6ee2d8ac46308e6d18018e910',true,(error, result) => {
+           this._contract.at(this.contractAddr).setTransferAgent('0x2c104bb9E7098Ccc5a537caF2daE52caC4E4e5B5',true,(error, result) => {
              if (!error) {
                resolve(result);
              } else {
