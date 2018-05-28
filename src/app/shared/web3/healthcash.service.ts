@@ -11,10 +11,10 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class HealthcashService {
   @Output() update = new EventEmitter();
-   private rinkebyContractAddr: string = '0x8a1eD83DfB3ea079ee7F057e1E7eCE964A1c6259'
+   private rinkebyContractAddr: string = '0xd83522918f62ecd34fb3cae0d7ddfc62d4f3101e'
    private mainContractAddr: string = ''
    private contractAddr: string;
-   private rinkebyDrsAddr: string = '0xF54a6dE3F1FE973c73BfBb9a5B35D3695Ea277D2'
+   private rinkebyDrsAddr: string = '0xf91f169d64167cd41f544b45effa895a6dcd5997'
    private mainDrsAddr: string = ''
    private drsAddr: string;
    private defaultNodeIP: string = 'MetaMask';                    // Default node

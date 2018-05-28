@@ -21,7 +21,7 @@ export class DrsService {
 
   @Output() update = new EventEmitter();
    private mainContractAddr: string = '' //Main net
-   private contractAddr: string = '0xF54a6dE3F1FE973c73BfBb9a5B35D3695Ea277D2'// Rinkeby Default
+   private contractAddr: string = '0xf91f169d64167cd41f544b45effa895a6dcd5997'// Rinkeby Default
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
@@ -86,10 +86,10 @@ export class DrsService {
           this._contract.at(this.contractAddr).getKeyCount((error, result) => {
             if (!error) {
               this.keyNumber = result.c[0];
-              // resolve(result);
+              //resolve(result);
             } else {
               console.log('error from key count:',error);
-              // reject(error)
+              //reject(error)
             }
           });
         });
@@ -97,19 +97,19 @@ export class DrsService {
     }
 
     loadKeysAndServices() {
+      
       var self = this;
 
       async.parallel([
         function loadServices(next) {
           //gets a list of services
-          let serviceEvent = self.web3.eth.contract(self.contract.abi).at(self.contractAddr).ServiceCreated({}, {fromBlock: 1649845, toBlock: 'latest'},(err, event) => {
-            // console.log(err, event)
+          let serviceEvent = self.web3.eth.contract(self.contract.abi).at(self.contractAddr).ServiceCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
+           //console.log(err, event)
           })
-
           serviceEvent.get((error, results) => {
             // we have the results, now print them
             async.each(results, function(result, nextResult) {
-            let resultArgs = result["args"] || {};
+              let resultArgs = result["args"] || {};
               if (resultArgs._owner == self.unlockedAccount) {
                 self.services.push(resultArgs);
               }
@@ -117,6 +117,7 @@ export class DrsService {
             }, next);
           })
         },
+        
         function loadKeys(next) {
           let keyEvent = self.web3.eth.contract(self.contract.abi).at(self.contractAddr).KeyCreated({}, {fromBlock: 0, toBlock: 'latest'},(err, event) => {
             //console.log(err, event)
@@ -126,65 +127,62 @@ export class DrsService {
             async.each(results, function(result, nextResult) {
             let args = result && result["args"] || {};
              async.series([
-               function getOwners(done) {
-                 self.getKeyOwners(args._key,0,[]).then(function(result) {
-                   self.keyOwners[args._key] = result;
-                   done();
-                 });
-               },
-               function getInfo(done) {
-                 if (args._owner == self.unlockedAccount) {
-                     self.getKeyInfo(args._key).then(function(info) {
-                     self.keys.push({
-                       key: args._key,
-                       owner: args._owner,
-                       share: info[1],
-                       trade: info[2],
-                       sell: info[3],
-                       service: info[4]
-                     });
-                     self.keysData.push(info);
-                     done();
-                   });
-               } else {
-                 //getUrlFromKey
-                  self.isKeyOwner(args._key,self.unlockedAccount).then(function(resultOwner) {
-                   if (resultOwner) {
-                     self.keyAccess[args._key]={'key':args._key};
-                     self.getUrlFromKey(args._key).then(function(resultUrl) {
-                       self.keyAccess[args._key]['url']=resultUrl;
-                       }.bind(self));
-                     self.getKeyInfo(args._key).then(function(keyResult) {
-                       self.keyAccess[args._key]['share']=keyResult[1];
-                       self.keyAccess[args._key]['trade']=keyResult[2];
-                       self.keyAccess[args._key]['sell']=keyResult[3];
-                       self.keyAccess[args._key]['service']=keyResult[4];
-                       });
-                     }
-                     done();
-                   });
-               }
-               }
+                          function getOwners(done) {
+                            self.getKeyOwners(args._key,0,[]).then(function(result) {
+                              self.keyOwners[args._key] = result;
+                              done();
+                            }).catch(function (error) {
+                                console.log("End of Owner List");
+                                done();                                
+                            });
+                          },
+                          function getInfo(done) {
+                            if (args._owner == self.unlockedAccount) {
+                                self.getKeyInfo(args._key).then(function(info) {
+                                self.keys.push({
+                                  key: args._key,
+                                  owner: args._owner,
+                                  share: info[1],
+                                  trade: info[2],
+                                  sell: info[3],
+                                  service: info[4]
+                                });
+                                self.keysData.push(info);
+                                done();
+                              });
+                            } else {
+                              //getUrlFromKey
+                              self.isKeyOwner(args._key,self.unlockedAccount).then(function(resultOwner) {
+                              if (resultOwner) {
+                                self.keyAccess[args._key]={'key':args._key};
+                                self.getUrlFromKey(args._key).then(function(resultUrl) {
+                                  self.keyAccess[args._key]['url']=resultUrl;
+                                  }.bind(self));
+                                self.getKeyInfo(args._key).then(function(keyResult) {
+                                  self.keyAccess[args._key]['share']=keyResult[1];
+                                  self.keyAccess[args._key]['trade']=keyResult[2];
+                                  self.keyAccess[args._key]['sell']=keyResult[3];
+                                  self.keyAccess[args._key]['service']=keyResult[4];
+                                  });
+                                }
+                                done();
+                              });
+                            }
+                          }
              ], nextResult);
            }, next);
           })
         },
-        function loadServiceList(next) {
-          self._contract=self.web3.eth.contract(self.contract.abi)
-
-          self._contract.at(self.contractAddr).serviceList(3, (error, eventResult) => {
-            next();
-             if (error){
-               console.log('3Error in myEvent event handler: ' + error);
-
-             }
-             else{
-
-             }
-           });
-        }
-      ], function(err) {
-        self.loaded.next(true);
+        
+        async function loadServiceList(next) {
+           self._contract=self.web3.eth.contract(self.contract.abi)
+           let contract = self._contract.at(self.contractAddr)
+           let count = await self.getServiceCount()
+           count = count.valueOf()
+           next(null);
+        }],
+        (err) => {
+          if (!err) self.loaded.next(true);
       })
     }
 
@@ -249,7 +247,6 @@ export class DrsService {
     * @return {Array<json>} returns an array of json obejcts of all the services
     */
    getServices(): any {
-
      return this.services;
    }
 
@@ -363,10 +360,11 @@ export class DrsService {
                 resolve(this.getKeyOwners(key,index+1,finalResult));
                }
                else{
+                console.log(finalResult);                 
                 resolve(finalResult);
               }
              } else {
-               console.log('error from:',error)
+               //console.log('error from:',error)
                reject(error);
              }
              });

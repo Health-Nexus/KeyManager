@@ -61,6 +61,7 @@ constructor(private drsService:DrsService,private healthcashService:HealthcashSe
     this.drsService.onLoad$.subscribe(
     hasLoaded => {
       this.loaded = hasLoaded;
+      console.log('loaded',this.loaded);      
       if (this.loaded) {
           this.displayData();
       }
@@ -68,8 +69,9 @@ constructor(private drsService:DrsService,private healthcashService:HealthcashSe
   }
 
   displayData() {
-    var updatedServices = this.drsService.getServices();
 
+    var updatedServices = this.drsService.getServices();
+    console.log(updatedServices);
     this.keys = this.drsService.getKeys();
     this.keyOwners = this.drsService.returnKeyOwners();
 
