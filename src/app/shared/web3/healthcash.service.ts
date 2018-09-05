@@ -2,7 +2,6 @@ import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-// const Web3 = require('web3');
 import 'rxjs/add/operator/map';
 
 /**
@@ -14,7 +13,7 @@ export class HealthcashService {
    private rinkebyContractAddr: string = '0xd83522918f62ecd34fb3cae0d7ddfc62d4f3101e'
    private mainContractAddr: string = ''
    private contractAddr: string;
-   private rinkebyDrsAddr: string = '0xf91f169d64167cd41f544b45effa895a6dcd5997'
+   private rinkebyDrsAddr: string = '0x08cb9ce6f3644f7c00db30a1ead5350618bd213b'
    private mainDrsAddr: string = ''
    private drsAddr: string;
    private defaultNodeIP: string = 'MetaMask';                    // Default node

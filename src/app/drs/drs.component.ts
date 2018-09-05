@@ -167,10 +167,13 @@ constructor(private drsService:DrsService,private healthcashService:HealthcashSe
       keyId = this.selectedChildKey.key;
     }
 
+
     this.dataToDisplay = this.drsService.dataRequestTest(urlKey, parameter, keyId).then(function(value) {
-      // Do things after onload
+      
+
       let contentType = value.headers.get("Content-Type");
       var blob = new Blob([value._body], {type: contentType });
+
 
       if (this._window.navigator && this._window.navigator.msSaveOrOpenBlob) {
        this._window.navigator.msSaveOrOpenBlob(blob, parameter);

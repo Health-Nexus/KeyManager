@@ -9,9 +9,9 @@ import * as async from 'async';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+const sigUtil = require('eth-sig-util')
 
 import 'rxjs/add/operator/map';
-
 
 /**
  * Class to handle DRS Contract interactions
@@ -21,7 +21,7 @@ export class DrsService {
 
   @Output() update = new EventEmitter();
    private mainContractAddr: string = '' //Main net
-   private contractAddr: string = '0xf91f169d64167cd41f544b45effa895a6dcd5997'// Rinkeby Default
+   private contractAddr: string = '0x08cb9ce6f3644f7c00db30a1ead5350618bd213b'// Rinkeby Default
    private defaultNodeIP: string = 'MetaMask';                    // Default node
    private nodeIP: string;                                                      // Current nodeIP
    private nodeConnected: boolean = true;                                       // If we've established a connection yet
@@ -41,7 +41,7 @@ export class DrsService {
    private selectedChildKey = new Subject<string>();
    private authorized = new BehaviorSubject<boolean>(false);
    private loaded = new BehaviorSubject<boolean>(false);
-
+   
    parentKeyChanged$ = this.selectedParentKey.asObservable();
    childKeyChanged$ = this.selectedChildKey.asObservable();
    loginChanged$ = this.authorized.asObservable();
@@ -94,6 +94,7 @@ export class DrsService {
           });
         });
       });
+      
     }
 
     loadKeysAndServices() {
@@ -207,13 +208,38 @@ export class DrsService {
       //determines signer and message
       var signature;
       var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0];
-      var original_message = "DRS Message";
+      
+      /* 
+
+      Original hashing function, replaced as part of keeping consistent with MetaMask plugin
+
       var message_hash = this.web3.sha3(
         '\u0019Ethereum Signed Message:\n' +
         original_message.length.toString() +
         original_message
       );
+      var original_message = "DRS Message";
+      let b = Buffer.from(original_message, 'utf8');
+      var message = "0x" + b.toString('hex');
+      message = '\u0019Ethereum Signed Message:\n' + message.length.toString() + message;
+      var message_hash = this.web3.sha3(message);
+
+      var message_hash = this.web3.sha3("DRS Message Request: " + parameter);
+      var message_hash = this.web3.eth.accounts.hashMessage("DRS Message Request: " + parameter)
+      */
+
+      let msgParams = [
+        {
+          type: 'string',      // Any valid solidity type
+          name: 'DRS Message',     // Any string label you want
+          value: "DRS Message Request: " + parameter
+        }
+      ];
+
+      var message_hash = sigUtil.typedSignatureHash(msgParams)
+
       let p = new Promise<any>((resolve, reject) => {
+
         this.web3.eth.sign(signer,message_hash, function(err, res) {
           if (err) console.error(err);
           signature = res;
@@ -221,7 +247,6 @@ export class DrsService {
         });
           var options = new RequestOptions({ //headers: headers,
             responseType : ResponseContentType.ArrayBuffer
-
            });
           var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
           return this.http.get(url, options)
@@ -229,6 +254,51 @@ export class DrsService {
                       resolve(result);
                     })
         }.bind(this));
+
+        /* 
+
+        Metamask is changing the support for signing messages - this code will assist if you need to suport 
+        the alternate signing method. The Gatekeeper Client is not configured to recover public addresses from
+        this method, so don't expect it to work until the standard is completed. 
+
+        https://github.com/ethereum/EIPs/pull/712
+
+
+        const signData = [{type: "string", name: "Data Request", value: message_hash}]
+        this.web3.currentProvider.sendAsync({
+          method: "eth_signTypedData",
+          params: [signData,signer],
+          from: signer
+        }, function(err, res) {
+
+         if (err) console.error(err);
+        //console.log(this.web3.eth.accounts)
+        //console.log(signer)    
+         signature = res.result;
+
+        const recovered = sigUtil.recoverTypedSignature({data: signData, sig: signature});
+        if (recovered === signer ) {
+          alert('Recovered signer: ' + signer);
+        } else {
+          alert('Failed to verify signer, got: ' + res);
+        }
+
+         
+         var headers = new Headers({ 'Content-Type': 'application/octet-stream'});
+         var options = new RequestOptions({ 
+            //headers: headers,
+            responseType : ResponseContentType.ArrayBuffer
+         });
+         var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
+         console.log(url);
+         return this.http.get(url, options).subscribe(result => {
+                         resolve(result);
+                  });
+         
+         }.bind(this));
+         */
+
+
       });
 
       return p;
@@ -799,6 +869,7 @@ export class DrsService {
      let p = new Promise<any>((resolve, reject) => {
        this._contract.at(this.contractAddr).getKeyData(key, dataKey,(error, result) => {
          if (!error) {
+           console.log(result)
            result=this.hexToAscii(result)
            resolve(result);
          } else {
