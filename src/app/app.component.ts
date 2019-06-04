@@ -54,5 +54,4 @@ export class AppComponent implements OnInit {
   setTransferAgent(): any{
     this.healthcashService.setTransferAgent();
   }
-
 }
