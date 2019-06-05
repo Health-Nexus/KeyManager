@@ -1,9 +1,24 @@
 <div class="container">
   <div class="row drs" [hidden]="selectedParentKey || selectedChildKey">
+    <span>Instructions on how to operate Health Nexus Data Sharing for Phuse</span>
+    <br>
+    <small>1. Create or choose a parent key to attach to your database</small>
+    <br>
+    <small>2. Next, create a child key of off the given parent key</small>
+    <br>
+    <small>3. Then, create a child key of off the given parent key and set parameters</small>
+    <br>
+    <small>4. Next, set PhUSE id and retrieve the  key data</small>
+    <br>
+    <small>5. Finally, transact the key</small>
+    <br>
+    <small>For a more thorough walk through please check out our <a href="https://medium.com/simplyvital/lets-hit-the-ground-running-with-health-nexus-5c25df21c56d">walkthrough</a></small>
     <span>Create new parent key</span>
     <input type="text" class="form-control" placeholder="Enter parent key value here" name="url" #url>
     <button class="form-control" (click)="createService(url.value)">Generate</button>
-
+    <br>
+    <small>Create a parent key with the URL to your gatekeeper or blockchain enabled service</small>
+    <br>
     <div class="row padding-top-lg">
       <span [ngClass]="{'hidden': !loaded, 'inline': loaded}">My parent keys</span>
       <div *ngFor="let service of services">
@@ -13,6 +28,9 @@
         <span>Purchase keys</span>
         <input type="text" class="half form-control" placeholder="Key to purchase" name="keyPurchase" #keyPurchase>
         <button class="form-control" (click)="purchaseKey(keyPurchase.value)">Purchase</button>
+        <br>
+        <small>Insert the id for the key you would like to purchase</small>
+        <br>
       </div>
       <div class="col-9 padding-top-lg">
         <span>Owned/Shared keys</span>
@@ -66,6 +84,8 @@
       <span class="padding-bottom-md">Managing parent key</span>
       <span class="bold"> {{ selectedParentKey && selectedParentKey._service }}: {{ selectedParentKey && selectedParentKey.url | async }} </span>
       <span class="padding-top-lg">Child keys</span>
+      <small>Generate the permissioned childkeys here to be traded</small>
+      <br>
       <button class="form-control" (click)="createParentKey(selectedParentKey && selectedParentKey._service)">Generate new</button>
       <div *ngIf="selectedParentKey && selectedParentKey.keys">
         <div *ngFor="let key of selectedParentKey.keys">
@@ -78,12 +98,23 @@
     <div class="row" [hidden]="!selectedChildKey">
       <span class="padding-bottom-md">Managing child key</span>
       <span class="bold">{{ selectedChildKey && selectedChildKey.id || selectedChildKey && selectedChildKey.key }}</span>
-      <span class="padding-top-lg">Retrieve child key data</span>
+      <br>
+      <p>Update or Register your PhUSE ID</p>
+      <br>
+      <small>Register you PhUSE Id with Health Nexus to connect with the PhUSE App</small>
+      <br>
+        <input type="text" class="half form-control" placeholder="PhUSE ID" name="phuseNumber" #phuseNumber>
+        <button class="form-control" (click)="updatePhuse(phuseNumber.value)">Update</button>
+      <br>
+      <small class="padding-top-lg">Retrieve child key data</small>
       <div *ngIf="image">
         <img [src]="image" />
       </div>
       <div *ngIf="json"> {{ json }}</div>
       <span class="warning margin-v-sm">Warning: not verified for sensitive data; any data may be unsanitized.  Additionally, make sure to only download data from trusted sources.  We are not verifing the safety of the data</span>
+      <br>
+      <small>Insert the parameter you would like to use to retrieve the data</small>
+      <br>
       <div>
         <input type="text" class="form-control" placeholder="Insert parameter to send" name="Parameter" #Parameter>
         <button class="form-control" (click)="retrieveData(Parameter.value)">Retrieve</button>
@@ -92,6 +123,9 @@
 
       <div class="permissions clearfix" [hidden]="!selectedParentKey">
         <span class="padding-top-lg inline">Managing child key permissions</span>
+        <br>
+        <small>Edit your permissions for your child key here</small>
+        <br>
         <span class="text-brand-blue clickable float-right"
           [hidden]="!editingPermissions"
           (click)="changePermissions()">Save Permissions</span>
@@ -139,7 +173,9 @@
             [ngClass]="{'active': selectedChildKey && !selectedChildKey.trade }">Off</span>
           </div>
         </div>
-
+        <br>
+        <small>Set custom permissions, including paramters for your database, here</small>
+        <br>
         <div *ngIf="childParamsArray">
           <div *ngFor="let keyParamName of childParamsArray" class="border-bottom">
             <div class="padding-sm clearfix">
@@ -176,6 +212,7 @@
       <div [hidden]="!selectedParentKey">
         <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share" [ngClass]="{'disabled': editingPermissions}">
           <span>Share keys</span>
+          <small>Insert the address for the person you would like to share with</small>
           <input type="text" class="form-control" placeholder="Share with" name="share" #share>
           <button class="form-control"
           [disabled]="editingPermissions"
@@ -192,6 +229,7 @@
 
         <div class="col-9 padding-top-lg" *ngIf="canMakeSaleOffer()" [ngClass]="{'disabled': editingPermissions}">
           <span>Make sale offer</span>
+          <small>Insert the address for the person you would like to make an offer to</small>
           <input type="text" class="half form-control" placeholder="Sell to"  name="buyer" #buyer>
           <input type="number" class="half form-control" placeholder="Amount" name="price" #price>
           <span class="inline text-md">Can sell: <input type="checkbox" name="sellPermission" #sellPermission></span>

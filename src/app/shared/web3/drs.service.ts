@@ -221,6 +221,8 @@ export class DrsService {
           signature = res;
           var headers = new Headers({ 'Content-Type': 'application/octet-stream',
         });
+        //      responseType: ResponseContentType.Blob,
+
           var options = new RequestOptions({ //headers: headers,
             responseType : ResponseContentType.ArrayBuffer
 
@@ -228,6 +230,7 @@ export class DrsService {
           var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
           return this.http.get(url, options)
                     .subscribe(result => {
+                      console.log('result: ', result)
                       resolve(result);
                     })
         }.bind(this));
@@ -235,6 +238,47 @@ export class DrsService {
 
       return p;
   }
+
+  /**
+   * registerPhuseId function.  Sends signed message to a gatekeeper, based on key, parameter and key url, to retrive data.
+   * @param urlKey:  The data form the key to be treated as a url to call
+   * @param parameter:  Pareamter to use in the request
+   * @param key:  The id of the key to use to unlock the data
+   * @return {json | file} returns Json or a file
+   */
+   updatePhuse(urlKey,phuseNumber): any {
+
+    //determines signer and message
+    var signature;
+    var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0];
+    var original_message = "DRS Message";
+    var message_hash = this.web3.sha3(
+      '\u0019Ethereum Signed Message:\n' +
+      original_message.length.toString() +
+      original_message
+    );
+    console.log("UPDATE PHUSE: ",urlKey,phuseNumber)
+    let p = new Promise<any>((resolve, reject) => {
+      this.web3.eth.sign(signer,message_hash, function(err, res) {
+        if (err) console.error(err);
+        signature = res;
+        var headers = new Headers({ 'Content-Type': 'application/octet-stream',
+      });
+        var options = new RequestOptions({ //headers: headers,
+          responseType : ResponseContentType.ArrayBuffer
+
+         });
+        var url='http://'+urlKey+'register/'+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+phuseNumber;
+        return this.http.get(url, options)
+                  .subscribe(result => {
+                    resolve(result);
+                  })
+      }.bind(this));
+    });
+
+    return p;
+  }
+
 
   /**
    * initializeWeb3 function.  initalizes web3

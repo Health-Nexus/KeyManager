@@ -158,8 +158,6 @@ constructor(private drsService:DrsService,private healthcashService:HealthcashSe
     var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
     var keyId = this.selectedChildKey && this.selectedChildKey.id;
 
-    //console.log('childkey',this.selectedChildKey);
-    //console.log('urlKey',urlKey);
     if (typeof urlKey === "undefined") {
       urlKey = this.selectedChildKey.url;
       keyId = this.selectedChildKey.key;
@@ -275,5 +273,18 @@ constructor(private drsService:DrsService,private healthcashService:HealthcashSe
 
   cancelSellKeyOffer(key): any {
     this.drsService.cancelSalesOffer(key);
+  }
+
+  updatePhuse(phuseNumber): any {
+    var self = this;
+
+    var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
+    var keyId = this.selectedChildKey && this.selectedChildKey.id;
+
+    if (typeof urlKey === "undefined") {
+      urlKey = this.selectedChildKey.url;
+      keyId = this.selectedChildKey.key;
+    }
+    this.drsService.updatePhuse(urlKey,phuseNumber);
   }
 }
