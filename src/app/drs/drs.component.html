@@ -12,6 +12,7 @@
     <br>
     <small>5. Finally, transact the key</small>
     <br>
+    <small>For a more thorough walk through please check out our <a href="https://medium.com/simplyvital/lets-hit-the-ground-running-with-health-nexus-5c25df21c56d">walkthrough</a></small>
     <span>Create new parent key</span>
     <input type="text" class="form-control" placeholder="Enter parent key value here" name="url" #url>
     <button class="form-control" (click)="createService(url.value)">Generate</button>
@@ -28,7 +29,7 @@
         <input type="text" class="half form-control" placeholder="Key to purchase" name="keyPurchase" #keyPurchase>
         <button class="form-control" (click)="purchaseKey(keyPurchase.value)">Purchase</button>
         <br>
-        <small>Insert an amount of crypto payment you would like to offer for a key, It can be zero</small>
+        <small>Insert the id for the key you would like to purchase</small>
         <br>
       </div>
       <div class="col-9 padding-top-lg">
@@ -211,6 +212,7 @@
       <div [hidden]="!selectedParentKey">
         <div class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share" [ngClass]="{'disabled': editingPermissions}">
           <span>Share keys</span>
+          <small>Insert the address for the person you would like to share with</small>
           <input type="text" class="form-control" placeholder="Share with" name="share" #share>
           <button class="form-control"
           [disabled]="editingPermissions"
@@ -227,6 +229,7 @@
 
         <div class="col-9 padding-top-lg" *ngIf="canMakeSaleOffer()" [ngClass]="{'disabled': editingPermissions}">
           <span>Make sale offer</span>
+          <small>Insert the address for the person you would like to make an offer to</small>
           <input type="text" class="half form-control" placeholder="Sell to"  name="buyer" #buyer>
           <input type="number" class="half form-control" placeholder="Amount" name="price" #price>
           <span class="inline text-md">Can sell: <input type="checkbox" name="sellPermission" #sellPermission></span>

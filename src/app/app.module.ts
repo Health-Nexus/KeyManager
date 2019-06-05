@@ -25,7 +25,8 @@ import { TabComponent } from './tab/tab.component';
     FooterComponent,
     WelcomeComponent,
     TabsComponent,
-    TabComponent
+    TabComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule, HttpClientModule, HttpModule
