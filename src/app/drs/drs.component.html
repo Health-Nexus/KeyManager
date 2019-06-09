@@ -4,13 +4,15 @@
     <br>
     <small>1. Create or choose a parent key to attach to your database</small>
     <br>
-    <small>2. Next, create a child key of off the given parent key</small>
+    <small>2. Next, create a child key off of the given parent key</small>
     <br>
-    <small>3. Then, create a child key of off the given parent key and set parameters</small>
+    <small>3. Then, create a child key off of the given parent key and set parameters</small>
     <br>
     <small>4. Next, set PhUSE id and retrieve the  key data</small>
     <br>
-    <small>5. Finally, transact the key</small>
+    <small>5. If needed, upload data that you will need to transfer either here or through your gatekeeper itself</small>
+    <br>
+    <small>6. Finally, transact the key</small>
     <br>
     <small>For a more thorough walk through please check out our <a href="https://medium.com/simplyvital/lets-hit-the-ground-running-with-health-nexus-5c25df21c56d">walkthrough</a></small>
     <span>Create new parent key</span>
@@ -107,11 +109,14 @@
         <button class="form-control" (click)="updatePhuse(phuseNumber.value)">Update</button>
       <br>
       <p>Upload file to gatekeeper</p>
+      <small>Upload a file to the gatekeeper server</small>
+
       <div class="form-group">
         <label for="file">Choose File</label>
+        <br>
         <input type="file"
            id="file"
-           (change)="handleFileInput($event.target.files)">
+           (change)="handleFileInput($event.target.files)" style="width:90px">
          </div>
       <small class="padding-top-lg">Retrieve child key data</small>
       <div *ngIf="image">
