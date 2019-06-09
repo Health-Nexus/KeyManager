@@ -36,6 +36,7 @@ export class DrsComponent implements OnInit {
    loaded: boolean = false;
    editingPermissions: boolean = false;
    editingParam?: any = {};
+   fileToUpload: File = null;
 
 constructor(private drsService:DrsService,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService, private zone: NgZone) {
   this._window = windowRef.nativeWindow;
@@ -66,6 +67,22 @@ constructor(private drsService:DrsService,private healthcashService:HealthcashSe
       }
     });
   }
+
+  handleFileInput(files: FileList) {
+    var self = this;
+
+    var urlKey = this.selectedParentKey && this.selectedParentKey.url.__zone_symbol__value;
+    var keyId = this.selectedChildKey && this.selectedChildKey.id;
+
+    if (typeof urlKey === "undefined") {
+      urlKey = this.selectedChildKey.url;
+      keyId = this.selectedChildKey.key;
+    }
+    this.fileToUpload = files.item(0);
+
+    this.drsService.uploadFile(this.fileToUpload,urlKey);
+  }
+
 
   displayData() {
     var updatedServices = this.drsService.getServices();

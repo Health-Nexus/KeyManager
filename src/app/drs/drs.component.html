@@ -106,6 +106,13 @@
         <input type="text" class="half form-control" placeholder="PhUSE ID" name="phuseNumber" #phuseNumber>
         <button class="form-control" (click)="updatePhuse(phuseNumber.value)">Update</button>
       <br>
+      <p>Upload file to gatekeeper</p>
+      <div class="form-group">
+        <label for="file">Choose File</label>
+        <input type="file"
+           id="file"
+           (change)="handleFileInput($event.target.files)">
+         </div>
       <small class="padding-top-lg">Retrieve child key data</small>
       <div *ngIf="image">
         <img [src]="image" />

@@ -240,7 +240,7 @@ export class DrsService {
   }
 
   /**
-   * registerPhuseId function.  Sends signed message to a gatekeeper, based on key, parameter and key url, to retrive data.
+   * updatePhuse function.  Sends signed message to a gatekeeper, based on key, parameter and key url, to retrive data.
    * @param urlKey:  The data form the key to be treated as a url to call
    * @param parameter:  Pareamter to use in the request
    * @param key:  The id of the key to use to unlock the data
@@ -279,6 +279,54 @@ export class DrsService {
     return p;
   }
 
+
+  /**
+   * updatePhuse function.  Sends signed message to a gatekeeper, based on key, parameter and key url, to retrive data.
+   * @param urlKey:  The data form the key to be treated as a url to call
+   * @param parameter:  Pareamter to use in the request
+   * @param key:  The id of the key to use to unlock the data
+   * @return {json | file} returns Json or a file
+   */
+   uploadFile(file, urlKey): any {
+
+    //determines signer and message
+    var signature;
+    var signer = this.unlockedAccount || this.web3.eth.defaultAccount || this.web3.eth.accounts[0];
+    var original_message = "DRS Message";
+    var message_hash = this.web3.sha3(
+      '\u0019Ethereum Signed Message:\n' +
+      original_message.length.toString() +
+      original_message
+    );
+    console.log("UPDATE PHUSE: ",urlKey)
+    let p = new Promise<any>((resolve, reject) => {
+      this.web3.eth.sign(signer,message_hash, function(err, res) {
+        if (err) console.error(err);
+        signature = res;
+        var headers = new Headers({ 'Content-Type': 'application/octet-stream',
+      });
+        var options = new RequestOptions({ //headers: headers,
+          responseType : ResponseContentType.ArrayBuffer
+
+         });
+        var url='http://'+urlKey+'upload/'+this.unlockedAccount+'/'+signature+'/'+message_hash;
+
+        const formData: FormData = new FormData();
+        formData.append('fileKey', file, file.name);
+        console.log("HERE", file);
+        return this.http.post(url, formData, options)
+          .subscribe(result => {
+            console.log("RESULT: ",result);
+          })
+        // return this.http.get(url, options)
+        //           .subscribe(result => {
+        //             resolve(result);
+        //           })
+      }.bind(this));
+    });
+
+    return p;
+  }
 
   /**
    * initializeWeb3 function.  initalizes web3
