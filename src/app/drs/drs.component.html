@@ -127,6 +127,7 @@
       <br>
       <small>Insert the parameter you would like to use to retrieve the data</small>
       <br>
+
       <div>
         <input type="text" class="form-control" placeholder="Insert parameter to send" name="Parameter" #Parameter>
         <button class="form-control" (click)="retrieveData(Parameter.value)">Retrieve</button>
@@ -186,7 +187,7 @@
           </div>
         </div>
         <br>
-        <small>Set custom permissions, including paramters for your database, here</small>
+        <small>Set custom permissions, including parameters for your database, here</small>
         <br>
         <div *ngIf="childParamsArray">
           <div *ngFor="let keyParamName of childParamsArray" class="border-bottom">
