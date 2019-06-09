@@ -86,7 +86,24 @@ constructor(private drsService:DrsService,private healthcashService:HealthcashSe
 
   displayData() {
     var updatedServices = this.drsService.getServices();
-
+    console.log('Updated Services: ', updatedServices)
+    var temp=[]
+    for(var i=0; i<updatedServices.length; i++){
+      if(updatedServices[i]._service!='0x3ce9ef5b6cf94f9b8ce9d3216f16790ca264476322ef2f4e22ea5f42d98688b0' &&
+      updatedServices[i]._service!='0xa6de77bb66c6805ea6100178cde7800778ce36b5a2415f2de38a77193b8dcd98' &&
+      updatedServices[i]._service!='0xd1ee719b312fe66f2048155ad5c04afb2bfe2e8855537683e5bcf2e4aa95eee4' &&
+      updatedServices[i]._service!='0x387e5ab2b7764786e8696b98f675c55410813474aa163958fd66cc33f8691304' &&
+      updatedServices[i]._service!='0x5b41bca00fceabf17f418c96db3638e31a0f7c9e23370b5bf62b71d6d6c191ec' &&
+      updatedServices[i]._service!='0x72f876de7aa61b524048033415c950348ff2fe46597098bc60c6a0c718b4e44d' &&
+      updatedServices[i]._service!='0x9426e04fe757749698e850c413f730c3970dc88e0d73661c4acc01f7f2d0de74' &&
+      updatedServices[i]._service!='0x54818303b4622a678fbdc9397ee39face49bd67db5af023664dd84e7192ea7ae' &&
+      updatedServices[i]._service!='0x17acc4f9bba840c491c1c9cadb7974ff09d990ece5b38776ba1c0ccd926a4bf9' &&
+      updatedServices[i]._service!='0x748497a9052948b47e42a1c2c74e678746ef4714f2c5a36b972cb69f1d0e1c3d'
+    ){
+        temp.push(updatedServices[i])
+      }
+    }
+    updatedServices=temp;
     this.keys = this.drsService.getKeys();
     this.keyOwners = this.drsService.returnKeyOwners();
 
