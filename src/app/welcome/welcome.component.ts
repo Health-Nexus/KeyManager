@@ -9,12 +9,9 @@ export class WelcomeComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() { }
 
   reloadPage() {
     location.reload();
   }
-
 }

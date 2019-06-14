@@ -14,15 +14,11 @@ export class AppComponent implements OnInit {
   authorized: boolean = false;
 
   constructor(private drsService:DrsService,private healthcashService:HealthcashService) {
-
     if (!window.hasOwnProperty('web3')) {
       return;
     }
-
     this.drsService.initializeWeb3();
     this.healthcashService.initializeWeb3();
-
-
   }
 
   ngOnInit() {
