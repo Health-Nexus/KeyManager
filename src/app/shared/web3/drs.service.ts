@@ -53,6 +53,7 @@ export class DrsService {
     * @param Http http
     */
        constructor(private http: Http) {
+
          this.services=[];
          this.keys=[];
          this.keysData=[];
@@ -78,7 +79,7 @@ export class DrsService {
           //User Main net contract Address
           this.contractAddr = this.mainContractAddr;
         }
-        if (this.unlockedAccount) {
+        if (this.unlockedAccount) { // loaded with MetaMask
           this.loadKeysAndServices();
         }
 

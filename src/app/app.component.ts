@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DrsService } from './shared/web3/drs.service';
 import { HealthcashService } from './shared/web3/healthcash.service';
+import { Message } from '@angular/compiler/src/i18n/i18n_ast';
 
 @Component({
   selector: 'app-root',
@@ -13,8 +14,11 @@ export class AppComponent implements OnInit {
   authorized: boolean = false;
 
   constructor(private drsService:DrsService,private healthcashService:HealthcashService) {
-      this.drsService.initializeWeb3();
-      this.healthcashService.initializeWeb3();
+    if (!window.hasOwnProperty('web3')) {
+      return;
+    }
+    this.drsService.initializeWeb3();
+    this.healthcashService.initializeWeb3();
   }
 
   ngOnInit() {
@@ -32,7 +36,8 @@ export class AppComponent implements OnInit {
        break;
       default:
       this.isRinkeby = false;
-    }
+    };
+
   }
 
   balance(): any{

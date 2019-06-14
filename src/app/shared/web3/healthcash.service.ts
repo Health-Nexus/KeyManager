@@ -35,6 +35,10 @@ export class HealthcashService {
     * @param Http http
     */
        constructor(private http: Http) {
+         if(!window.hasOwnProperty('web3')){
+           return;
+         }
+
          this.ngOnInit();
          //set our addresses based on the network
          switch(this.web3.version.network) {

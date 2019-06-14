@@ -40,8 +40,11 @@ export class DrsComponent implements OnInit {
 
 constructor(private drsService:DrsService,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService, private zone: NgZone) {
   this._window = windowRef.nativeWindow;
-   }
 
+  if (!window.hasOwnProperty('web3')) {
+    return;
+  }
+}
 
   ngOnInit() {
     this.drsService.parentKeyChanged$.subscribe(
