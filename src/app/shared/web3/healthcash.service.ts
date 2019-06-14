@@ -37,7 +37,6 @@ export class HealthcashService {
        constructor(private http: Http) {
 
          if (!window.hasOwnProperty('web3')) {
-           let a = false
            return;
          }
 
