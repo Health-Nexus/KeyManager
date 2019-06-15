@@ -201,6 +201,10 @@ MIT License
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE
 
+@angular/compiler@5.2.11
+MIT
+MIT
+
 @angular/platform-browser-dynamic@5.2.11
 MIT
 MIT
