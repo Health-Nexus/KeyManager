@@ -243,7 +243,7 @@ export class DrsService {
   /**
    * updatePhuse function.  Sends signed message to a gatekeeper, based on key, parameter and key url, to retrive data.
    * @param urlKey:  The data form the key to be treated as a url to call
-   * @param parameter:  Pareamter to use in the request
+   * @param parameter:  Parameter to use in the request
    * @param key:  The id of the key to use to unlock the data
    * @return {json | file} returns Json or a file
    */
@@ -998,13 +998,9 @@ export class DrsService {
     */
    connected(): Promise<any> {
        let p = new Promise<any>((resolve, reject) => {
-
-
            if (this.nodeIP !== 'MetaMask') {
-
-
                this.web3.eth.sendTransaction({from: this.web3.eth.defaultAccount, to: this.web3.eth.defaultAccount, value: 0, gas: 0, gasPrice: 0 },
-                   (err, res) => {;
+                   (err, res) => {
                        if (err.toString() !== 'Error: account is locked') {
                            this.unlockedAccount = this.web3.eth.accounts[0];
                            if (this.unlockedAccount) {
@@ -1023,17 +1019,44 @@ export class DrsService {
                        }
                    }
                );
-           } else {
+           } else {  
+             window.addEventListener('load', async () => {
+               // Modern dapp browsers...
+               if (window.ethereum) {
+                 window.web3 = new Web3(ethereum);
+                 try {
+                   // Request account access if needed
+                   await ethereum.enable();
+                   // Acccounts now exposed
+                   web3.eth.sendTransaction({/* ... */ });
+                 } catch (error) {
+                   // User denied account access...
+                 }
+               }
+               // Legacy dapp browsers...
+               else if (window.web3) {
+                 window.web3 = new Web3(web3.currentProvider);
+                 // Acccounts always exposed
+                 web3.eth.sendTransaction({/* ... */ });
+               }
+               // Non-dapp browsers...
+               else {
+                 console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+               }
+             });
                this.unlockedAccount = this.web3.eth.accounts[0];
                if (this.unlockedAccount) {
+                 console.log("if + this.unlockedAccount: " + this.unlockedAccount);
                  this.authorized.next(true);
                }
-
-               console.log('Connected to account: ' + this.unlockedAccount)
+             console.log("if + this.unlockedAccount: " + this.unlockedAccount);
+             console.log(false);
                resolve(false);
            }
        });
+       console.log("return p: " + p);
        return p;
+       
    }
 
    /**
