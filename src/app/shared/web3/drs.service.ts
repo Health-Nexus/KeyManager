@@ -1046,15 +1046,11 @@ export class DrsService {
              });
                this.unlockedAccount = this.web3.eth.accounts[0];
                if (this.unlockedAccount) {
-                 console.log("if + this.unlockedAccount: " + this.unlockedAccount);
                  this.authorized.next(true);
                }
-             console.log("if + this.unlockedAccount: " + this.unlockedAccount);
-             console.log(false);
                resolve(false);
            }
        });
-       console.log("return p: " + p);
        return p;
        
    }
