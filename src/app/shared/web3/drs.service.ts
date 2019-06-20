@@ -1021,8 +1021,13 @@ export class DrsService {
                );
            } else {  
              window.addEventListener('load', async () => {
-               // Modern dapp browsers...
+               let window: any;
+               let ethereum: any;
+              // Modern dapp browsers... 
                if (window.ethereum) {
+                 let ethereum: any;
+                 let web3: any;
+                 let Web3: any;
                  window.web3 = new Web3(ethereum);
                  try {
                    // Request account access if needed
@@ -1035,6 +1040,8 @@ export class DrsService {
                }
                // Legacy dapp browsers...
                else if (window.web3) {
+                 let web3;
+                 let Web3;
                  window.web3 = new Web3(web3.currentProvider);
                  // Acccounts always exposed
                  web3.eth.sendTransaction({/* ... */ });
@@ -1052,7 +1059,6 @@ export class DrsService {
            }
        });
        return p;
-       
    }
 
    /**
