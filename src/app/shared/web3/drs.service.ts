@@ -1025,37 +1025,6 @@ export class DrsService {
                    }
                );
            } else {  
-            //  window.addEventListener('load', async () => {
-            //    let window: any;
-            //    let ethereum: any;
-            //   // Modern dapp browsers... 
-            //    if (window.ethereum) {
-            //      let ethereum: any;
-            //      let web3: any;
-            //      let Web3: any;
-            //      window.web3 = new Web3(ethereum);
-            //      try {
-            //        // Request account access if needed
-            //        await ethereum.enable();
-            //        // Acccounts now exposed
-            //        web3.eth.sendTransaction({/* ... */ });
-            //      } catch (error) {
-            //        // User denied account access...
-            //      }
-            //    }
-            //    // Legacy dapp browsers...
-            //    else if (window.web3) {
-            //      let web3;
-            //      let Web3;
-            //      window.web3 = new Web3(web3.currentProvider);
-            //      // Acccounts always exposed
-            //      web3.eth.sendTransaction({/* ... */ });
-            //    }
-            //    // Non-dapp browsers...
-            //    else {
-            //      console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-            //    }
-            //  });
                this.unlockedAccount = this.web3.eth.accounts[0];
                if (this.unlockedAccount) {
                  this.authorized.next(true);

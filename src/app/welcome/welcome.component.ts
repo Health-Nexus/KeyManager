@@ -1,9 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 
-// import * as Web3 from 'web3';
-// import Web3 from 'web3';
-
-
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
@@ -42,9 +38,7 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
-  ngOnInit() { 
-    
-  }
+  ngOnInit() { }
 
   reloadPage() {
     if (!window.hasOwnProperty('web3')) {
