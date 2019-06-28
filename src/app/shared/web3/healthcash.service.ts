@@ -5,6 +5,11 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 // const Web3 = require('web3');
 import 'rxjs/add/operator/map';
 
+// import * as Web3 from 'web3';
+// import Web3 from 'web3';
+// const Web3 = require('web3');
+// const web3 = new Web3(Web3.givenProvider || "ws://localhost:8546");
+
 /**
  * Class to handle HLTH Cash Contract interactions
  */
