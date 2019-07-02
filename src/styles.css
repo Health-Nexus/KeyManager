@@ -220,6 +220,17 @@ button.form-control {
   margin: 20px;
 }
 
+button.form-control2 {
+  width: 165px;
+  padding: 10px;
+  background-color: #3f819e;
+  color: white;
+  font-size: 20px;
+  font-weight: 400;
+  border-radius: 10px;
+  margin: 5px;
+}
+
 .editing {
   background-color: #d9d9d9;
   padding-left: 30px;
@@ -325,4 +336,8 @@ div.disabled button.form-control{
     font-weight: normal;
     background-color: lightgray;
     border: gray dotted;
+}
+
+.text-sm{
+  font-size: 16px
 }
