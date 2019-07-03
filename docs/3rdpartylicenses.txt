@@ -1049,7 +1049,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 """
 
-node-libs-browser@2.2.0
+node-libs-browser@2.2.1
 MIT
 (The MIT License)
 

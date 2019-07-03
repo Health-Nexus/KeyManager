@@ -37,6 +37,7 @@ export class DrsComponent implements OnInit {
    editingPermissions: boolean = false;
    editingParam?: any = {};
    fileToUpload: File = null;
+   show: boolean;
 
 constructor(private drsService:DrsService,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService, private zone: NgZone) {
   this._window = windowRef.nativeWindow;
@@ -324,4 +325,5 @@ constructor(private drsService:DrsService,private healthcashService:HealthcashSe
     }
     this.drsService.updatePhuse(urlKey,phuseNumber);
   }
+
 }
