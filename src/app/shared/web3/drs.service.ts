@@ -4,9 +4,9 @@
  */
 
 import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Http, Response,Headers, RequestOptions,URLSearchParams,ResponseContentType } from '@angular/http';
+// import { Http, Response,Headers, RequestOptions,URLSearchParams,ResponseContentType } from '@angular/http';
 import * as async from 'async';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpHeaders, HttpRequest, HttpParams,  } from '@angular/common/http';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -57,7 +57,7 @@ export class DrsService {
     * Constructor function.  Initializes array and calls on init
     * @param Http http
     */
-       constructor(private http: Http) {
+       constructor(private http: HttpClient) {
 
          this.services=[];
          this.keys=[];
@@ -75,7 +75,7 @@ export class DrsService {
     ngOnInit() {
       var self = this;
       this.contract = this.http.get("./data/HealthDRS.json")
-      .map(response => response.json() )
+      // .map(response => response.json() )
       .subscribe(result => {
         this.contract = result;
         this._contract = this.web3.eth.contract(this.contract.abi);
