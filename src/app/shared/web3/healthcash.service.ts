@@ -1,9 +1,9 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 
 // const Web3 = require('web3');
-import 'rxjs/add/operator/map';
+
 
 // import * as Web3 from 'web3';
 // import Web3 from 'web3';

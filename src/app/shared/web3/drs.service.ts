@@ -7,10 +7,9 @@ import { Injectable, EventEmitter, Output } from '@angular/core';
 // import { Http, Response,Headers, RequestOptions,URLSearchParams,ResponseContentType } from '@angular/http';
 import * as async from 'async';
 import { HttpClient, HttpResponse, HttpHeaders, HttpRequest, HttpParams,  } from '@angular/common/http';
-import { Subject } from 'rxjs/Subject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subject ,  BehaviorSubject } from 'rxjs';
 
-import 'rxjs/add/operator/map';
+
 
 // import * as Web3 from 'web3';
 // import Web3 from 'web3';
