@@ -228,12 +228,12 @@ export class DrsService {
         });
         //      responseType: ResponseContentType.Blob,
 
-          var options = new RequestOptions({ //headers: headers,
-            responseType : ResponseContentType.ArrayBuffer
+          // var options = new HttpRequest({ //headers: headers,
+          //   responseType : 'json'
 
-           });
+          //  });
           var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
-          return this.http.get(url, options)
+          return this.http.get(url, { responseType: 'json' })
                     .subscribe(result => {
                       console.log('result: ', result)
                       resolve(result);
@@ -269,12 +269,12 @@ export class DrsService {
         signature = res;
         var headers = new Headers({ 'Content-Type': 'application/octet-stream',
       });
-        var options = new RequestOptions({ //headers: headers,
-          responseType : ResponseContentType.ArrayBuffer
+        // var options = new RequestOptions({ //headers: headers,
+        //   responseType : ResponseContentType.ArrayBuffer
 
-         });
+        //  });
         var url='http://'+urlKey+'register/'+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+phuseNumber;
-        return this.http.get(url, options)
+        return this.http.get(url, { responseType: 'json' })
                   .subscribe(result => {
                     resolve(result);
                   })
@@ -310,16 +310,16 @@ export class DrsService {
         signature = res;
         var headers = new Headers({ 'Content-Type': 'application/octet-stream',
       });
-        var options = new RequestOptions({ //headers: headers,
-          responseType : ResponseContentType.ArrayBuffer
+        // var options = new RequestOptions({ //headers: headers,
+        //   responseType : ResponseContentType.ArrayBuffer
 
-         });
+        //  });
         var url='http://'+urlKey+'upload/'+this.unlockedAccount+'/'+signature+'/'+message_hash;
 
         const formData: FormData = new FormData();
         formData.append('fileKey', file, file.name);
         console.log("HERE", file);
-        return this.http.post(url, formData, options)
+        return this.http.post(url, formData, { responseType: 'json' })
           .subscribe(result => {
             console.log("RESULT: ",result);
           })
