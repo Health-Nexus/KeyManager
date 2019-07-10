@@ -6,8 +6,7 @@ import { WindowRefService } from './shared/window-ref.service';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-// import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { DrsComponent } from './drs/drs.component';
 import { TokenComponent } from './token/token.component';
 import { HeaderComponent } from './header/header.component';
@@ -29,7 +28,7 @@ import { TabComponent } from './tab/tab.component';
     LoginComponent
   ],
   imports: [
-    BrowserModule, HttpClientModule, // HttpModule
+    BrowserModule, HttpClientModule,
   ],
   providers: [DrsService, HealthcashService, HttpClientModule, WindowRefService],
   bootstrap: [AppComponent]

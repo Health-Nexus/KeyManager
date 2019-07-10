@@ -4,8 +4,8 @@
 
 <div class="container">
   <div class="row drs" [hidden]="selectedParentKey || selectedChildKey"> 
-    <button class="form-control2 md-raised" (click)="show = !show">Original View {{!show ? '' : ''}}</button>
-    <button class="form-control2 md-raised" (click)="show = !show">PhUSE {{show ? 'selected' : ''}}</button>
+    <button class="form-control2 md-raised" (click)="buttonPhuseOff()">Original View {{!show ? '' : ''}}</button>
+    <button class="form-control2 md-raised" (click)="buttonPhuseOn()">PhUSE {{show ? 'selected' : ''}}</button>
     <br>
     <br>
     <ng-container *ngIf="show">

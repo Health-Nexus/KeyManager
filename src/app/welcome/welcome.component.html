@@ -1,4 +1,3 @@
-
 <div class="content text-center">
 
   <img class="padding-md" src="./assets/icon_wallet.svg" alt="health nexus">
@@ -10,10 +9,9 @@
   </div>
   
   <div>
-    <div class="text-brand-blue can-click" (click)="reloadPage()">To begin, login with Metamask.</div>
-    <br>
-    <div>
-      <a href="https://metamask.io/" target="_blank" class="text-brand-blue can-click" style="text-decoration:none"><small>(To install MetaMask, click here)</small></a>
+    <div *ngIf="isWeb3" class="text-brand-blue can-click" (click)="reloadPage()">To begin, login with Metamask.</div>
+    <div *ngIf="!isWeb3">
+      <a href="https://metamask.io/" target="_blank" class="text-brand-blue can-click" style="text-decoration:none">MetaMask is required. To install, please click here.</a>
     </div>
   </div>
 

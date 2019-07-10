@@ -1,7 +1,5 @@
 import {Injectable, OnInit} from '@angular/core';
 
-// import * as Web3 from 'web3';
-// import Web3 from 'web3';
 const Web3 = require('web3');
 // const web3 = new Web3(Web3.givenProvider || "ws://localhost:8546");
 
@@ -37,7 +35,6 @@ export class Web3Service {
   test(): any {
 
       };
-
 
   private async getAccount(): Promise<string> {
     if (this._account == null) {

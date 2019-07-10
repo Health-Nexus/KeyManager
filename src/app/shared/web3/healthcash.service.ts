@@ -1,16 +1,6 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
-// import { Http, Response } from '@angular/http';
 import { HttpClient, HttpResponse, HttpHeaders, HttpRequest, HttpParams, } from '@angular/common/http';
-
 import { BehaviorSubject } from 'rxjs';
-
-// const Web3 = require('web3');
-
-
-// import * as Web3 from 'web3';
-// import Web3 from 'web3';
-// const Web3 = require('web3');
-// const web3 = new Web3(Web3.givenProvider || "ws://localhost:8546");
 
 /**
  * Class to handle HLTH Cash Contract interactions
@@ -35,7 +25,6 @@ export class HealthcashService {
    private canspend = new BehaviorSubject<number>(0);
    currentBalance = this.balance.asObservable();
    allowedToSpend = this.canspend.asObservable();
-
 
    /**
     * Constructor function.  Initializes array and calls on init
@@ -122,7 +111,6 @@ export class HealthcashService {
            });
            return p;
    }
-
 
    /**
     * transfer function.  Transfers value to address in hlth
@@ -373,6 +361,7 @@ export class HealthcashService {
            console.log('Invalid address used');
        }
    }
+   
    /**
    * currentNode function: gets current node
    *

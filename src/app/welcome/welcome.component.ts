@@ -6,9 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./welcome.component.css']
 })
 export class WelcomeComponent implements OnInit {
+  isWeb3: boolean = false;
 
   constructor() { 
-
     const Web3 = require('web3');
     console.log(window);
     
@@ -38,7 +38,11 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
-  ngOnInit() { }
+  ngOnInit() { 
+    if(window.hasOwnProperty('web3')){
+      this.isWeb3 = true;
+    }
+  }
 
   reloadPage() {
     if (!window.hasOwnProperty('web3')) {

@@ -4,19 +4,9 @@
  */
 
 import { Injectable, EventEmitter, Output } from '@angular/core';
-// import { Http, Response,Headers, RequestOptions,URLSearchParams,ResponseContentType } from '@angular/http';
 import * as async from 'async';
-import { HttpClient, HttpResponse, HttpHeaders, HttpRequest, HttpParams,  } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Subject ,  BehaviorSubject } from 'rxjs';
-
-
-
-
-// import * as Web3 from 'web3';
-// import Web3 from 'web3';
-// const Web3 = require('web3');
-// const web3 = new Web3(Web3.givenProvider || "ws://localhost:8546");
-
 
 /**
  * Class to handle DRS Contract interactions
@@ -75,7 +65,6 @@ export class DrsService {
     ngOnInit() {
       var self = this;
       this.contract = this.http.get("./data/HealthDRS.json")
-      // .map(response => response.json() )
       .subscribe(result => {
         this.contract = result;
         this._contract = this.web3.eth.contract(this.contract.abi);
@@ -227,12 +216,6 @@ export class DrsService {
           signature = res;
           var headers = new Headers({ 'Content-Type': 'application/octet-stream',
         });
-        //      responseType: ResponseContentType.Blob,
-
-          // var options = new HttpRequest({ //headers: headers,
-          //   responseType : 'json'
-
-          //  });
           var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
           return this.http.get(url, { responseType: 'json' })
                     .subscribe(result => {
@@ -270,10 +253,6 @@ export class DrsService {
         signature = res;
         var headers = new Headers({ 'Content-Type': 'application/octet-stream',
       });
-        // var options = new RequestOptions({ //headers: headers,
-        //   responseType : ResponseContentType.ArrayBuffer
-
-        //  });
         var url='http://'+urlKey+'register/'+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+phuseNumber;
         return this.http.get(url, { responseType: 'json' })
                   .subscribe(result => {
@@ -284,7 +263,6 @@ export class DrsService {
 
     return p;
   }
-
 
   /**
    * updatePhuse function.  Sends signed message to a gatekeeper, based on key, parameter and key url, to retrive data.
@@ -311,10 +289,6 @@ export class DrsService {
         signature = res;
         var headers = new Headers({ 'Content-Type': 'application/octet-stream',
       });
-        // var options = new RequestOptions({ //headers: headers,
-        //   responseType : ResponseContentType.ArrayBuffer
-
-        //  });
         var url='http://'+urlKey+'upload/'+this.unlockedAccount+'/'+signature+'/'+message_hash;
 
         const formData: FormData = new FormData();
@@ -323,12 +297,12 @@ export class DrsService {
         return this.http.post(url, formData, { responseType: 'json' })
           .subscribe(result => {
             console.log("RESULT: ",result);
-          })
+          });
         // return this.http.get(url, options)
         //           .subscribe(result => {
         //             resolve(result);
         //           })
-      }.bind(this));
+        }.bind(this));
     });
 
     return p;
