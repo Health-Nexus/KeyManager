@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DrsService } from './shared/web3/drs.service';
 import { HealthcashService } from './shared/web3/healthcash.service';
 import { Message } from '@angular/compiler/src/i18n/i18n_ast';
+import * as Rx from 'rxjs';
 
 @Component({
   selector: 'app-root',
