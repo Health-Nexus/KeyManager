@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { DrsService } from './web3.service';
+import { DrsService } from './drs.service';
 
 describe('DrsService', () => {
   beforeEach(() => {

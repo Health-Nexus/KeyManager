@@ -1,4 +1,5 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
+import { HttpClient, HttpResponse, HttpHeaders, HttpRequest, HttpParams, } from '@angular/common/http';
 import { Http, Response } from '@angular/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -39,7 +40,7 @@ export class HealthcashService {
     * Constructor function.  Initializes array and calls on init
     * @param Http http
     */
-       constructor(private http: Http) {
+       constructor(private http: HttpClient) {
          if(!window.hasOwnProperty('web3')){
            return;
          }
@@ -64,7 +65,6 @@ export class HealthcashService {
        ngOnInit() {
          let p = new Promise<any>((resolve, reject) => {
            this.http.get("./data/HealthCash.json")
-            .map(response => response.json() )
             .subscribe(result => {
               this.contract=result;
               this._contract=this.web3.eth.contract(this.contract.abi)
