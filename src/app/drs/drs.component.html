@@ -4,20 +4,22 @@
 
 <div class="container">
   <div class="row drs" [hidden]="selectedParentKey || selectedChildKey"> 
-    <button class="form-control2 md-raised" (click)="buttonPhuseOff()">Original View {{!show ? '' : ''}}</button>
-    <button class="form-control2 md-raised" (click)="buttonPhuseOn()">PhUSE {{show ? 'selected' : ''}}</button>
+    <button id="orgViewBtn" class="form-control2 md-raised" (click)="buttonPhuseOff()">Original View {{!show ? '' : ''}}</button>
+    <button id="phViewBtn" class="form-control2 md-raised" (click)="buttonPhuseOn()">PhUSE {{show ? 'selected' : ''}}</button>
     <br>
     <br>
     <ng-container *ngIf="show">
-      <span class="listTitle">Instructions on how to operate Health Nexus Data Sharing for Phuse</span>
-      <span class="listElement">1. Create or choose a parent key to attach to your database</span>
-      <span class="listElement">2. Next, create a child key off of the given parent key</span>
-      <span class="listElement">3. Then, create a child key off of the given parent key and set parameters</span>
-      <span class="listElement">4. Next, set PhUSE id and retrieve the key data</span>
-      <span class="listElement">5. If needed, upload data that you will need to transfer either here or through your gatekeeper itself</span>
-      <span class="listElement">6. Finally, transact the key</span>
-      <span id="walkthrough">For a more thorough walk through please check out our <a href="https://medium.com/simplyvital/lets-hit-the-ground-running-with-health-nexus-5c25df21c56d">walkthrough</a></span>
-      <br>
+      <div id="phuseText">
+        <span class="listTitle">Instructions on how to operate Health Nexus Data Sharing for Phuse</span>
+        <span class="listElement">1. Create or choose a parent key to attach to your database</span>
+        <span class="listElement">2. Next, create a child key off of the given parent key</span>
+        <span class="listElement">3. Then, create a child key off of the given parent key and set parameters</span>
+        <span class="listElement">4. Next, set PhUSE id and retrieve the key data</span>
+        <span class="listElement">5. If needed, upload data that you will need to transfer either here or through your gatekeeper itself</span>
+        <span class="listElement">6. Finally, transact the key</span>
+        <span id="walkthrough">For a more thorough walk through please check out our <a id="mediumLink" href="https://medium.com/simplyvital/lets-hit-the-ground-running-with-health-nexus-5c25df21c56d">walkthrough</a></span>
+        <br>
+      </div>
     </ng-container>
     <br>
     <span class="title">Create New Parent Key</span><span class="element">Create a parent key using the URL to your gatekeeper- or blockchain-enabled service</span>

@@ -9,6 +9,6 @@ export class WindowRefService {
     get nativeWindow (): any {
         if (window.hasOwnProperty('web3')){
             return getWindow();
-        }
+        }  
     }
 }
