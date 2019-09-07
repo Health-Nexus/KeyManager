@@ -4,7 +4,7 @@ import { metamaskLogin, accountLogin,
          createParentKey, createChildKey, 
          setChildKeyPermissions, shareChildKey, 
          compareOwnedKeyCounts } from './functions/app.share-function-list';
-import { account1mnemonic, account1password, account2private, account1public } from './environment/app.accounts-info-chelitests';
+import { account1mnemonic, account1password, account2private, account1public } from './environment/app.accounts-info';
 
 /**
  * tests validating that keys can be 

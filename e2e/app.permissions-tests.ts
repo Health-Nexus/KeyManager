@@ -2,7 +2,7 @@ import { AppPage } from './app.po';
 import { $, $$, ExpectedConditions } from 'protractor';
 import { metamaskLogin } from './functions/app.share-function-list';
 import { permNone, permShare, permSell, permTrade, permShareSell, permShareTrade, permSellTrade, permAll, navigateTestChild } from './functions/app.permissions-function-list'
-import { account1mnemonic, account1password } from './environment/app.accounts-info-chelitests';
+import { account1mnemonic, account1password } from './environment/app.accounts-info';
 
 var protractor = require('protractor');
 var browser = require("protractor").protractor.browser;
