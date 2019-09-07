@@ -10,14 +10,14 @@
   </div>
   
   <div>
-    <div *ngIf="isWeb3" class="text-brand-blue can-click" (click)="reloadPage()" id="welcomeMessage">To begin, login with MetaMask and refresh
+    <div *ngIf="isWeb3" id="welcomeMsg" class="text-brand-blue can-click" (click)="reloadPage()">To begin, login with MetaMask and refresh
       the page.</div>
     <div *ngIf="!isWeb3">
-      <a href="https://metamask.io/" target="_blank" class="text-brand-blue can-click" style="text-decoration:none" id="welcomeMessage">MetaMask
+      <a href="https://metamask.io/" id="mediumLink" target="_blank" class="text-brand-blue can-click" style="text-decoration:none" id="welcomeMessage">MetaMask
         is required. To install, please click here.</a>
     </div>
     <br>
-    <!-- <div id="metaMaskLogin" class="text-brand-blue can-click" (click)="metaMaskPopup()">Test Login Button</div> -->
+    
   </div>
 
 </div>

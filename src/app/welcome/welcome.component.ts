@@ -39,19 +39,6 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
-  metaMaskPopup(){
-    // let web3: any;
-    // if ((window as any)['ethereum']) {
-    //   web3 = new Web3((window as any)['ethereum']);
-    //   try {
-    //     // Request account access if needed
-        let res = (window as any)['ethereum'].enable();
-        console.log(res)
-      // } catch (error) {
-      //   // User denied account access...
-      // }
-    }
-
   ngOnInit() { 
     if (window.hasOwnProperty('web3')) {
       this.isWeb3 = true;
