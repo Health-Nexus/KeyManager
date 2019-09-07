@@ -1,17 +1,18 @@
-## Running Tests
+## Test Setup
 1. clone git repository
 
 2. install node modules using: $npm install
 
 3. populate variables in /KeyManager/e2e/environment/app.accounts-info.ts with the relevant account information
       - account 1 public address, mnemonic, and password and account 2 private address are all that are strictly required
-      - NOTE: only provide information for accounts that you are comfortable being used in an automated testing environment
-      - NOTE: Ether for newly created test accounts can be acquired at the rinkeby faucet: https://faucet.rinkeby.io/
+      - Note: only provide information for accounts that you are comfortable being used in an automated testing environment
+      - Note: Ether for newly created test accounts can be acquired at the rinkeby faucet: https://faucet.rinkeby.io/
          1. post your testing account's public address on a social media platform (twitter, facebook, etc.)
          2. copy a link to your social media post to the rinkeby faucet page
          3. click the "Give Me Ether" button on the rinkeby faucet page, selecting the amount of ether you want to recieve
 
-4. to run tests:
+## Running Tests
+1. to run tests:
       1. set up an instance of the Key Manager application using: $ng serve
       2. then, in a new terminal window, run: $protractor protractor.conf.js
 
