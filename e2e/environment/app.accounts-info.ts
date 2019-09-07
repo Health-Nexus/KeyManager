@@ -1,5 +1,5 @@
 // test account information:
-// account #0
+// account #1
 export let account1public = '';
 export let account1private = '';
 export let account1mnemonic = '';
