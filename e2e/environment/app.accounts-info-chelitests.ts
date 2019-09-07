@@ -1,5 +1,8 @@
-// test account information:
-// account #0
+/**
+ * test account information:
+ */
+
+// account #1
 export let account1public = '0xA0031fdBD932CBa7B19426FfD8317F4390831985';
 export let account1private = '9b081cac311a8ad6df622f388e5e334790b33f4d862e3210a4d3121caf95fa16';
 export let account1mnemonic = 'lucky tide ritual belt fruit trumpet hurdle elevator jar else lunch morning';
