@@ -13,7 +13,6 @@ exports.config = {
     './e2e/app.basic-tests.ts',
     './e2e/app.permissions-tests.ts',
     './e2e/app.share-tests.ts',
-    // './e2e/**/*.e2e-spec.ts'
   ],
   capabilities: {
     'browserName': 'chrome',
@@ -30,10 +29,6 @@ exports.config = {
     defaultTimeoutInterval: 6000000,
     print: function() {}
   },
-  // //Enabling blocking proxy
-  // useBlockingProxy: true,
-  // //Delaying for 3 sec before interacting with element and hightlighting it
-  // highlightDelay: 500,
   onPrepare() {
     const browser = require('protractor').browser;
     require('ts-node').register({

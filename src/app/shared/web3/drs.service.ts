@@ -12,12 +12,6 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import 'rxjs/add/operator/map';
 
-// import * as Web3 from 'web3';
-// import Web3 from 'web3';
-// const Web3 = require('web3');
-// const web3 = new Web3(Web3.givenProvider || "ws://localhost:8546");
-
-
 /**
  * Class to handle DRS Contract interactions
  */
@@ -228,9 +222,7 @@ export class DrsService {
             'Content-Type': 'application/octet-stream',
           });
           var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
-          return this.http.get(url, { 
-            // headers: headers,
-            // responseType: 'blob'
+          return this.http.get(url, {
             responseType: 'arraybuffer',
           })
             .subscribe(result => {
@@ -271,8 +263,6 @@ export class DrsService {
         });
         var url='http://'+urlKey+'register/'+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+phuseNumber;
         return this.http.get(url, {
-          // headers: headers,
-          // responseType: 'blob'
           responseType: 'arraybuffer',
         })
           .subscribe(result => {
@@ -317,17 +307,11 @@ export class DrsService {
         formData.append('fileKey', file, file.name);
         console.log("HERE", file);
         return this.http.post(url, formData, {
-          // headers: headers,
-          // responseType: 'blob'
           responseType: 'arraybuffer',
         })
           .subscribe(result => {
             console.log("RESULT: ",result);
           });
-        // return this.http.get(url, options)
-        //           .subscribe(result => {
-        //             resolve(result);
-        //           })
       }.bind(this));
     });
 
