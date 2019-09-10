@@ -12,7 +12,7 @@ exports.config = {
   specs: [
     './e2e/app.basic-tests.ts',
     './e2e/app.permissions-tests.ts',
-    './e2e/app.share-tests.ts',
+    './e2e/app.share-test.ts',
   ],
   capabilities: {
     'browserName': 'chrome',
