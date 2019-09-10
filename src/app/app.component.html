@@ -1,19 +1,19 @@
 <app-header></app-header>
 <div id="main" class="padding-sm">
-  <div class="text-center padding-v-lg"
+  <div id="rinkebyMsg" class="text-center padding-v-lg"
     [ngClass]="{'hidden': !isRinkeby, 'warning': isRinkeby}">You are connected to the Rinkeby Test network. Do not spend real ETH on Rinkeby.</div>
 
   <div [hidden]="authorized">
     <app-welcome></app-welcome>
   </div>
 
-  <div [hidden]="!authorized">
+ <div [hidden]="!authorized">
     <div>
       <app-tabs>
-          <app-tab tabTitle="My Tokens">
+          <app-tab id="tokensTab" tabTitle="My Tokens">
             <app-token></app-token>
           </app-tab>
-          <app-tab tabTitle="My Keys">
+          <app-tab id="keysTab" tabTitle="My Keys">
             <app-drs></app-drs>
           </app-tab>
       </app-tabs>

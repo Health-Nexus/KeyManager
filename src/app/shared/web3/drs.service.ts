@@ -6,17 +6,11 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Http, Response,Headers, RequestOptions,URLSearchParams,ResponseContentType } from '@angular/http';
 import * as async from 'async';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import 'rxjs/add/operator/map';
-
-// import * as Web3 from 'web3';
-// import Web3 from 'web3';
-// const Web3 = require('web3');
-// const web3 = new Web3(Web3.givenProvider || "ws://localhost:8546");
-
 
 /**
  * Class to handle DRS Contract interactions
@@ -57,7 +51,7 @@ export class DrsService {
     * Constructor function.  Initializes array and calls on init
     * @param Http http
     */
-       constructor(private http: Http) {
+       constructor(private http: HttpClient) {
 
          this.services=[];
          this.keys=[];
@@ -75,7 +69,6 @@ export class DrsService {
     ngOnInit() {
       var self = this;
       this.contract = this.http.get("./data/HealthDRS.json")
-      .map(response => response.json() )
       .subscribe(result => {
         this.contract = result;
         this._contract = this.web3.eth.contract(this.contract.abi);
@@ -225,20 +218,17 @@ export class DrsService {
         this.web3.eth.sign(signer,message_hash, function(err, res) {
           if (err) console.error(err);
           signature = res;
-          var headers = new Headers({ 'Content-Type': 'application/octet-stream',
-        });
-        //      responseType: ResponseContentType.Blob,
-
-          var options = new RequestOptions({ //headers: headers,
-            responseType : ResponseContentType.ArrayBuffer
-
-           });
+          var headers = new HttpHeaders({ 
+            'Content-Type': 'application/octet-stream',
+          });
           var url='http://'+urlKey+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+parameter+'/'+key;
-          return this.http.get(url, options)
-                    .subscribe(result => {
-                      console.log('result: ', result)
-                      resolve(result);
-                    })
+          return this.http.get(url, {
+            responseType: 'arraybuffer',
+          })
+            .subscribe(result => {
+              console.log('result: ', result)
+              resolve(result);
+            })
         }.bind(this));
       });
 
@@ -268,17 +258,16 @@ export class DrsService {
       this.web3.eth.sign(signer,message_hash, function(err, res) {
         if (err) console.error(err);
         signature = res;
-        var headers = new Headers({ 'Content-Type': 'application/octet-stream',
-      });
-        var options = new RequestOptions({ //headers: headers,
-          responseType : ResponseContentType.ArrayBuffer
-
-         });
+        var headers = new HttpHeaders({ 
+          'Content-Type': 'application/octet-stream',
+        });
         var url='http://'+urlKey+'register/'+this.unlockedAccount+'/'+signature+'/'+message_hash+'/'+phuseNumber;
-        return this.http.get(url, options)
-                  .subscribe(result => {
-                    resolve(result);
-                  })
+        return this.http.get(url, {
+          responseType: 'arraybuffer',
+        })
+          .subscribe(result => {
+            resolve(result);
+          })
       }.bind(this));
     });
 
@@ -309,25 +298,20 @@ export class DrsService {
       this.web3.eth.sign(signer,message_hash, function(err, res) {
         if (err) console.error(err);
         signature = res;
-        var headers = new Headers({ 'Content-Type': 'application/octet-stream',
-      });
-        var options = new RequestOptions({ //headers: headers,
-          responseType : ResponseContentType.ArrayBuffer
-
-         });
+        var headers = new Headers({ 
+          'Content-Type': 'application/octet-stream',
+        });
         var url='http://'+urlKey+'upload/'+this.unlockedAccount+'/'+signature+'/'+message_hash;
 
         const formData: FormData = new FormData();
         formData.append('fileKey', file, file.name);
         console.log("HERE", file);
-        return this.http.post(url, formData, options)
+        return this.http.post(url, formData, {
+          responseType: 'arraybuffer',
+        })
           .subscribe(result => {
             console.log("RESULT: ",result);
-          })
-        // return this.http.get(url, options)
-        //           .subscribe(result => {
-        //             resolve(result);
-        //           })
+          });
       }.bind(this));
     });
 
