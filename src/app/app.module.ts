@@ -15,6 +15,7 @@ import { FooterComponent } from './footer/footer.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { TabsComponent } from './tabs/tabs.component';
 import { TabComponent } from './tab/tab.component';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,7 @@ import { TabComponent } from './tab/tab.component';
     LoginComponent
   ],
   imports: [
-    BrowserModule, HttpClientModule, HttpModule
+    BrowserModule, HttpClientModule, HttpModule, NgxPaginationModule
   ],
   providers: [DrsService, HealthcashService, HttpClientModule, WindowRefService],
   bootstrap: [AppComponent]

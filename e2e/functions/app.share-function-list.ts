@@ -1,36 +1,32 @@
 import { AppPage } from '../app.po';
 import { by, $, $$, element, ExpectedConditions } from 'protractor';
-import { text } from '@angular/core/src/render3/instructions';
+import { countKeys, naviagteLastPageLastParent } from './app.pagination-functions'
 
 var protractor = require('protractor');
 var browser = require("protractor").protractor.browser;
 let EC = ExpectedConditions;
 
-let page: AppPage;
-let a2_pCount;          // store original parent key count
-let a2_pCountUpdated;   // store updated parent key count
-let originalCount;      // store original owned/shared keys count
-let updatedCount;       // store updated owned/shared keys count
+export let page: AppPage;
 
 /**
  * provided new instance AppPage
  */
-export function newAppPage(){
+export function newAppPage() {
    return page = new AppPage();
 };
 
 /**
  * function to handle beligerant welcome page
  */
-export async function handleWelcomePage(){
+export async function handleWelcomePage() {
    let welcomePage = await $('#welcomeMsg').isPresent().then(function (value) {
       return value;
    });
    if (welcomePage == true) {
       newAppPage();
       page.navigateTo();
-   } 
-      page.navigateTo();
+   }
+   page.navigateTo();
 }
 
 /**
@@ -59,7 +55,7 @@ export function metamaskLogin(mnemonic, password) {
          });
       };
       browser.driver.wait(EC.elementToBeClickable($('.button.btn-primary.first-time-flow__button')), 5000);
-      $('.button.btn-primary.first-time-flow__button').click();         
+      $('.button.btn-primary.first-time-flow__button').click();
       browser.driver.wait(EC.elementToBeClickable($$('.button.btn-primary.first-time-flow__button').get(0)), 5000);
       $$('.button.btn-primary.first-time-flow__button').get(0).click();
       browser.driver.wait(EC.elementToBeClickable($('.button.btn-default.btn--large.page-container__footer-button')), 5000);
@@ -119,7 +115,7 @@ export function switchWallets(mnemonic, password) {
  * add account to test, pass
  * relevant test account's private key
  */
-export function addAccount(privateKey){
+export function addAccount(privateKey) {
    browser.executeScript("window.open(arguments[0], '_blank')");
    browser.getAllWindowHandles().then(function (handles) {
       let handle0 = handles[0].toString();
@@ -176,13 +172,9 @@ export async function metamaskConfirm() {
       browser.driver.wait(EC.elementToBeClickable($$('.button-group__button').last()), 5000);
       $$('.button-group__button').last().click();
       browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)').then(function () { });;
-      // browser.driver.wait(EC.elementToBeClickable(element(by.buttonText('Save'))), 5000);
-      // browser.driver.sleep(1000);
-      // element(by.buttonText('Save')).click();
       browser.driver.wait(EC.elementToBeClickable($('.button.btn-secondary.btn--large.page-container__footer-button')), 5000);
-      // browser.driver.sleep(1000);
       $('.button.btn-secondary.btn--large.page-container__footer-button').click();
-      browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)').then(function(){ });
+      browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)').then(function () { });
       browser.driver.wait(EC.elementToBeClickable($('.button.btn-primary.btn--large.page-container__footer-button')));
       browser.driver.sleep(1000);
       $('.button.btn-primary.btn--large.page-container__footer-button').click();
@@ -215,10 +207,8 @@ export async function metamaskConfirm() {
 export async function createParentKey() {
    page.navigateTo();
    browser.wait(EC.presenceOf($$("#parentKeysList").last()), 30000);
-   await browser.executeScript('arguments[0].scrollIntoView();', $$("#parentKeysList").last().getWebElement());
-   a2_pCount = await $$("#parentKeysList").count().then(function (count) {
-      return count;
-   });
+   browser.executeScript('arguments[0].scrollIntoView();', $$("#parentKeysList").last().getWebElement());
+   await countKeys(0, 'parent', 'original');
    await $('#createParentInput').sendKeys("https://medium.com/search?q=" + Date.now());
    browser.wait(EC.elementToBeClickable(element(by.buttonText('Generate'))), 5000);
    await element(by.buttonText('Generate')).click();
@@ -229,10 +219,7 @@ export async function createParentKey() {
    browser.wait(EC.presenceOf($$("#parentKeysList").last()), 30000);
    browser.sleep(1000);
    browser.executeScript('arguments[0].scrollIntoView();', $$("#parentKeysList").last().getWebElement());
-   a2_pCountUpdated = await $$("#parentKeysList").count().then(function (count) {
-      return count;
-   });
-   await expect(a2_pCountUpdated).toBe(a2_pCount + 1);
+   await countKeys(0, 'parent', 'updated');
    switchToTab1();
 };
 
@@ -243,6 +230,11 @@ export async function createParentKey() {
 export async function createChildKey() {
    page.navigateTo();
    browser.wait(EC.presenceOf($$('#parentKeysList').last()), 30000);
+   await $('#parentPaginator').isDisplayed().then(async function (result) {
+      if (result) {
+         await naviagteLastPageLastParent();
+      };
+   });
    let a2_pLast = await $$('#parentKeysList').last().getText().then(function (text) {
       return text.substring(0, 63);
    });
@@ -256,15 +248,17 @@ export async function createChildKey() {
    });
    await expect(a2_pm1).toBe(a2_pLast);
    browser.wait(EC.stalenessOf($$('#childKeysList').get(0)), 5000);
-   let a2_pLast_cCount
-   if (await $$('#childKeysList').get(0).isPresent() == false){
-      a2_pLast_cCount = 0;
-   }
+   await countKeys(0, 'child', 'original');
    browser.wait(EC.elementToBeClickable($('#generateChildBtn')), 5000);
    await $('#generateChildBtn').click();
    metamaskConfirm();
    page.navigateTo();
    browser.wait(EC.elementToBeClickable($$("#parentKeysList").last()), 30000);
+   await $('#parentPaginator').isDisplayed().then(async function (result) {
+      if (result) {
+         await naviagteLastPageLastParent();
+      }
+   });
    a2_pLast = await $$('#parentKeysList').last().getText().then(function (text) {
       return text.substring(0, 63);
    });
@@ -277,11 +271,9 @@ export async function createChildKey() {
       return text.substring(0, 63);
    });
    await expect(a2_pm1).toBe(a2_pLast);
-   let a2_pLast_cUpdatedCount = await $$('#childKeysList').count().then(function (count) {
-      return count;
-   });
-   await expect(a2_pLast_cUpdatedCount).toEqual(a2_pLast_cCount + 1);
-   let a2_pLast_cLast = await $$('#childKeysList').last().getText().then(function(text){
+   browser.wait(EC.presenceOf($('#childKeysList')), 30000);
+   await countKeys(0, 'child', 'updated');
+   let a2_pLast_cLast = await $$('#childKeysList').last().getText().then(function (text) {
       return text.substring(0, 63);
    });
    browser.wait(EC.elementToBeClickable($$('#childKeysList').last()));
@@ -290,7 +282,7 @@ export async function createChildKey() {
    let a2_pLast_c_managing = await $('#managingChildKey').getText().then(function (text) {
       return text.substring(0, 63);
    });
-   await expect(a2_pLast_c_managing).toBe(a2_pLast_cLast);
+   await expect(a2_pLast_c_managing).toBe(a2_pLast_cLast)
    switchToTab1();
 };
 
@@ -299,8 +291,13 @@ export async function createChildKey() {
  * key's page
  */
 export async function navigateNewChild() {
-   await page.navigateTo();
+   page.navigateTo();
    browser.wait(EC.presenceOf($$("#parentKeysList").last()), 30000);
+   await $('#parentPaginator').isDisplayed().then(async function (result) {
+      if (result) {
+         await naviagteLastPageLastParent();
+      }
+   });
    browser.sleep(1000);
    let a2_pLast = await $$('#parentKeysList').last().getText().then(function (text) {
       return text.substring(0, 63);
@@ -365,8 +362,7 @@ export async function setChildKeyPermissions() {
 export async function shareChildKey(account) {
    navigateNewChild();
    browser.wait(EC.elementToBeClickable($('#shareInput')), 30000);
-   browser.executeScript('window.scrollTo(0,1500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500);');
    browser.wait(EC.elementToBeClickable($('#shareInput')), 30000);
    await $('#shareInput').sendKeys(account);
    await $('#shareBtn').click();;
@@ -375,40 +371,9 @@ export async function shareChildKey(account) {
 };
 
 /**
- * count the number of owned/shared keys,
- * pass in the desired account number
- */
-export async function countOwnedKeys(accountNum) {
-   accountLogin(accountNum);
-   // page.navigateTo();
-   browser.wait(EC.presenceOf($$('#ownedKeysList').last()), 30000);
-   await $$('#ownedKeysList').count().then(function (count) {
-      originalCount = count;
-      return count;
-   });
-   switchToTab1();
-};
-
-/**
- * counts the updated number of owned/shared keys,
- * pass in the desired account number
- */
-export async function compareOwnedKeyCounts(accountNum) {
-   accountLogin(accountNum);
-   page.navigateTo();
-   browser.wait(EC.presenceOf($$('#ownedKeysList').last()), 30000);
-   await $$('#ownedKeysList').count().then(function (count) {
-      updatedCount = count;
-      expect(updatedCount).toBe(originalCount + 1);
-      return count;
-   });
-   switchToTab1();
-};
-
-/**
  * refocus the browser to tab 1
  */
-export function switchToTab1(){
+export function switchToTab1() {
    browser.getAllWindowHandles().then(function (handles) {
       let handle0 = handles[0].toString();
       browser.switchTo().window(handle0);

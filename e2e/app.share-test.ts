@@ -1,9 +1,9 @@
 import { AppPage } from './app.po';
 import { metamaskLogin, accountLogin, 
-         addAccount, countOwnedKeys, 
-         createParentKey, createChildKey, 
-         setChildKeyPermissions, shareChildKey, 
-         compareOwnedKeyCounts } from './functions/app.share-function-list';
+         addAccount, createParentKey, 
+         createChildKey, setChildKeyPermissions, 
+         shareChildKey } from './functions/app.share-function-list';
+import { countKeys } from './functions/app.pagination-functions'
 import { account1mnemonic, account1password, account2private, account1public } from './environment/app.accounts-info';
 
 /**
@@ -26,7 +26,7 @@ describe('health-nexus-wallet App - key share test', function() {
    });
 
    it("counted account 1 shared keys", function () {
-      countOwnedKeys(1);
+      countKeys(1, 'owned', 'original');
    });
       
    it("logged in to account 2", function(){
@@ -50,7 +50,7 @@ describe('health-nexus-wallet App - key share test', function() {
    });
 
    it("validated key share", function(){
-      compareOwnedKeyCounts(1);
+      countKeys(1, 'owned', 'updated');
    });
 
 });

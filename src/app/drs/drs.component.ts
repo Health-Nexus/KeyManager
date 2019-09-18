@@ -1,4 +1,4 @@
-import { Component,SecurityContext, OnInit, Input, ViewChild, ViewContainerRef, NgZone } from '@angular/core';
+import { Component, SecurityContext, OnInit, Input, ViewChild, ViewContainerRef, NgZone } from '@angular/core';
 import { HealthcashService } from '../shared/web3/healthcash.service';
 import { DrsService } from '../shared/web3/drs.service';
 import { WindowRefService } from '../shared/window-ref.service';
@@ -38,6 +38,9 @@ export class DrsComponent implements OnInit {
    editingParam?: any = {};
    fileToUpload: File = null;
    show: boolean = false;
+   parentPage: number = 1;
+   ownedPage: number = 1;
+   childPage: number = 1;
 
 constructor(private drsService:DrsService,private healthcashService:HealthcashService,private _sanitizer: DomSanitizer,windowRef: WindowRefService, private zone: NgZone) {
   this._window = windowRef.nativeWindow;
