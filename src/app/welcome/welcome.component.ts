@@ -10,10 +10,11 @@ export class WelcomeComponent implements OnInit {
 
   constructor() { 
 
-    const Web3 = require('web3');
+    // var Web3 = require('web3');
     console.log(window);
-    
+
     window.addEventListener('load', async () => {
+      const Web3 = require('web3');
       // Modern dapp browsers...
       let web3: any;
       if ((window as any)['ethereum']) {
