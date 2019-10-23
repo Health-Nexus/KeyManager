@@ -5,13 +5,13 @@
 </ul>
 <div [hidden]="!selectedParentKey && !selectedChildKey">
   <div class="padding-v-md">
-    <span id="myKeys-map" class="inline clickable" (click)="clearSelectedKeys()">My Keys</span>
+    <span id="myKeysNavigator" class="inline clickable" (click)="clearSelectedKeys()">My Keys</span>
     <span [ngClass]="{'hidden': !selectedParentKey, 'inline': selectedParentKey}">
       <span class="inline bold"> > </span>
-      <span id="parentKey-map" class="inline" [ngClass]="{'bold': !selectedChildKey, 'clickable': selectedChildKey}" (click)="clearChildKey()">Parent Key</span>
+      <span id="parentKeyNavigator" class="inline" [ngClass]="{'bold': !selectedChildKey, 'clickable': selectedChildKey}" (click)="clearChildKey()">Parent Key</span>
     </span>
     <span class="bold" [ngClass]="{'hidden': !selectedChildKey, 'inline': selectedChildKey}"> > </span>
-    <span id="childKey-map" class="bold" [ngClass]="{'hidden': !selectedChildKey, 'inline': selectedChildKey}">Child Key</span>
+    <span id="childKeyNavigator" class="bold" [ngClass]="{'hidden': !selectedChildKey, 'inline': selectedChildKey}">Child Key</span>
   </div>
 </div>
 <ng-content></ng-content>
