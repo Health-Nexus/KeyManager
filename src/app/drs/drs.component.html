@@ -117,8 +117,8 @@
       <span id="managingParentKey" class="bold"> {{ selectedParentKey && selectedParentKey._service }}:
         {{ selectedParentKey && selectedParentKey.url | async }} </span>
       <br>
-      <span id="childKeyInfoText" class="padding-top-lg title">Child keys</span>
-      <div id="childKeyInfo"><small>Generate the permissioned childkeys here to be traded</small></div>
+      <span id="childKeyTitleText" class="padding-top-lg title">Child keys</span>
+      <div id="childKeyInfoText"><small>Generate the permissioned childkeys here to be traded</small></div>
       <br>
       <button id="generateChildBtn" class="form-control"
         (click)="createParentKey(selectedParentKey && selectedParentKey._service)">Generate new</button>

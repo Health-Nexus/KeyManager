@@ -10,9 +10,9 @@ function encode(file) {
 exports.config = {
   allScriptsTimeout: 6000000,
   specs: [
-    './e2e/app.basic-tests.ts',
-    './e2e/app.permissions-tests.ts',
-    './e2e/app.share-test.ts',
+    './e2e/app.testsDisplay.ts',
+    // './e2e/app.testsPermissions.ts',
+    // './e2e/app.testsShare.ts',
   ],
   capabilities: {
     'browserName': 'chrome',
