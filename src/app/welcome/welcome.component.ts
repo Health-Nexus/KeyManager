@@ -10,7 +10,7 @@ export class WelcomeComponent implements OnInit {
 
   constructor() { 
 
-    // var Web3 = require('web3');
+    // let Web3 = require('web3');
     console.log(window);
 
     window.addEventListener('load', async () => {
@@ -22,7 +22,7 @@ export class WelcomeComponent implements OnInit {
         try {
           // Request account access if needed
           let res = await (window as any)['ethereum'].enable();
-          console.log(res)
+          console.log(res);
         } catch (error) {
           // User denied account access...
         }
@@ -38,20 +38,20 @@ export class WelcomeComponent implements OnInit {
         // return dispatch(setMetamaskLoadingStage('Error'))
       }
     });
-  }
+  };
 
   ngOnInit() { 
     if (window.hasOwnProperty('web3')) {
       this.isWeb3 = true;
-    }
-  }
+    };
+  };
 
   reloadPage() {
     if (!window.hasOwnProperty('web3')) {
       (window as any)['ethereum'].enable();
     } else {
       location.reload();
-    }
-  }
+    };
+  };
 
-}
+};

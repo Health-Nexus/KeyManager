@@ -1,8 +1,8 @@
 import { $, $$, ExpectedConditions } from 'protractor';
-import { accountLogin, page } from './app.functionsShare'
+import { accountLogin, page } from './app.functions-share'
 
-var protractor = require('protractor');
-var browser = require("protractor").protractor.browser;
+let protractor = require('protractor');
+let browser = require("protractor").protractor.browser;
 let EC = ExpectedConditions;
 
 let counts: number[] = [];
@@ -54,12 +54,12 @@ async function setup(accountNumber, keyType) {
    };
    keyList = $$('#' + keyType + 'KeysList');
    paginator = $('#' + keyType + 'Paginator');
-   if (keyType == 'parent' || keyType == 'owned') {
+   if (keyType === 'parent' || keyType === 'owned') {
       browser.wait(EC.presenceOf(keyList), 30000);
    };
-   if (keyType == 'parent') {
+   if (keyType === 'parent') {
       paginatorElem = $$('.ngx-pagination.responsive').get(0);
-   } else if (keyType == 'owned') {
+   } else if (keyType === 'owned') {
       await $('#parentPaginator').$('li').isPresent().then(async function (parentPaginator) {
          if (!parentPaginator) {
             paginatorElem = $$('.ngx-pagination.responsive').get(0);
@@ -67,7 +67,7 @@ async function setup(accountNumber, keyType) {
             paginatorElem = $$('.ngx-pagination.responsive').get(1);
          };
       });
-   } else if (keyType == 'child') {
+   } else if (keyType === 'child') {
       await $('#parentPaginator').$('li').isPresent().then(async function (parentPaginator) {
          await $('#ownedPaginator').$('li').isPresent().then(async function (ownedPaginator) {
             if (!parentPaginator && !ownedPaginator) {
@@ -90,8 +90,8 @@ async function keysNoPages(keyType, countType) {
    browser.wait(EC.presenceOf(keyList.last()), 30000);
    await keyList.count().then(function (num) {
       counts.push(num);
-      if (countType == 'updated') {
-         if (keyType == 'owned') {
+      if (countType === 'updated') {
+         if (keyType === 'owned') {
             expect(counts[counts.length - 1]).toBe(counts[0] + 1);
          } else {
             expect(counts[counts.length - 1]).toBe(counts[counts.length - 2] + 1);
@@ -110,7 +110,7 @@ async function keysPages(keyType, countType) {
          numOfPages = num - 3;
          browser.executeScript('window.scrollTo(0, document.body.scrollHeight)');
          await paginatorElem.$$('li').get(num - 1).click();
-      } else if (num == 10) {
+      } else if (num === 10) {
          numOfPages = await paginatorElem.$$('li').get(num - 2).$$('span').get(1).getText().then(function (pages) {
             return pages;
          });
@@ -121,8 +121,8 @@ async function keysPages(keyType, countType) {
    });
    await keyList.count().then(function (num) {
       counts.push(num + (10 * (numOfPages - 1)));
-      if (countType == 'updated') {
-         if (keyType == 'owned') {
+      if (countType === 'updated') {
+         if (keyType === 'owned') {
             expect(counts[counts.length - 1]).toBe(counts[0] + 1);
          } else {
             expect(counts[counts.length - 1]).toBe(counts[counts.length - 2] + 1);
@@ -137,9 +137,12 @@ async function keysPages(keyType, countType) {
  */
 export async function naviagteLastPageLastParent() {
    browser.wait(EC.elementToBeClickable($('#parentPaginator')));
-   await $$('.ngx-pagination.responsive').get(0).$$('li').count().then(async function (num) {
-      browser.executeScript('window.scrollTo(0, document.body.scrollHeight)');
-      await $$('.ngx-pagination.responsive').get(0).$$('li').get(num - 2).click();
-      browser.wait(EC.presenceOf($('.pagination-next.disabled')));
+   await $$('.ngx-pagination.responsive').get(0)
+      .$$('li')
+      .count()
+      .then(async function (num) {
+         browser.executeScript('window.scrollTo(0, document.body.scrollHeight)');
+         await $$('.ngx-pagination.responsive').get(0).$$('li').get(num - 2).click();
+         browser.wait(EC.presenceOf($('.pagination-next.disabled')));
    });
 };

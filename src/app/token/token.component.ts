@@ -9,32 +9,36 @@ import { HealthcashService } from '../shared/web3/healthcash.service';
 export class TokenComponent implements OnInit {
   @Input() tokenService: any;
   @Input() drsService: any;
-  balance:number;
-  canspend:number;
-  addr:string;
-  amount:number;
-  editing:boolean = false;
-  constructor(private healthcashService:HealthcashService) { }
+  balance: number;
+  canspend: number;
+  addr: string;
+  amount: number;
+  editing: boolean = false;
+  constructor(private healthcashService:HealthcashService) {};
 
   ngOnInit() {
-    this.healthcashService.currentBalance.subscribe(balance => this.balance = balance)
-    this.healthcashService.allowedToSpend.subscribe(canspend => this.canspend = canspend)
-  }
+    this.healthcashService.currentBalance.subscribe(
+      balance => this.balance = balance
+    );
+    this.healthcashService.allowedToSpend.subscribe(
+      canspend => this.canspend = canspend
+    );
+  };
 
-  balances(): any{
+  balances(): any {
     this.healthcashService.balanceOf();
     this.healthcashService.drsApprovedFor();
-  }
+  };
 
   editCanSpend() {
     this.editing = !this.editing;
-  }
+  };
 
-  transfer(addr, amount): any{
+  transfer(addr, amount): any {
     this.healthcashService.transfer(addr, amount);
-  }
+  };
 
   approveHLTH(value): any {
     this.healthcashService.approve(value)
-  }
-}
+  };
+};

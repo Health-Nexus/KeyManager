@@ -1,10 +1,10 @@
 import { AppPage } from './app.po';
 import { $, $$, ExpectedConditions } from 'protractor';
-import { metamaskLogin, switchToTab1, } from './functions/app.functionsShare';
+import { metamaskLogin, switchToTab1, } from './functions/app.functions-share';
 import { account1mnemonic, account1password } from './environment/app.accountsInfo';
 
-var protractor = require('protractor');
-var browser = require("protractor").protractor.browser;
+let protractor = require('protractor');
+let browser = require("protractor").protractor.browser;
 let EC = ExpectedConditions;
 
 /**

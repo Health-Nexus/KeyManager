@@ -7,12 +7,11 @@ import { Component } from '@angular/core';
 })
 export class LoginComponent {
   wallet = '';
-  private=false;
-  keystore=false;
-
+  private = false;
+  keystore = false;
 
   chooseWallet(type) {
-    this.wallet=type;
-  }
+    this.wallet = type;
+  };
 
-}
+};

@@ -1,15 +1,15 @@
 'use strict';
 
-var protractor = require('protractor');
-var browser = require("protractor").protractor.browser;
+let protractor = require('protractor');
+let browser = require("protractor").protractor.browser;
 let EC = ExpectedConditions;
 
-var pageChild = function () {
+let pageChild = function () {
    browser.get('localhost:4200');
 };
 
 pageChild.prototype = Object.create({}, {
-  
+
    managingChildTitleText: {
       get: () => {
          browser.wait(EC.presenceOf($('#managingChildTitleText')), 20000);
@@ -135,37 +135,37 @@ pageChild.prototype = Object.create({}, {
    },
    shareOn: {
       get: () => {
-         browser.wait(EC.elementToBeClickable($('#shareOn')), 10000);
+         browser.wait(EC.elementToBeClickable($('#shareOn')), 20000);
          return $('#shareOn');
       }
    },
    shareOff: {
       get: () => {
-         browser.wait(EC.elementToBeClickable($('#shareOff')), 10000);
+         browser.wait(EC.elementToBeClickable($('#shareOff')), 20000);
          return $('#shareOff');
       }
    },
    sellOn: {
       get: () => {
-         browser.wait(EC.elementToBeClickable($('#sellOn')), 10000);
+         browser.wait(EC.elementToBeClickable($('#sellOn')), 20000);
          return $('#sellOn');
       }
    },
    sellOff: {
       get: () => {
-         browser.wait(EC.elementToBeClickable($('#sellOff')), 10000);
+         browser.wait(EC.elementToBeClickable($('#sellOff')), 20000);
          return $('#sellOff');
       }
    },
    tradeOn: {
       get: () => {
-         browser.wait(EC.elementToBeClickable($('#tradeOn')), 10000);
+         browser.wait(EC.elementToBeClickable($('#tradeOn')), 20000);
          return $('#tradeOn');
       }
    },
    tradeOff: {
       get: () => {
-         browser.wait(EC.elementToBeClickable($('#tradeOff')), 10000);
+         browser.wait(EC.elementToBeClickable($('#tradeOff')), 20000);
          return $('#tradeOff');
       }
    },
@@ -178,7 +178,7 @@ pageChild.prototype = Object.create({}, {
    },
    shareBtn: {
       get: () => {
-         browser.wait(EC.elementToBeClickable($('#shareBtn')), 5000);
+         browser.wait(EC.elementToBeClickable($('#shareBtn')), 20000);
          return $('#shareBtn');
       }
    },
@@ -220,7 +220,7 @@ pageChild.prototype = Object.create({}, {
    },
    cancelAllTrade: {
       get: () => {
-         browser.wait(EC.presenceOf($('#cancelAllTrade')),20000);
+         browser.wait(EC.presenceOf($('#cancelAllTrade')), 20000);
          return $('#cancelAllTrade');
       }
    }

@@ -1,59 +1,115 @@
+<!DOCTYPE html>
+
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <div class="container">
+  
+  <!-- MAIN PAGE -->
   <div class="row drs" [hidden]="selectedParentKey || selectedChildKey">
-    <button id="orgViewBtn" class="form-control2 md-raised" (click)="buttonPhuseOff()">Original View
-      {{!show ? '' : ''}}</button>
-    <button id="phViewBtn" class="form-control2 md-raised" (click)="buttonPhuseOn()">PhUSE
-      {{show ? 'selected' : ''}}</button>
-    <br>
-    <br>
+    <button id="orgViewBtn" 
+        class="form-control2 md-raised" 
+        (click)="buttonPhuseOff()">
+        Original View {{!show ? '' : ''}}
+    </button>
+    <button id="phViewBtn" 
+        class="form-control2 md-raised" 
+        (click)="buttonPhuseOn()">
+        PhUSE {{show ? 'selected' : ''}}
+    </button>
+    <br><br>
     <ng-container *ngIf="show">
       <div id="phuseText">
-        <span class="listTitle">Instructions on how to operate Health Nexus Data Sharing for Phuse</span>
-        <span class="listElement">1. Create or choose a parent key to attach to your database</span>
-        <span class="listElement">2. Next, create a child key off of the given parent key</span>
-        <span class="listElement">3. Then, create a child key off of the given parent key and set parameters</span>
-        <span class="listElement">4. Next, set PhUSE id and retrieve the key data</span>
-        <span class="listElement">5. If needed, upload data that you will need to transfer either here or through your
-          gatekeeper itself</span>
+        <span class="listTitle">Instructions on how to operate 
+            Health Nexus Data Sharing for Phuse</span>
+        <span class="listElement">1. Create or choose a parent 
+            key to attach to your database</span>
+        <span class="listElement">2. Next, create a child key 
+            off of the given parent key</span>
+        <span class="listElement">3. Then, create a child key 
+            off of the given parent key and set parameters</span>
+        <span class="listElement">4. Next, set PhUSE id and 
+            retrieve the key data</span>
+        <span class="listElement">5. If needed, upload data 
+            that you will need to transfer either here or 
+            through your gatekeeper itself</span>
         <span class="listElement">6. Finally, transact the key</span>
-        <span id="walkthrough">For a more thorough walk through please check out our <a id="mediumLink"
-            href="https://medium.com/simplyvital/lets-hit-the-ground-running-with-health-nexus-5c25df21c56d">walkthrough</a></span>
+        <span id="walkthrough">For a more thorough walk through 
+            please check out our 
+          <a id="mediumLink"
+              href="https://medium.com/simplyvital/lets-hit-the-ground-running-with-health-nexus-5c25df21c56d">
+              walkthrough
+          </a>
+        </span>
         <br>
       </div>
     </ng-container>
     <br>
-    <span id="createParentTitleText" class="title">Create New Parent Key</span>
-    <span id="createParentInfo" class="element">Create a parent key using the URL to your gatekeeper- or
-      blockchain-enabled service</span>
-    <input id="createParentInput" type="text" class="form-control" placeholder="Enter parent key value here" name="url"
-      #url>
-    <button id="createParentBtn" class="form-control" (click)="createService(url.value)">Generate</button>
+    <span id="createParentTitleText" 
+        class="title">
+        Create New Parent Key
+    </span>
+    <span id="createParentInfo" 
+        class="element">
+        Create a parent key using the URL to your 
+        gatekeeper- or blockchain-enabled service
+    </span>
+    <input id="createParentInput" 
+        type="text" 
+        class="form-control" 
+        placeholder="Enter parent key value here" 
+        name="url"
+        #url>
+    <button id="createParentBtn" 
+        class="form-control" 
+        (click)="createService(url.value)">
+        Generate
+    </button>
     <br>
+
     <div class="row padding-top-lg">
-      <span id="parentKeysTitleText" class="title" [ngClass]="{'hidden': !loaded, 'inline': loaded}">My Parent
-        Keys</span>
-      <div
-        *ngFor="let service of services | paginate: { id:'parentPaginator', itemsPerPage: 10, currentPage: parentPage }">
+      <span id="parentKeysTitleText" 
+          class="title" 
+          [ngClass]="{'hidden': !loaded, 'inline': loaded}">
+          My Parent Keys
+      </span>
+      <div *ngFor="let service of services | paginate: 
+          { id:'parentPaginator', itemsPerPage: 10, currentPage: parentPage }">
         <span>
-          <div id="parentKeysList" class="clickable margin-v-sm" (click)="pickParentKey(service._service)">
-            {{ service._service }}: {{ service.url | async }}</div>
+          <div id="parentKeysList" 
+              class="clickable margin-v-sm" 
+              (click)="pickParentKey(service._service)">
+              {{ service._service }}: {{ service.url | async }}
+          </div>
         </span>
       </div>
       <small>
-        <pagination-controls id="parentPaginator" (pageChange)="parentPage = $event" autoHide=true responsive=true
-          previousLabel="" nextLabel=""></pagination-controls>
+        <pagination-controls id="parentPaginator" 
+            (pageChange)="parentPage = $event" 
+            autoHide=true 
+            responsive=true
+            previousLabel="" 
+            nextLabel="">
+        </pagination-controls>
       </small>
       <div class="col-9 padding-top-lg">
         <span id="purchaseKeysTitleText" class="title">Purchase Keys</span>
-        <small>Insert the id for the key you would like to purchase below:</small>
+        <small>
+            Insert the id for the key you would like to purchase below:
+        </small>
         <br>
-        <input id="purchaseKeysInput" type="text" class="half form-control" placeholder="Key to purchase"
-          name="keyPurchase" #keyPurchase>
-        <button id="purchaseKeysBtn" class="form-control" (click)="purchaseKey(keyPurchase.value)">Purchase</button>
+        <input id="purchaseKeysInput" 
+            type="text" 
+            class="half form-control" 
+            placeholder="Key to purchase"
+            name="keyPurchase" 
+            #keyPurchase>
+        <button id="purchaseKeysBtn" 
+            class="form-control" 
+            (click)="purchaseKey(keyPurchase.value)">
+            Purchase
+        </button>
         <br>
       </div>
       <div class="col-9 padding-top-lg">
@@ -61,20 +117,37 @@
         <!-- <div *ngFor="let key of keys">
           <span class="clickable margin-v-sm" (click)="pickChildKey(key.key)">{{ key.key }}</span>
         </div> -->
-        <div
-          *ngFor="let keyShared of keyAccessArray | paginate: { id:'ownedPaginator', itemsPerPage: 10, currentPage: ownedPage }">
-          <span id="ownedKeysList" class="clickable margin-v-sm"
-            (click)="pickChildKey(keyShared.key)">{{ keyShared.key }}: {{ keyShared.url }}</span>
+        <div *ngFor="let keyShared of keyAccessArray | paginate: 
+            { id:'ownedPaginator', itemsPerPage: 10, currentPage: ownedPage }">
+          <span id="ownedKeysList" 
+              class="clickable margin-v-sm"
+              (click)="pickChildKey(keyShared.key)">
+              {{ keyShared.key }}: {{ keyShared.url }}
+          </span>
         </div>
         <small>
-          <pagination-controls id="ownedPaginator" (pageChange)="ownedPage = $event" autoHide=true responsive=true
-            previousLabel="" nextLabel=""></pagination-controls>
+          <pagination-controls id="ownedPaginator" 
+              (pageChange)="ownedPage = $event" 
+              autoHide=true 
+              responsive=true
+              previousLabel="" 
+              nextLabel="">
+          </pagination-controls>
         </small>
       </div>
+
       <!-- <div class="col-9 padding-top-lg">
         <span>Make trade offer</span>
-        <input type="text" class="half form-control" placeholder="Key to trade" name="keyTrade" #keyTrade>
-        <input type="text" class="half form-control" placeholder="Key to trade for" name="keyToTrade" #keyToTrade>
+        <input type="text" 
+        class="half form-control" 
+        placeholder="Key to trade" 
+        name="keyTrade" 
+        #keyTrade>
+        <input type="text" 
+        class="half form-control" 
+        placeholder="Key to trade for" 
+        name="keyToTrade" 
+        #keyToTrade>
       </div>
       <div class="col-9 padding-top-lg">
         <div class="border-bottom padding-v-lg">
@@ -82,11 +155,15 @@
             <span>Outstanding trade offers</span>
             <div class="padding-sm">
               <span class="bold margin-v-sm inline">absaklsa2js923cde</span>
-              <span class="inline float-right clickable padding-h-sm">Cancel</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-h-sm">View</span>
+              <span class="inline float-right clickable padding-h-sm">Cancel</span>
+              <span class="float-right inline">|</span>
+              <span class="inline clickable float-right padding-h-sm">View</span>
             </div>
             <div class="padding-sm">
               <span class="bold margin-v-sm inline">absaklsa2js923cde</span>
-              <span class="inline float-right clickable padding-h-sm">Cancel</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-h-sm">View</span>
+              <span class="inline float-right clickable padding-h-sm">Cancel</span>
+              <span class="float-right inline">|</span>
+              <span class="inline clickable float-right padding-h-sm">View</span>
             </div>
           </div>
         </div>
@@ -95,12 +172,15 @@
             <span>Incoming trade offers</span>
             <div class="padding-sm">
               <span class="bold margin-v-sm inline">absaklsa2js923cde</span>
-              <span class="inline float-right clickable padding-h-sm">Decline</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-h-sm">Accept</span>
+              <span class="inline float-right clickable padding-h-sm">Decline</span>
+              <span class="float-right inline">|</span>
+              <span class="inline clickable float-right padding-h-sm">Accept</span>
             </div>
-
             <div class="padding-sm">
               <span class="bold margin-v-sm inline">absaklsa2js923cde</span>
-              <span class="inline float-right clickable padding-h-sm">Decline</span><span class="float-right inline">|</span><span class="inline clickable float-right padding-h-sm">Accept</span>
+              <span class="inline float-right clickable padding-h-sm">Decline</span>
+              <span class="float-right inline">|</span>
+              <span class="inline clickable float-right padding-h-sm">Accept</span>
             </div>
           </div>
         </div>
@@ -108,89 +188,169 @@
     </div>
   </div>
 
+
+  <!-- PARENT KEY VIEW -->
   <div [hidden]="!selectedParentKey && !selectedChildKey">
-    <!-- PARENT KEY VIEW -->
     <div class="row" [hidden]="selectedChildKey">
       <!-- <div *ngIf="show" class="text-sm">(PhUSE is selexcted)</div> -->
       <br>
-      <span id="managingParentTitleText" class="padding-bottom-md title">Managing parent key</span>
-      <span id="managingParentKey" class="bold"> {{ selectedParentKey && selectedParentKey._service }}:
-        {{ selectedParentKey && selectedParentKey.url | async }} </span>
+      <span id="managingParentTitleText" 
+          class="padding-bottom-md title">
+          Managing parent key
+      </span>
+      <span id="managingParentKey" 
+          class="bold"> 
+          {{ selectedParentKey && selectedParentKey._service }}:
+          {{ selectedParentKey && selectedParentKey.url | async }} 
+      </span>
       <br>
-      <span id="childKeyTitleText" class="padding-top-lg title">Child keys</span>
-      <div id="childKeyInfoText"><small>Generate the permissioned childkeys here to be traded</small></div>
+      <span id="childKeyTitleText" 
+          class="padding-top-lg title">
+          Child keys
+      </span>
+      <div id="childKeyInfoText">
+        <small>Generate the permissioned childkeys here to be traded</small>
+      </div>
       <br>
-      <button id="generateChildBtn" class="form-control"
-        (click)="createParentKey(selectedParentKey && selectedParentKey._service)">Generate new</button>
+      <button id="generateChildBtn" 
+          class="form-control"
+          (click)="createParentKey(selectedParentKey && 
+              selectedParentKey._service)">
+          Generate new
+      </button>
       <div *ngIf="selectedParentKey && selectedParentKey.keys">
-        <div
-          *ngFor="let key of selectedParentKey.keys | paginate: { id:'childPaginator', itemsPerPage: 10, currentPage: childPage }">
-          <span id="childKeysList" class="clickable padding-v-sm" (click)="pickChildKey(key.id)"> {{ key.id }}</span>
+        <div *ngFor="let key of selectedParentKey.keys | paginate: 
+            { id:'childPaginator', itemsPerPage: 10, currentPage: childPage }">
+          <span id="childKeysList" 
+              class="clickable padding-v-sm" 
+              (click)="pickChildKey(key.id)"> 
+              {{ key.id }}
+          </span>
         </div>
-        <pagination-controls id="childPaginator" (pageChange)="childPage = $event" autoHide=true responsive=true
-          previousLabel="" nextLabel=""></pagination-controls>
+        <pagination-controls id="childPaginator" 
+            (pageChange)="childPage = $event" 
+            autoHide=true 
+            responsive=true
+            previousLabel="" 
+            nextLabel="">
+        </pagination-controls>
       </div>
     </div>
 
-    <!-- CHILD KEY VIEW -->
     <div class="row" [hidden]="!selectedChildKey">
-      <span id="managingChildTitleText" class="padding-bottom-md title">Managing child key</span>
+      <!-- OWNED & CHILD KEY VIEW -->
+      <span id="managingChildTitleText" 
+          class="padding-bottom-md title">
+          Managing child key
+      </span>
       <span id="managingChildKey"
-        class="bold">{{ selectedChildKey && selectedChildKey.id || selectedChildKey && selectedChildKey.key }}</span>
+          class="bold">
+          {{ selectedChildKey && selectedChildKey.id || 
+              selectedChildKey && selectedChildKey.key }}
+      </span>
       <br>
       <div *ngIf="show">
         <p class="title">Update or Register your PhUSE ID</p>
-        <small>Register you PhUSE Id with Health Nexus to connect with the PhUSE App</small>
+        <small>
+            Register you PhUSE Id with Health Nexus 
+            to connect with the PhUSE App
+        </small>
         <br>
-        <input type="text" class="half form-control" placeholder="PhUSE ID" name="phuseNumber" #phuseNumber>
-        <button class="form-control" (click)="updatePhuse(phuseNumber.value)">Update</button>
+        <input type="text" 
+            class="half form-control" 
+            placeholder="PhUSE ID" 
+            name="phuseNumber" 
+            #phuseNumber>
+        <button class="form-control" 
+            (click)="updatePhuse(phuseNumber.value)">
+            Update
+        </button>
         <br>
       </div>
       <br>
-      <!-- <div class="title">Upload file to gatekeeper</div> -->
-      <div id="gatekeeperTitleText" class="title">Upload a file to the gatekeeper server:</div>
+      <div id="gatekeeperTitleText" 
+          class="title">
+          Upload a file to the gatekeeper server:
+      </div>
       <br>
       <div class="form-group">
         <label id="chooseInfoText" for="file">Choose file:</label>
-        <input type="file" id="file" (change)="handleFileInput($event.target.files)" style="width:90px">
+        <input type="file" 
+            id="file" 
+            (change)="handleFileInput($event.target.files)" 
+            style="width:90px">
       </div>
       <br>
-      <small id="retrieveInfoText" class="padding-top-lg title" style="padding-top: 10px;">Retrieve child key
-        data:</small>
+      <small id="retrieveInfoText" 
+          class="padding-top-lg title" 
+          style="padding-top: 10px;">
+          Retrieve child key data:
+      </small>
       <div *ngIf="image">
-        <img [src]="image" />
+        <img [src]="image" alt=""/>
       </div>
-      <div *ngIf="json"> {{ json }}</div>
-      <span id="retrieveWarning" class="warning margin-v-sm">Warning: not verified for sensitive data; any data may be
-        unsanitized. Additionally, make sure to only download data from trusted sources. We are not verifing the safety
-        of the data</span>
+      <div *ngIf="json">{{ json }}</div>
+      <span id="retrieveWarning" 
+          class="warning margin-v-sm">
+          Warning: not verified for sensitive data; any data may be
+          unsanitized. Additionally, make sure to only download data 
+          from trusted sources. We are not verifing the safety
+          of the data
+      </span>
       <br>
-      <small id="insertInfoText">Insert the parameter you would like to use to retrieve the data</small>
+      <small id="insertInfoText">
+        Insert the parameter you would like to use to retrieve the data
+      </small>
       <br>
       <div>
-        <input type="text" class="form-control" placeholder="Insert parameter to send" name="Parameter" #Parameter>
-        <button id="retrieveBtn" class="form-control" (click)="retrieveData(Parameter.value)">Retrieve</button>
+        <input type="text" 
+            class="form-control" 
+            placeholder="Insert parameter to send" 
+            name="Parameter" 
+            #Parameter>
+        <button id="retrieveBtn" 
+            class="form-control" 
+            (click)="retrieveData(Parameter.value)">
+            Retrieve
+        </button>
       </div>
 
-
+      <!-- CHILD KEY VIEW -->
       <div class="permissions clearfix" [hidden]="!selectedParentKey">
         <br>
-        <span id="permissionsTitleText" class="padding-top-lg inline title">Managing child key permissions</span>
+        <span id="permissionsTitleText" 
+            class="padding-top-lg inline title">
+            Managing child key permissions
+        </span>
         <br>
         <small>Edit your permissions for your child key here:</small>
         <br>
-        <span id="savePermissions" class="text-brand-blue clickable float-right" [hidden]="!editingPermissions"
-          (click)="changePermissions()">Save Permissions</span>
+        <span id="savePermissions" 
+            class="text-brand-blue clickable float-right" 
+            [hidden]="!editingPermissions"
+            (click)="changePermissions()">
+            Save Permissions
+        </span>
         <div id="permissionShareRow" class="border-bottom">
           <div class="padding-sm clearfix">
             <div class="col-6 float-left">
               <span class="bold margin-v-sm inline">Share</span>
             </div>
-            <span id="shareOn" class="inline clickable float-left padding-h-sm" (click)="setActive('share', true)"
-              [ngClass]="{'active': selectedChildKey && selectedChildKey.share }">On</span>
+            <span id="shareOn" 
+                class="inline clickable float-left padding-h-sm" 
+                (click)="setActive('share', true)"
+                [ngClass]="{'active': selectedChildKey && 
+                    selectedChildKey.share }">
+                On
+            </span>
             <span class="float-left inline">|</span>
-            <span id="shareOff" class="inline float-left clickable padding-h-sm" (click)="setActive('share', false)"
-              [ngClass]="{'active': selectedChildKey && !selectedChildKey.share }">Off</span>
+            <span id="shareOff" 
+                class="inline float-left clickable padding-h-sm" 
+                (click)="setActive('share', false)"
+                [ngClass]="{'active': selectedChildKey && 
+                    !selectedChildKey.share }">
+                Off
+            </span>
           </div>
         </div>
 
@@ -199,11 +359,21 @@
             <div class="col-6 float-left">
               <span class="bold margin-v-sm inline">Sell</span>
             </div>
-            <span id="sellOn" class="inline clickable float-left padding-h-sm" (click)="setActive('sell', true)"
-              [ngClass]="{'active': selectedChildKey && selectedChildKey.sell }">On</span>
+            <span id="sellOn" 
+                class="inline clickable float-left padding-h-sm" 
+                (click)="setActive('sell', true)"
+                [ngClass]="{'active': selectedChildKey && 
+                    selectedChildKey.sell }">
+                On
+            </span>
             <span class="float-left inline">|</span>
-            <span id="sellOff" class="inline float-left clickable padding-h-sm" (click)="setActive('sell', false)"
-              [ngClass]="{'active': selectedChildKey && !selectedChildKey.sell }">Off</span>
+            <span id="sellOff"
+                class="inline float-left clickable padding-h-sm"
+                (click)="setActive('sell', false)"
+                [ngClass]="{'active': selectedChildKey && 
+                    !selectedChildKey.sell }">
+                Off
+            </span>
           </div>
         </div>
 
@@ -212,87 +382,188 @@
             <div class="col-6 float-left">
               <span class="bold margin-v-sm inline">Trade</span>
             </div>
-            <span id="tradeOn" class="inline clickable float-left padding-h-sm" (click)="setActive('trade', true)"
-              [ngClass]="{'active': selectedChildKey && selectedChildKey.trade }">On</span>
+            <span id="tradeOn" 
+                class="inline clickable float-left padding-h-sm" 
+                (click)="setActive('trade', true)"
+                [ngClass]="{'active': selectedChildKey && 
+                    selectedChildKey.trade }">
+                On
+            </span>
             <span class="float-left inline">|</span>
-            <span id="tradeOff" class="inline float-left clickable padding-h-sm" (click)="setActive('trade', false)"
-              [ngClass]="{'active': selectedChildKey && !selectedChildKey.trade }">Off</span>
+            <span id="tradeOff" 
+                class="inline float-left clickable padding-h-sm" 
+                (click)="setActive('trade', false)"
+                [ngClass]="{'active': selectedChildKey && 
+                    !selectedChildKey.trade }">
+                Off
+            </span>
           </div>
         </div>
         <br>
-        <small>Set custom permissions, including parameters for your database, here:</small>
+        <small>
+            Set custom permissions, including parameters 
+            for your database, here:
+        </small>
         <br>
         <div *ngIf="childParamsArray">
-          <div *ngFor="let keyParamName of childParamsArray" class="border-bottom">
+          <div *ngFor="let keyParamName of childParamsArray" 
+              class="border-bottom">
             <div class="padding-sm clearfix">
               <div class="col-6 float-left">
                 <span class="bold margin-v-sm inline">{{ keyParamName }}</span>
               </div>
-              <span class="inline clickable float-left padding-h-sm" title="click to update value"
-                [ngClass]="{'hidden': editingParam[keyParamName], 'inline': !editingParam[keyParamName]}"
-                (click)="editParam(keyParamName)">{{ childParams[keyParamName] }}</span>
+              <span class="inline clickable float-left padding-h-sm" 
+                  title="click to update value"
+                  [ngClass]="{'hidden': editingParam[keyParamName], 
+                      'inline': !editingParam[keyParamName]}"
+                  (click)="editParam(keyParamName)">
+                  {{ childParams[keyParamName] }}
+              </span>
               <div class="float-left padding-h-sm"
-                [ngClass]="{'hidden': !editingParam[keyParamName], 'flexContainer': editingParam[keyParamName]}">
-                <input name="new-{{keyParamName}}" type="text" placeholder="New value" #newParamValue>
-                <button (click)="setData(keyParamName, newParamValue.value)">&#10003;</button>
+                  [ngClass]="{'hidden': !editingParam[keyParamName], 
+                      'flexContainer': editingParam[keyParamName]}">
+                <input name="new-{{keyParamName}}" 
+                    type="text" 
+                    placeholder="New value" 
+                    #newParamValue>
+                <button (click)="setData(keyParamName, 
+                    newParamValue.value)">
+                    ✓
+                </button>
               </div>
               <span class="float-left inline">|</span>
-              <span class="inline float-left clickable padding-h-sm" (click)="setData(keyParamName, null)">Remove</span>
+              <span class="inline float-left clickable padding-h-sm" 
+                  (click)="setData(keyParamName, null)">
+                  Remove
+              </span>
             </div>
           </div>
         </div>
         <div id="getParameterBox" class="editing">
-          <input type="text" class="half form-control" placeholder="Enter parameter name to get" name="getParamName"
-            #getParamName>
-          <button id="getParameterBtn" class="form-control" (click)="getData(getParamName.value)">Get</button>
+          <input type="text" 
+              class="half form-control" 
+              placeholder="Enter parameter name to get" 
+              name="getParamName"
+              #getParamName>
+          <button id="getParameterBtn" 
+              class="form-control" 
+              (click)="getData(getParamName.value)">
+              Get
+          </button>
           {{ dataOnKey | async }}
         </div>
         <div id="addParameterBox" class="editing">
-          <input id="enterParameterName" type="text" class="half form-control" placeholder="Enter parameter name"
-            name="paramName" #paramName>
-          <input id="enterParameterValue" type="text" class="half form-control" placeholder="Enter parameter value"
-            name="paramValue" #paramValue>
-          <button id="addParameterBtn" class="form-control"
-            (click)="setData(paramName.value, paramValue.value)">Add</button>
+          <input id="enterParameterName" 
+              type="text" 
+              class="half form-control" 
+              placeholder="Enter parameter name"
+              name="paramName" 
+              #paramName>
+          <input id="enterParameterValue" 
+              type="text" 
+              class="half form-control" 
+              placeholder="Enter parameter value"
+              name="paramValue" 
+              #paramValue>
+          <button id="addParameterBtn" 
+              class="form-control"
+              (click)="setData(paramName.value, paramValue.value)">
+              Add
+          </button>
         </div>
       </div>
 
       <!-- Child key management section -->
       <div [hidden]="!selectedParentKey">
-        <div id="childKeyShare" class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share"
-          [ngClass]="{'disabled': editingPermissions}">
+        <div id="childKeyShare" 
+            class="col-9 padding-top-lg" 
+            *ngIf="selectedChildKey && selectedChildKey.share"
+            [ngClass]="{'disabled': editingPermissions}">
           <span id="shareTitleText" class="title">Share keys</span>
-          <small id="shareInfoText">Insert the address for the person you would like to share with:</small>
-          <input id="shareInput" type="text" class="form-control" placeholder="Share with" name="share" #share>
-          <button id="shareBtn" class="form-control" [disabled]="editingPermissions"
-            (click)="shareKey(selectedChildKey && selectedChildKey.id, share.value)">Share</button>
+          <small id="shareInfoText">
+            Insert the address for the person you 
+            would like to share with:
+          </small>
+          <input id="shareInput" 
+              type="text" 
+              class="form-control" 
+              placeholder="Share with" 
+              name="share" 
+              #share>
+          <button id="shareBtn" 
+              class="form-control" 
+              [disabled]="editingPermissions"
+              (click)="shareKey(selectedChildKey && 
+                  selectedChildKey.id, share.value)">
+              Share
+          </button>
         </div>
 
-        <div id="childKeyUnshare" class="col-9 padding-top-lg" *ngIf="selectedChildKey && selectedChildKey.share"
-          [ngClass]="{'disabled': editingPermissions}">
+        <div id="childKeyUnshare" 
+            class="col-9 padding-top-lg" 
+            *ngIf="selectedChildKey && selectedChildKey.share"
+            [ngClass]="{'disabled': editingPermissions}">
           <span id="unshareTitleText" class="title">Unshare keys</span>
-          <small id="unshareInfoText">Insert the address for the person you would like to unshare with:</small>
-          <input id="unshareInput" type="text" class="form-control" placeholder="Unshare with" name="unshare" #unshare>
-          <button id="unshareBtn" class="form-control" [disabled]="editingPermissions"
-            (click)="unshareKey(selectedChildKey && selectedChildKey.id, unshare.value)">Unshare</button>
+          <small id="unshareInfoText">
+            Insert the address for the person you would like to unshare with:
+          </small>
+          <input id="unshareInput" 
+              type="text" 
+              class="form-control" 
+              placeholder="Unshare with" 
+              name="unshare" 
+              #unshare>
+          <button id="unshareBtn" 
+              class="form-control" 
+              [disabled]="editingPermissions"
+              (click)="unshareKey(selectedChildKey && 
+                  selectedChildKey.id, unshare.value)">
+              Unshare
+          </button>
         </div>
 
-        <div id="childKeySale" class="col-9 padding-top-lg" *ngIf="canMakeSaleOffer()"
-          [ngClass]="{'disabled': editingPermissions}">
+        <div id="childKeySale" 
+            class="col-9 padding-top-lg" 
+            *ngIf="canMakeSaleOffer()"
+            [ngClass]="{'disabled': editingPermissions}">
           <span id="saleTitleText" class="title">Make sale offer</span>
-          <small id="saleInfoText">Insert the address for the person you would like to make an offer to:</small>
+          <small id="saleInfoText">
+              Insert the address for the person you 
+              would like to make an offer to:
+          </small>
           <br>
-          <input id="saleTo" type="text" class="half form-control" placeholder="Sell to" name="buyer" #buyer>
-          <input id="saleAmount" type="number" class="half form-control" placeholder="Amount" name="price" #price>
-          <span id="saleCan" class="inline text-md">Can sell: <input type="checkbox" name="sellPermission"
-              #sellPermission></span>
-          <button id="saleBtn" class="form-control" [disabled]="editingPermissions"
-            (click)="sellKeyOffer(buyer.value, price.value, sellPermission.checked)">Send</button>
+          <input id="saleTo" 
+              type="text" 
+              class="half form-control" 
+              placeholder="Sell to" 
+              name="buyer" 
+              #buyer>
+          <input id="saleAmount" 
+              type="number" 
+              class="half form-control" 
+              placeholder="Amount" 
+              name="price" 
+              #price>
+          <span id="saleCan" class="inline text-md">
+            Can sell: 
+            <input type="checkbox" 
+                name="sellPermission"
+                #sellPermission>
+          </span>
+          <button id="saleBtn" 
+              class="form-control" 
+              [disabled]="editingPermissions"
+              (click)="sellKeyOffer(buyer.value, price.value, sellPermission.checked)">
+              Send
+          </button>
         </div>
-        <span id="cancelAllTrade" class="text-brand-blue can-click padding-top-lg"
-          (click)="cancelTradeKeyOffer(selectedChildKey && selectedChildKey.id)">Cancel all outstanding trade
-          offers</span>
+        <span id="cancelAllTrade" 
+            class="text-brand-blue can-click padding-top-lg"
+            (click)="cancelTradeKeyOffer(selectedChildKey && selectedChildKey.id)">
+            Cancel all outstanding trade offers
+        </span>
       </div>
     </div>
   </div>
+
 </div>

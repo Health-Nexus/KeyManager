@@ -3,7 +3,7 @@
 const { SpecReporter } = require('jasmine-spec-reporter');
 
 function encode(file) {
-  var stream = require('fs').readFileSync(file);
+  let stream = require('fs').readFileSync(file);
   return new Buffer(stream).toString('base64');
 }
 

@@ -1,9 +1,9 @@
 import { AppPage } from '../app.po';
 import { by, $, $$, element, ExpectedConditions } from 'protractor';
-import { countKeys, naviagteLastPageLastParent } from './app.functionsPagination'
+import { countKeys, naviagteLastPageLastParent } from './app.functions-pagination'
 
-var protractor = require('protractor');
-var browser = require("protractor").protractor.browser;
+let protractor = require('protractor');
+let browser = require("protractor").protractor.browser;
 let EC = ExpectedConditions;
 
 export let page: AppPage;
@@ -22,12 +22,12 @@ export async function handleWelcomePage() {
    let welcomePage = await $('#welcomeMsg').isPresent().then(function (value) {
       return value;
    });
-   if (welcomePage == true) {
+   if (welcomePage === true) {
       newAppPage();
       page.navigateTo();
-   }
+   };
    page.navigateTo();
-}
+};
 
 /**
  * login to metamask
@@ -45,7 +45,7 @@ export function metamaskLogin(mnemonic, password) {
       browser.ignoreSynchronization = true;
       if (browser.getTitle().then(function (text) {
          return text;
-      }) == "MetaMask Notification") {
+      }) === "MetaMask Notification") {
          browser.driver.close();
          browser.switchTo().window((handle0));
          browser.getAllWindowHandles().then(function (handles) {
@@ -61,11 +61,14 @@ export function metamaskLogin(mnemonic, password) {
       browser.driver.wait(EC.elementToBeClickable($('.button.btn-default.btn--large.page-container__footer-button')), 5000);
       $$('.button.btn-default.btn--large.page-container__footer-button').get(0).click();
       browser.driver.wait(EC.presenceOf($('.first-time-flow__textarea')), 5000);
-      $('.first-time-flow__textarea').sendKeys(mnemonic)
-      $('#password').sendKeys(password)
+      $('.first-time-flow__textarea').sendKeys(mnemonic);
+      $('#password').sendKeys(password);
       $('#confirm-password').sendKeys(password);
       $('.first-time-flow__checkbox').click();
-      browser.driver.wait(EC.and(EC.elementToBeClickable($('.button.btn-primary.first-time-flow__button')), EC.elementToBeClickable($('.button.btn-primary.first-time-flow__button'))));
+      browser.driver.wait(EC.and(
+         EC.elementToBeClickable($('.button.btn-primary.first-time-flow__button')), 
+         EC.elementToBeClickable($('.button.btn-primary.first-time-flow__button'))
+      ));
       $('.button.btn-primary.first-time-flow__button').click();
       browser.driver.wait(EC.presenceOf($('.loading-overlay')));
       browser.driver.wait(EC.stalenessOf($('.loading-overlay')));
@@ -95,17 +98,17 @@ export function switchWallets(mnemonic, password) {
       browser.switchTo().window((handle1));
       browser.ignoreSynchronization = true;
       browser.get("chrome-extension://jgdghhcboioigekocoopcgjlpfepkdgi/home.html#");
-      browser.driver.wait(EC.elementToBeClickable($('.account-menu__icon')), 5000)
+      browser.driver.wait(EC.elementToBeClickable($('.account-menu__icon')), 5000);
       $('.account-menu__icon').click();
-      browser.driver.wait(EC.elementToBeClickable($('.account-menu__logout-button')), 5000)
+      browser.driver.wait(EC.elementToBeClickable($('.account-menu__logout-button')), 5000);
       $('.account-menu__logout-button').click();
-      browser.driver.wait(EC.elementToBeClickable($('.unlock-page__link.unlock-page__link--import')), 5000)
+      browser.driver.wait(EC.elementToBeClickable($('.unlock-page__link.unlock-page__link--import')), 5000);
       $('.unlock-page__link.unlock-page__link--import').click();
-      browser.driver.wait(EC.presenceOf($('.import-account__secret-phrase')), 5000)
+      browser.driver.wait(EC.presenceOf($('.import-account__secret-phrase')), 5000);
       $('.import-account__secret-phrase').sendKeys(mnemonic);
       $('#password').sendKeys(password);
       $('#confirm-password').sendKeys(password);
-      browser.driver.wait(EC.elementToBeClickable(element(by.buttonText('Restore'))), 5000)
+      browser.driver.wait(EC.elementToBeClickable(element(by.buttonText('Restore'))), 5000);
       element(by.buttonText('Restore')).click();
       browser.driver.close();
    });
@@ -172,10 +175,10 @@ export async function metamaskConfirm() {
       $('.confirm-detail-row__header-text.confirm-detail-row__header-text--edit').click();
       browser.driver.wait(EC.elementToBeClickable($$('.button-group__button').last()), 5000);
       $$('.button-group__button').last().click();
-      browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)').then(function () { });;
+      browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)');
       browser.driver.wait(EC.elementToBeClickable($('.button.btn-secondary.btn--large.page-container__footer-button')), 5000);
       $('.button.btn-secondary.btn--large.page-container__footer-button').click();
-      browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)').then(function () { });
+      browser.driver.executeScript('window.scrollTo(0, document.body.scrollHeight)');
       browser.driver.wait(EC.elementToBeClickable($('.button.btn-primary.btn--large.page-container__footer-button')));
       browser.driver.sleep(1000);
       $('.button.btn-primary.btn--large.page-container__footer-button').click();
@@ -240,9 +243,12 @@ export async function createChildKey() {
       return text.substring(0, 63);
    });
    browser.wait(EC.elementToBeClickable($$('#parentKeysList').last()), 5000);
-   browser.executeScript('arguments[0].scrollIntoView();', $$('#parentKeysList').last().getWebElement()).then(function () {
-      $$('#parentKeysList').last().click();
-   });
+   browser.executeScript('arguments[0].scrollIntoView();', $$('#parentKeysList').last()
+      .getWebElement())
+      .then(function () {
+         $$('#parentKeysList').last().click();
+      }
+   );
    browser.wait(EC.presenceOf($('#managingParentKey')), 5000);
    let a2_pm1 = await $('#managingParentKey').getText().then(function (text) {
       return text.substring(0, 63);
@@ -258,14 +264,17 @@ export async function createChildKey() {
    await $('#parentPaginator').isDisplayed().then(async function (result) {
       if (result) {
          await naviagteLastPageLastParent();
-      }
+      };
    });
    a2_pLast = await $$('#parentKeysList').last().getText().then(function (text) {
       return text.substring(0, 63);
    });
-   browser.executeScript('arguments[0].scrollIntoView();', $$('#parentKeysList').last().getWebElement()).then(function () {
-      $$('#parentKeysList').last().click();
-   });
+   browser.executeScript('arguments[0].scrollIntoView();', $$('#parentKeysList').last()
+      .getWebElement())
+      .then(function () {
+         $$('#parentKeysList').last().click();
+      }
+   );
    browser.sleep(1000);
    browser.wait(EC.presenceOf($('#managingParentKey')), 5000);
    a2_pm1 = await $('#managingParentKey').getText().then(function (text) {
@@ -274,16 +283,20 @@ export async function createChildKey() {
    await expect(a2_pm1).toBe(a2_pLast);
    browser.wait(EC.presenceOf($('#childKeysList')), 30000);
    await countKeys(0, 'child', 'updated');
-   let a2_pLast_cLast = await $$('#childKeysList').last().getText().then(function (text) {
-      return text.substring(0, 63);
-   });
+   let a2_pLast_cLast = await $$('#childKeysList').last().getText()
+      .then(function (text) {
+         return text.substring(0, 63);
+      }
+   );
    browser.wait(EC.elementToBeClickable($$('#childKeysList').last()));
    await $$('#childKeysList').last().click();
    browser.wait(EC.presenceOf($('#managingChildKey')), 30000);
-   let a2_pLast_c_managing = await $('#managingChildKey').getText().then(function (text) {
-      return text.substring(0, 63);
-   });
-   await expect(a2_pLast_c_managing).toBe(a2_pLast_cLast)
+   let a2_pLast_c_managing = await $('#managingChildKey').getText()
+      .then(function (text) {
+         return text.substring(0, 63);
+      }
+   );
+   await expect(a2_pLast_c_managing).toBe(a2_pLast_cLast);
    switchToTab1();
 };
 
@@ -331,8 +344,7 @@ export async function navigateNewChild() {
  */
 export async function setChildKeyPermissions() {
    navigateNewChild();
-   await browser.executeScript('window.scrollTo(0,1000);').then(function () {
-   });
+   await browser.executeScript('window.scrollTo(0,1000);');
    browser.wait(EC.elementToBeClickable($('#shareOn')), 10000);
    await $('#shareOn').click();
    browser.wait(EC.elementToBeClickable($('#sellOff')), 10000);
@@ -342,8 +354,7 @@ export async function setChildKeyPermissions() {
    browser.wait(EC.elementToBeClickable($('#savePermissions')), 10000);
    await $('#savePermissions').click();
    metamaskConfirm();
-   browser.executeScript('window.scrollTo(0,1500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500);');
    browser.wait(EC.presenceOf($('#shareOn')), 5000);
    await expect($('#shareOn').getAttribute('class')).toContain('active');
    browser.wait(EC.presenceOf($('#sellOff')), 5000);

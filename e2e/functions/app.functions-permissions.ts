@@ -1,9 +1,9 @@
 import { $, $$, ExpectedConditions } from 'protractor';
-import { metamaskConfirm, switchToTab1 } from './app.functionsShare';
+import { metamaskConfirm, switchToTab1 } from './app.functions-share';
 import { AppPage } from '../app.po';
 
-var protractor = require('protractor');
-var browser = require("protractor").protractor.browser;
+let protractor = require('protractor');
+let browser = require("protractor").protractor.browser;
 let EC = ExpectedConditions;
 let page: AppPage = new AppPage();
 
@@ -16,8 +16,7 @@ export async function navigateTestChild() {
    let parentKey = await $$('#parentKeysList').get(0).getText().then(function (text) {
       return text.substring(0, 63);
    });
-   browser.executeScript('window.scrollTo(0,500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,500);');
    await $$('#parentKeysList').get(0).click();
    browser.wait(EC.presenceOf($$('#childKeysList').get(0)), 20000);
    let managingParentKey = await $$('#managingParentKey').get(0).getText().then(function (text) {
@@ -51,8 +50,7 @@ export async function navigateTestChild() {
  * set permissions to "none"
  */
 export async function permNone(){
-   browser.executeScript('window.scrollTo(0,1000)').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1000)');
    browser.wait(EC.presenceOf($('.permissions.clearfix')), 5000)
    browser.wait(EC.elementToBeClickable($('#shareOff')), 5000);
    await $('#shareOff').click();
@@ -63,8 +61,7 @@ export async function permNone(){
    browser.wait(EC.elementToBeClickable($('#savePermissions')), 5000);
    await $('#savePermissions').click();
    metamaskConfirm();
-   browser.executeScript('window.scrollTo(0,1500)').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500)');
    browser.wait(EC.presenceOf($('#shareOff')), 5000);
    await expect($('#shareOff').getAttribute('class')).toContain('active');
    browser.wait(EC.presenceOf($('#sellOff')), 5000);
@@ -82,8 +79,7 @@ export async function permNone(){
  */
 export async function permShare(){
    // navigateTestChild();
-   browser.executeScript('window.scrollTo(0,1000);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1000);');
    browser.wait(EC.elementToBeClickable($('#shareOn')), 5000);
    await $('#shareOn').click();
    browser.wait(EC.elementToBeClickable($('#sellOff')), 5000);
@@ -93,8 +89,7 @@ export async function permShare(){
    browser.wait(EC.elementToBeClickable($('#savePermissions')), 5000);
    await $('#savePermissions').click();
    metamaskConfirm();
-   browser.executeScript('window.scrollTo(0,1500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500);');
    browser.wait(EC.presenceOf($('#shareOn')), 5000);
    await expect($('#shareOn').getAttribute('class')).toContain('active');
    browser.wait(EC.presenceOf($('#sellOff')), 5000);
@@ -114,8 +109,7 @@ export async function permShare(){
  */
 export async function permSell(){
    // navigateTestChild();
-   browser.executeScript('window.scrollTo(0,1000);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1000);');
    browser.wait(EC.elementToBeClickable($('#shareOff')), 5000);
    await $('#shareOff').click();
    browser.wait(EC.elementToBeClickable($('#sellOn')), 5000);
@@ -125,8 +119,7 @@ export async function permSell(){
    browser.wait(EC.elementToBeClickable($('#savePermissions')), 5000);
    await $('#savePermissions').click();
    metamaskConfirm();
-   browser.executeScript('window.scrollTo(0,1500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500);');
    browser.wait(EC.presenceOf($('#shareOff')), 5000);
    await expect($('#shareOff').getAttribute('class')).toContain('active');
    browser.wait(EC.presenceOf($('#sellOn')), 5000);
@@ -145,8 +138,7 @@ export async function permSell(){
  */
 export async function permTrade(){
    // navigateTestChild();
-   browser.executeScript('window.scrollTo(0,1000);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1000);');
    browser.wait(EC.elementToBeClickable($('#shareOff')), 5000);
    await $('#shareOff').click();
    browser.wait(EC.elementToBeClickable($('#sellOff')), 5000);
@@ -156,8 +148,7 @@ export async function permTrade(){
    browser.wait(EC.elementToBeClickable($('#savePermissions')), 5000);
    await $('#savePermissions').click();
    metamaskConfirm();
-   browser.executeScript('window.scrollTo(0,1500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500);');
    browser.wait(EC.presenceOf($('#shareOff')), 5000);
    await expect($('#shareOff').getAttribute('class')).toContain('active');
    browser.wait(EC.presenceOf($('#sellOff')), 5000);
@@ -174,8 +165,7 @@ export async function permTrade(){
  * set permissions to "share" and "sell"
  */
 export async function permShareSell(){
-   browser.executeScript('window.scrollTo(0,1000);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1000);');
    browser.wait(EC.elementToBeClickable($('#shareOn')), 5000);
    await $('#shareOn').click();
    browser.wait(EC.elementToBeClickable($('#sellOn')), 5000);
@@ -185,8 +175,7 @@ export async function permShareSell(){
    browser.wait(EC.elementToBeClickable($('#savePermissions')), 5000);
    await $('#savePermissions').click();
    metamaskConfirm();
-   browser.executeScript('window.scrollTo(0,1500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500);');
    browser.wait(EC.presenceOf($('#shareOn')), 5000);
    await expect($('#shareOn').getAttribute('class')).toContain('active');
    browser.wait(EC.presenceOf($('#sellOn')), 5000);
@@ -206,8 +195,7 @@ export async function permShareSell(){
  * set permissions to "share" and "trade"
  */
 export async function permShareTrade(){
-   browser.executeScript('window.scrollTo(0,1000);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1000);');
    browser.wait(EC.elementToBeClickable($('#shareOn')), 5000);
    await $('#shareOn').click();
    browser.wait(EC.elementToBeClickable($('#sellOff')), 5000);
@@ -217,8 +205,7 @@ export async function permShareTrade(){
    browser.wait(EC.elementToBeClickable($('#savePermissions')), 5000);
    await $('#savePermissions').click();
    metamaskConfirm();
-   browser.executeScript('window.scrollTo(0,1500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500);');
    browser.wait(EC.presenceOf($('#shareOn')), 5000);
    await expect($('#shareOn').getAttribute('class')).toContain('active');
    browser.wait(EC.presenceOf($('#sellOff')), 5000);
@@ -238,8 +225,7 @@ export async function permShareTrade(){
  */
 export async function permSellTrade(){
    // navigateTestChild();
-   browser.executeScript('window.scrollTo(0,1000);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1000);');
    browser.wait(EC.elementToBeClickable($('#shareOff')), 5000);
    await $('#shareOff').click();
    browser.wait(EC.elementToBeClickable($('#sellOn')), 5000);
@@ -249,8 +235,7 @@ export async function permSellTrade(){
    browser.wait(EC.elementToBeClickable($('#savePermissions')), 5000);
    await $('#savePermissions').click();
    metamaskConfirm();
-   browser.executeScript('window.scrollTo(0,1500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500);');
    browser.wait(EC.presenceOf($('#shareOff')), 5000);
    await expect($('#shareOff').getAttribute('class')).toContain('active');
    browser.wait(EC.presenceOf($('#sellOn')), 5000);
@@ -268,8 +253,7 @@ export async function permSellTrade(){
  * set permissions to "share", "sell," and "trade"
  */
 export async function permAll(){
-   browser.executeScript('window.scrollTo(0,1000);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1000);');
    browser.wait(EC.elementToBeClickable($('#shareOn')), 5000);
    await $('#shareOn').click();
    browser.wait(EC.elementToBeClickable($('#sellOn')), 5000);
@@ -279,8 +263,7 @@ export async function permAll(){
    browser.wait(EC.elementToBeClickable($('#savePermissions')), 5000);
    await $('#savePermissions').click();
    metamaskConfirm();
-   browser.executeScript('window.scrollTo(0,1500);').then(function () {
-   });
+   browser.executeScript('window.scrollTo(0,1500);');
    browser.wait(EC.presenceOf($('#shareOn')), 5000);
    await expect($('#shareOn').getAttribute('class')).toContain('active');
    browser.wait(EC.presenceOf($('#sellOn')), 5000);
@@ -352,7 +335,6 @@ export async function saleDisplay() {
    await expect($('#saleTo').isDisplayed()).toBe(true);
    await expect($('#saleAmount').isDisplayed()).toBe(true);
    await expect($('#saleBtn').isDisplayed()).toBe(true);
-
    await expect($('#cancelAllTrade').isDisplayed()).toBe(true);
    await $('#cancelAllTrade').getText().then(function (text) {
       expect(text).toBe("Cancel all outstanding trade offers");

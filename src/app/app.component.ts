@@ -13,18 +13,19 @@ export class AppComponent implements OnInit {
   isRinkeby: boolean;
   authorized: boolean = false;
 
-  constructor(private drsService:DrsService,private healthcashService:HealthcashService) {
-    if (!window.hasOwnProperty('web3')) {
-      return;
-    }
-    this.drsService.initializeWeb3();
-    this.healthcashService.initializeWeb3();
-  }
+  constructor(private drsService:DrsService,
+    private healthcashService:HealthcashService) {
+      if (!window.hasOwnProperty('web3')) {
+        return;
+      };
+      this.drsService.initializeWeb3();
+      this.healthcashService.initializeWeb3();
+  };
 
   ngOnInit() {
     this.drsService.loginChanged$.subscribe(
-    authed => {
-      this.authorized = authed;
+      authed => {
+        this.authorized = authed;
     });
 
     switch(this.drsService.web3.version.network) {
@@ -38,25 +39,25 @@ export class AppComponent implements OnInit {
       this.isRinkeby = false;
     };
 
-  }
+  };
 
-  balance(): any{
+  balance(): any {
     this.healthcashService.balanceOf();
-  }
+  };
 
-  transferOwnership(): any{
+  transferOwnership(): any {
     this.healthcashService.transferOwnership('');
-  }
+  };
 
-  getNumberService(): any{
+  getNumberService(): any {
     this.drsService.getServiceCount();
-  }
+  };
 
-  getServiceURL(id): any{
+  getServiceURL(id): any {
     this.drsService.getServiceURL(id);
-  }
+  };
 
-  setTransferAgent(): any{
+  setTransferAgent(): any {
     this.healthcashService.setTransferAgent();
-  }
+  };
 }

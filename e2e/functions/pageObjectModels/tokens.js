@@ -1,10 +1,10 @@
 'use strict';
 
-var protractor = require('protractor');
-var browser = require("protractor").protractor.browser;
+let protractor = require('protractor');
+let browser = require("protractor").protractor.browser;
 let EC = ExpectedConditions;
 
-var pageTokens = function () {
+let pageTokens = function () {
    browser.get('localhost:4200');
 };
 
@@ -40,11 +40,6 @@ pageTokens.prototype = Object.create({}, {
          return $('#maxTokensInput');
       }
    },
-   
-
-
-
-
 
 });
 
