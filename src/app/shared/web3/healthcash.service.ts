@@ -17,10 +17,12 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class HealthcashService {
   @Output() update = new EventEmitter();
-  private rinkebyContractAddr: string = '0x8a1eD83DfB3ea079ee7F057e1E7eCE964A1c6259';
+  private rinkebyContractAddr: string = 
+      '0x8a1eD83DfB3ea079ee7F057e1E7eCE964A1c6259';
   private mainContractAddr: string = '';
   private contractAddr: string;
-  private rinkebyDrsAddr: string = '0xF54a6dE3F1FE973c73BfBb9a5B35D3695Ea277D2';
+  private rinkebyDrsAddr: string = 
+      '0xF54a6dE3F1FE973c73BfBb9a5B35D3695Ea277D2';
   private mainDrsAddr: string = '';
   private drsAddr: string;
   private defaultNodeIP: string = 'MetaMask';   // Default node
@@ -62,12 +64,12 @@ export class HealthcashService {
   ngOnInit() {
     let p = new Promise<any>((resolve, reject) => {
       this.http.get("./data/HealthCash.json")
-        .subscribe(result => {
-          this.contract = result;
-          this._contract = this.web3.eth.contract(this.contract.abi);
-          this.balanceOf();
-          this.drsApprovedFor();
-          resolve(result);
+          .subscribe(result => {
+            this.contract = result;
+            this._contract = this.web3.eth.contract(this.contract.abi);
+            this.balanceOf();
+            this.drsApprovedFor();
+            resolve(result);
         });
     });
   }
@@ -90,12 +92,12 @@ export class HealthcashService {
       this._contract.at(this.contractAddr)
           .setTransferAgent('0x2c104bb9E7098Ccc5a537caF2daE52caC4E4e5B5', 
               true, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log('error from transfer agent:', error);
-          reject(error);
-        };
+                if (!error) {
+                  resolve(result);
+                } else {
+                  console.log('error from transfer agent:', error);
+                  reject(error);
+                };
       });
     });
     return p;
@@ -109,12 +111,12 @@ export class HealthcashService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .approve(this.drsAddr, amount, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log('error from transfer agent:', error);
-          reject(error);
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log('error from transfer agent:', error);
+              reject(error);
+            };
       });
     });
     return p;
@@ -130,12 +132,12 @@ export class HealthcashService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .transfer(_to, _value, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log('error from transfer:', error)
-          reject(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log('error from transfer:', error)
+              reject(error)
+            };
       });
     });
     return p;
@@ -152,15 +154,15 @@ export class HealthcashService {
     }
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
-        .allowance(this.unlockedAccount, this.drsAddr, (error, result) => {
-          if (!error) {
-            this.canspend.next(result.c[0]);
-            this.allowedToSpend = result.c[0];
-            resolve(result.c[0]);
-          } else {
-            console.log('error from allowance:', error);
-            reject(error)
-          };
+          .allowance(this.unlockedAccount, this.drsAddr, (error, result) => {
+            if (!error) {
+              this.canspend.next(result.c[0]);
+              this.allowedToSpend = result.c[0];
+              resolve(result.c[0]);
+            } else {
+              console.log('error from allowance:', error);
+              reject(error)
+            };
         });
     });
     return p;
@@ -179,14 +181,14 @@ export class HealthcashService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .balanceOf(this.unlockedAccount, (error, result) => {
-        if (!error) {
-          this.balance.next(result.c[0]);
-          this.currentBalance = result.c[0];
-          resolve(result.c[0]);
-        } else {
-          console.log('error from balance:', error)
-          reject(error)
-        };
+            if (!error) {
+              this.balance.next(result.c[0]);
+              this.currentBalance = result.c[0];
+              resolve(result.c[0]);
+            } else {
+              console.log('error from balance:', error)
+              reject(error)
+            };
       });
     });
     return p;
@@ -202,12 +204,12 @@ export class HealthcashService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .transferOwnership(addr, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log('error transfer ownership:', error);
-          reject(error);
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log('error transfer ownership:', error);
+              reject(error);
+            };
       });
     });
     return p;
@@ -224,13 +226,13 @@ export class HealthcashService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .transferFrom(_from, _to, _value, (error, result) => {
-        if (!error) {
-          console.log('result contract test2:', result);
-          resolve(result);
-        } else {
-          console.log('error from test2:', error);
-          reject(error);
-        }
+            if (!error) {
+              console.log('result contract test2:', result);
+              resolve(result);
+            } else {
+              console.log('error from test2:', error);
+              reject(error);
+            }
       });
     });
     return p;
@@ -299,18 +301,18 @@ export class HealthcashService {
   connectToNode(): void { // Don't unlock until you send a transaction
     if (typeof window['web3'] !== 'undefined' && (!localStorage['nodeIP'] || 
         this.nodeIP === 'MetaMask')) {
-      localStorage['nodeIP'] = this.nodeIP;
-      this.web3 = new this.Web3(window['web3'].currentProvider);
-      this.nodeIP = 'MetaMask';
-      this.nodeConnected = true;
-      this.unlockedAccount = 'MetaMask';
-      this.update.emit(null);
-      this.handleConnection(this.web3.isConnected());
+          localStorage['nodeIP'] = this.nodeIP;
+          this.web3 = new this.Web3(window['web3'].currentProvider);
+          this.nodeIP = 'MetaMask';
+          this.nodeConnected = true;
+          this.unlockedAccount = 'MetaMask';
+          this.update.emit(null);
+          this.handleConnection(this.web3.isConnected());
     } else {
       localStorage['nodeIP'] = this.nodeIP;
       this.unlockedAccount = undefined;
       this.web3 = 
-        new this.Web3(new this.Web3.providers.HttpProvider(this.nodeIP));
+          new this.Web3(new this.Web3.providers.HttpProvider(this.nodeIP));
       this.handleConnection(this.web3.isConnected());
     };
   };

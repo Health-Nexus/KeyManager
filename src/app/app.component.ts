@@ -14,18 +14,18 @@ export class AppComponent implements OnInit {
   authorized: boolean = false;
 
   constructor(private drsService:DrsService,
-    private healthcashService:HealthcashService) {
-      if (!window.hasOwnProperty('web3')) {
-        return;
-      };
-      this.drsService.initializeWeb3();
-      this.healthcashService.initializeWeb3();
+      private healthcashService:HealthcashService) {
+        if (!window.hasOwnProperty('web3')) {
+          return;
+        };
+        this.drsService.initializeWeb3();
+        this.healthcashService.initializeWeb3();
   };
 
   ngOnInit() {
-    this.drsService.loginChanged$.subscribe(
-      authed => {
-        this.authorized = authed;
+    this.drsService.loginChanged$
+        .subscribe(authed => {
+          this.authorized = authed;
     });
 
     switch(this.drsService.web3.version.network) {

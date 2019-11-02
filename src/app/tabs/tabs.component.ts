@@ -15,13 +15,13 @@ export class TabsComponent implements OnInit {
   constructor(private drsService:DrsService) {};
 
   ngOnInit() {
-    this.drsService.parentKeyChanged$.subscribe(
-      selectedParent => {
-        this.selectedParentKey = selectedParent;
+    this.drsService.parentKeyChanged$
+        .subscribe(selectedParent => {
+          this.selectedParentKey = selectedParent;
     });
 
-    this.drsService.childKeyChanged$.subscribe(
-      selectedChild => {
+    this.drsService.childKeyChanged$
+    .subscribe(selectedChild => {
         this.selectedChildKey = selectedChild;
     });
   };

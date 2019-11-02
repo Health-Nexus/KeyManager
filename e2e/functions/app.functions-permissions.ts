@@ -13,14 +13,16 @@ let page: AppPage = new AppPage();
  */
 export async function navigateTestChild() {
    browser.wait(EC.presenceOf($$('#parentKeysList').get(0)), 20000);
-   let parentKey = await $$('#parentKeysList').get(0).getText().then(function (text) {
-      return text.substring(0, 63);
+   let parentKey = 
+         await $$('#parentKeysList').get(0).getText().then(function (text) {
+            return text.substring(0, 63);
    });
    browser.executeScript('window.scrollTo(0,500);');
    await $$('#parentKeysList').get(0).click();
    browser.wait(EC.presenceOf($$('#childKeysList').get(0)), 20000);
-   let managingParentKey = await $$('#managingParentKey').get(0).getText().then(function (text) {
-      return text.substring(0, 63);
+   let managingParentKey = 
+         await $$('#managingParentKey').get(0).getText().then(function (text) {
+            return text.substring(0, 63);
    });
    await $('#managingParentTitleText').getText().then(function (text) {
       expect(text).toBe("Managing parent key");
@@ -32,15 +34,17 @@ export async function navigateTestChild() {
    await $('#childKeyInfoText').getText().then(function (text) {
       expect(text).toBe("Generate the permissioned childkeys here to be traded");
    });
-   let childKey = await $$('#childKeysList').get(0).getText().then(function (text) {
-      return text.substring(0, 63);
+   let childKey = 
+         await $$('#childKeysList').get(0).getText().then(function (text) {
+            return text.substring(0, 63);
    });
    let firstKey = await $$('#childKeysList').get(0);
    await expect(firstKey.isDisplayed()).toBe(true); // expect at least 1 child key is present
    await $$('#childKeysList').get(0).click();
    browser.wait(EC.presenceOf($('#managingChildKey')), 20000);
-   let managingChildKey = await $('#managingChildKey').getText().then(function (text) {
-      return text.substring(0, 63);
+   let managingChildKey = 
+         await $('#managingChildKey').getText().then(function (text) {
+            return text.substring(0, 63);
    });
    await expect(managingChildKey).toBe(childKey);
    switchToTab1();
@@ -289,7 +293,8 @@ export async function shareDisplay() {
       expect(text).toBe("Share keys");
    });
    await $('#shareInfoText').getText().then(function (text) {
-      expect(text).toBe("Insert the address for the person you would like to share with:");
+      expect(text)
+            .toBe("Insert the address for the person you would like to share with:");
    });
    await expect($('#shareInput').isDisplayed()).toBe(true);
    await expect($('#shareBtn').isDisplayed()).toBe(true);
@@ -310,7 +315,8 @@ export async function unshareDisplay() {
       expect(text).toBe("Unshare keys");
    });
    await $('#unshareInfoText').getText().then(function (text) {
-      expect(text).toBe("Insert the address for the person you would like to unshare with:");
+      expect(text)
+            .toBe("Insert the address for the person you would like to unshare with:");
    });
    await expect($('#unshareInput').isDisplayed()).toBe(true);
    await expect($('#unshareBtn').isDisplayed()).toBe(true);
@@ -330,7 +336,8 @@ export async function saleDisplay() {
       expect(text).toBe("Make sale offer");
    });
    await $('#saleInfoText').getText().then(function (text) {
-      expect(text).toBe("Insert the address for the person you would like to make an offer to:")
+      expect(text)
+            .toBe("Insert the address for the person you would like to make an offer to:");
    });
    await expect($('#saleTo').isDisplayed()).toBe(true);
    await expect($('#saleAmount').isDisplayed()).toBe(true);

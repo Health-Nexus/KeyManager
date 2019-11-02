@@ -17,15 +17,15 @@ import 'rxjs/add/operator/map';
  */
 @Injectable()
 export class DrsService {
-
   @Output() update = new EventEmitter();
-  private mainContractAddr: string = ''        // Main net
-  private contractAddr: string = '0xF54a6dE3F1FE973c73BfBb9a5B35D3695Ea277D2'  // Rinkeby Default
-  private defaultNodeIP: string = 'MetaMask';  // Default node
-  private nodeIP: string;                      // Current nodeIP
-  private nodeConnected: boolean = true;       // If we've established a connection yet
-  //  private adding: boolean = false;         // If we're adding a question
-  private web3Instance: any;                   // Current instance of web3
+  private mainContractAddr: string = ''             // Main net
+  private contractAddr: string = 
+      '0xF54a6dE3F1FE973c73BfBb9a5B35D3695Ea277D2'; // Rinkeby Default
+  private defaultNodeIP: string = 'MetaMask';       // Default node
+  private nodeIP: string;                           // Current nodeIP
+  private nodeConnected: boolean = true;            // If we've established a connection yet
+  //  private adding: boolean = false;              // If we're adding a question
+  private web3Instance: any;                        // Current instance of web3
   private unlockedAccount: string;
   private contract: any;
   private _contract: any;
@@ -35,7 +35,6 @@ export class DrsService {
   private keyOwners: any;
   private keyNumber: number;
   private keyAccess: any;
-
   private selectedParentKey = new Subject<string>();
   private selectedChildKey = new Subject<string>();
   private authorized = new BehaviorSubject<boolean>(false);
@@ -66,29 +65,30 @@ export class DrsService {
   ngOnInit() {
     let self = this;
     this.contract = this.http.get("./data/HealthDRS.json")
-      .subscribe(result => {
-        this.contract = result;
-        this._contract = this.web3.eth.contract(this.contract.abi);
-        if (this.web3.version.network == 1) {
-          //User Main net contract Address
-          this.contractAddr = this.mainContractAddr;
-        };
-        // loaded with MetaMask
-        if (this.unlockedAccount) {
-          this.loadKeysAndServices();
-        };
-        new Promise<any>((resolve, reject) => {
-          this._contract.at(this.contractAddr).getKeyCount((error, result) => {
-            if (!error) {
-              this.keyNumber = result.c[0];
-              // resolve(result);
-            } else {
-              console.log('error from key count:', error);
-              // reject(error)
-            };
+        .subscribe(result => {
+          this.contract = result;
+          this._contract = this.web3.eth.contract(this.contract.abi);
+          if (this.web3.version.network == 1) {
+            //User Main net contract Address
+            this.contractAddr = this.mainContractAddr;
+          };
+          // loaded with MetaMask
+          if (this.unlockedAccount) {
+            this.loadKeysAndServices();
+          };
+          new Promise<any>((resolve, reject) => {
+            this._contract.at(this.contractAddr)
+                .getKeyCount((error, result) => {
+                  if (!error) {
+                    this.keyNumber = result.c[0];
+                    // resolve(result);
+                  } else {
+                    console.log('error from key count:', error);
+                    // reject(error)
+                  };
+            });
           });
         });
-      });
   };
 
   loadKeysAndServices() {
@@ -97,14 +97,14 @@ export class DrsService {
       function loadServices(next) {
         //gets a list of services
         let serviceEvent = self.web3.eth
-          .contract(self.contract.abi)
-          .at(self.contractAddr)
-          .ServiceCreated({}, {
-            fromBlock: 1649845,
-            toBlock: 'latest'
-          }, (err, event) => {
-            // console.log(err, event)
-          })
+            .contract(self.contract.abi)
+            .at(self.contractAddr)
+            .ServiceCreated({}, {
+              fromBlock: 1649845,
+              toBlock: 'latest'
+            }, (err, event) => {
+              // console.log(err, event)
+            })
         serviceEvent.get((error, results) => {
           // we have the results, now print them
           async.each(results, function(result, nextResult) {
@@ -118,14 +118,14 @@ export class DrsService {
       },
       function loadKeys(next) {
         let keyEvent = self.web3.eth
-          .contract(self.contract.abi)
-          .at(self.contractAddr)
-          .KeyCreated({}, {
-            fromBlock: 0,
-            toBlock: 'latest'
-          }, (err, event) => {
-            //console.log(err, event)
-          })
+            .contract(self.contract.abi)
+            .at(self.contractAddr)
+            .KeyCreated({}, {
+              fromBlock: 0,
+              toBlock: 'latest'
+            }, (err, event) => {
+              //console.log(err, event)
+            })
         keyEvent.get((error, results) => {
           // we have the results, now print them
           async.each(results, function(result, nextResult) {
@@ -154,21 +154,21 @@ export class DrsService {
                 } else {
                   //getUrlFromKey
                   self.isKeyOwner(args._key, self.unlockedAccount)
-                    .then(function(resultOwner) {
-                      if (resultOwner) {
-                        self.keyAccess[args._key] = { 'key': args._key };
-                        self.getUrlFromKey(args._key)
-                          .then(function(resultUrl) {
-                            self.keyAccess[args._key]['url'] = resultUrl;
-                        }.bind(self));
-                        self.getKeyInfo(args._key).then(function(keyResult) {
-                          self.keyAccess[args._key]['share'] = keyResult[1];
-                          self.keyAccess[args._key]['trade'] = keyResult[2];
-                          self.keyAccess[args._key]['sell'] = keyResult[3];
-                          self.keyAccess[args._key]['service'] = keyResult[4];
-                        });
-                      };
-                      done();
+                      .then(function(resultOwner) {
+                        if (resultOwner) {
+                          self.keyAccess[args._key] = { 'key': args._key };
+                          self.getUrlFromKey(args._key)
+                              .then(function(resultUrl) {
+                                self.keyAccess[args._key]['url'] = resultUrl;
+                          }.bind(self));
+                          self.getKeyInfo(args._key).then(function(keyResult) {
+                            self.keyAccess[args._key]['share'] = keyResult[1];
+                            self.keyAccess[args._key]['trade'] = keyResult[2];
+                            self.keyAccess[args._key]['sell'] = keyResult[3];
+                            self.keyAccess[args._key]['service'] = keyResult[4];
+                          });
+                        };
+                        done();
                     });
                 };
               }
@@ -179,11 +179,11 @@ export class DrsService {
       function loadServiceList(next) {
         self._contract = self.web3.eth.contract(self.contract.abi);
         self._contract.at(self.contractAddr)
-          .serviceList(3, (error, eventResult) => {
-            next();
-            if (error) {
-              console.log('3Error in myEvent event handler: ' + error);
-            } else {};
+            .serviceList(3, (error, eventResult) => {
+              next();
+              if (error) {
+                console.log('3Error in myEvent event handler: ' + error);
+              } else {};
         });
       }
     ], function(err) {
@@ -215,10 +215,10 @@ export class DrsService {
         this.web3.eth.defaultAccount || 
         this.web3.eth.accounts[0];
     let original_message = "DRS Message";
-    let message_hash = this.web3.sha3(
-      '\u0019Ethereum Signed Message:\n' +
-      original_message.length.toString() +
-      original_message
+    let message_hash = 
+        this.web3.sha3('\u0019Ethereum Signed Message:\n' +
+            original_message.length.toString() +
+            original_message
     );
     let p = new Promise<any>((resolve, reject) => {
       this.web3.eth.sign(signer, message_hash, function(err, res) {
@@ -228,19 +228,19 @@ export class DrsService {
           'Content-Type': 'application/octet-stream',
         });
         let url = 'http://' + 
-          urlKey + 
-          this.unlockedAccount + '/' + 
-          signature + '/' + 
-          message_hash + '/' + 
-          parameter + '/' + 
-          key;
+            urlKey + 
+            this.unlockedAccount + '/' + 
+            signature + '/' + 
+            message_hash + '/' + 
+            parameter + '/' + 
+            key;
         return this.http.get(url, {
           responseType: 'arraybuffer',
         })
-          .subscribe(result => {
-            console.log('result: ', result)
-            resolve(result);
-          })
+            .subscribe(result => {
+              console.log('result: ', result)
+              resolve(result);
+            })
       }.bind(this));
     });
 
@@ -263,10 +263,10 @@ export class DrsService {
         this.web3.eth.defaultAccount || 
         this.web3.eth.accounts[0];
     let original_message = "DRS Message";
-    let message_hash = this.web3.sha3(
-      '\u0019Ethereum Signed Message:\n' +
-      original_message.length.toString() +
-      original_message
+    let message_hash = this.web3
+        .sha3('\u0019Ethereum Signed Message:\n' +
+            original_message.length.toString() +
+            original_message
     );
     console.log("UPDATE PHUSE: ", urlKey, phuseNumber)
     let p = new Promise<any>((resolve, reject) => {
@@ -277,21 +277,22 @@ export class DrsService {
           'Content-Type': 'application/octet-stream',
         });
         let url = 'http://' + 
-          urlKey + 'register/' + 
-          this.unlockedAccount + '/' + 
-          signature + '/' + 
-          message_hash + '/' + 
-          phuseNumber;
-        return this.http.get(url, {
-          responseType: 'arraybuffer',
-        })
-          .subscribe(result => {
-            resolve(result);
-          })
+            urlKey + 'register/' + 
+            this.unlockedAccount + '/' + 
+            signature + '/' + 
+            message_hash + '/' + 
+            phuseNumber;
+        return this.http
+            .get(url, { 
+              responseType: 'arraybuffer', 
+            })
+            .subscribe(result => {
+              resolve(result);
+            })
       }.bind(this));
     });
     return p;
-  }
+  };
 
   /**
    * updatePhuse function.  Sends signed message to a gatekeeper, 
@@ -322,10 +323,10 @@ export class DrsService {
           'Content-Type': 'application/octet-stream',
         });
         let url = 'http://' + 
-          urlKey + 'upload/' + 
-          this.unlockedAccount + '/' + 
-          signature + '/' + 
-          message_hash;
+            urlKey + 'upload/' + 
+            this.unlockedAccount + '/' + 
+            signature + '/' + 
+            message_hash;
         const formData: FormData = new FormData();
         formData.append('fileKey', file, file.name);
         console.log("HERE", file);
@@ -398,11 +399,11 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .authorizedToSpend((error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              reject(error);
+            };
       });
     });
     return p;
@@ -418,12 +419,12 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .createService(url, (error, result) => {
-        if (!error) {
-          let result2 = this.web3.toAscii(result);
-          resolve(result2);
-        } else {
-          reject(error);
-        };
+            if (!error) {
+              let result2 = this.web3.toAscii(result);
+              resolve(result2);
+            } else {
+              reject(error);
+            };
       });
     });
     return p;
@@ -458,17 +459,17 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .owners(key, index, (error, result) => {
-        if (!error) {
-          if (result != '0x') {
-            finalResult.push(result)
-            resolve(this.getKeyOwners(key, index + 1, finalResult));
-          } else {
-            resolve(finalResult);
-          }
-        } else {
-          console.log('error from:', error)
-          reject(error);
-        }
+            if (!error) {
+              if (result != '0x') {
+                finalResult.push(result)
+                resolve(this.getKeyOwners(key, index + 1, finalResult));
+              } else {
+                resolve(finalResult);
+              }
+            } else {
+              console.log('error from:', error)
+              reject(error);
+            }
       });
     });
     return p;
@@ -482,13 +483,13 @@ export class DrsService {
   getServiceIds(index): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
-        .serviceList(index, (error, result) => {
-          if (!error) {
-            resolve(result);
-          } else {
-            console.log(error)
-            reject(error);
-          };
+          .serviceList(index, (error, result) => {
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+              reject(error);
+            };
       });
     })
     return p;
@@ -505,12 +506,12 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .isKeyOwner(key, account, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-          reject(error);
-        }
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+              reject(error);
+            }
       });
     })
     return p;
@@ -519,37 +520,40 @@ export class DrsService {
   /**
    * getServiceURL function.  Retrieves URL for service
    * @param id:  id of service to retrieve url
-   * @return {json} error or success.  Success contains a json object with the url
+   * @return {json} error or success.  Success contains a 
+   * json object with the url
    */
   getServiceURL(id): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .getUrl(id, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log('error:', error)
-          reject(error);
-        }
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log('error:', error)
+              reject(error);
+            }
       });
     })
     return p;
   };
 
   /**
-   * isServiceOwner function.  Determines if user is a service owner of given service
+   * isServiceOwner function.  Determines if user is a 
+   * service owner of given service
    * @param id:  id of service to check for ownership
-   * @return {json} error or success.  Success contains a boolean of if its a owner or not
+   * @return {json} error or success.  Success contains a 
+   * boolean of if its a owner or not
    */
   isServiceOwner(id): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .isServiceOwner(id, this.unlockedAccount, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        }
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            }
       });
     })
     return p;
@@ -565,11 +569,11 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .shareService(id, account, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        }
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            }
       });
     });
     return p;
@@ -579,17 +583,18 @@ export class DrsService {
    * unshareService function. Unshares a given service
    * @param id:  id of service to share
    * @param account:  address of user to share with
-   * @return {json} error or success.  Success contains a boolean for successful unsharing
+   * @return {json} error or success.  Success contains a 
+   * boolean for successful unsharing
    */
   unshareService(id, account): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .unshareService(id, account, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        }
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            }
       });
     })
     return p;
@@ -599,56 +604,61 @@ export class DrsService {
    * updateURL function. Updates the URL of a given service
    * @param id:  id of service to update
    * @param url:  Url to update to
-   * @return {json} error or success.  Success contains a boolean for successful update
+   * @return {json} error or success.  Success contains a 
+   * boolean for successful update
    */
   updateURL(id, url): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .updateUrl(id, url, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        }
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            }
       });
     });
     return p;
   };
 
   /**
-   * createKey function. Creates a key for the given service for the current user
+   * createKey function. Creates a key for the given 
+   * service for the current user
    * @param id:  id of the service to create a key for
-   * @return {json} error or success.  Success contains a boolean for successful create
+   * @return {json} error or success.  Success contains a 
+   * boolean for successful create
    */
   createKey(id): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .createKey(id, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        }
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            }
       });
     });
     return p;
   };
 
   /**
-   * issueKey function.  Creates a key for the given service for the current user
+   * issueKey function.  Creates a key for the given service 
+   * for the current user
    * @param id:  id of the service to create a key for
    * @param address:  address of the user
-   * @return {json} error or success.  Success contains a boolean for successful create
+   * @return {json} error or success.  Success contains a 
+   * boolean for successful create
    */
   issueKey(id, address): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .issueKey(id, address, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            };
       });
     });
     return p;
@@ -670,11 +680,11 @@ export class DrsService {
           canTrade, 
           canSell, 
           (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            };
       });
     });
     return p;
@@ -690,12 +700,12 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .shareKey(key, account, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              reject(error);
+              console.log(error)
+            };
       });
     });
     return p;
@@ -712,159 +722,173 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .unshareKey(key, account, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            };
       });
     });
     return p;
   };
 
   /**
-   * createSalesOffer function. creates a sales offer for a given key and buyer
+   * createSalesOffer function. creates a sales offer 
+   * for a given key and buyer
    * @param key:  id of key to offer
    * @param buyer:  address of buyer to share with
    * @param price:  amount to sell for
    * @param canSell:  ability to sell
-   * @return {json} error or success.  Success contains a boolean for 
+   * @return {json} error or success.  Success contains a 
+   * boolean for 
    * successful create sales offer
    */
   createSalesOffer(key, buyer, price, canSell): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .createSalesOffer(key, buyer, price, canSell, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              reject(error);
+              console.log(error)
+            };
       });
     });
     return p;
   };
 
   /**
-   * cancelSalesOffer function. cancels all sales offers for a given key
+   * cancelSalesOffer function. cancels all sales offers 
+   * for a given key
    * @param key:  id of key to cancel all offers for
-   * @return {json} error or success.  Success contains a boolean for successful cancel
+   * @return {json} error or success.  Success contains a 
+   * boolean for successful cancel
    */
   cancelSalesOffer(key): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .cancelSalesOffer(key, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              reject(error);
+              console.log(error)
+            };
       });
     });
     return p;
   };
 
   /**
-   * purchaseKey function. Purchase a key with an outstanding offer
+   * purchaseKey function. Purchase a key with an 
+   * outstanding offer
    * @param key:  id of key to purchase
-   * @return {json} error or success.  Success contains a boolean for successful unsharing
+   * @return {json} error or success.  Success contains a 
+   * boolean for successful unsharing
    */
   purchaseKey(key): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .purchaseKey(key, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              reject(error);
+              console.log(error)
+            };
       });
     });
     return p;
   };
 
   /**
-   * tradeKey function. trades a key with a second key if there is a pending offer
+   * tradeKey function. trades a key with a second key if 
+   * there is a pending offer
    * @param key1:  id of key1 to trade
    * @param key2:  id of key2 to trade
-   * @return {json} error or success.  Success contains a boolean for successful trade
+   * @return {json} error or success.  Success contains a 
+   * boolean for successful trade
    */
   tradeKey(key1, key2): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .tradeKey(key1, key2, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-          console.log(error)
-        }
+            if (!error) {
+              resolve(result);
+            } else {
+              reject(error);
+              console.log(error)
+            }
       });
     });
     return p;
   };
 
   /**
-   * CreateTradeKeyOffer function. creates a trade offer for a key and a second key
+   * CreateTradeKeyOffer function. creates a trade offer for
+   * a key and a second key
    * @param key1:  id of key1 to trade
    * @param key2:  id of key2 to trade
-   * @return {json} error or success.  Success contains a boolean for successful trade offer
+   * @return {json} error or success.  Success contains a 
+   * boolean for successful trade offer
    */
   CreateTradeKeyOffer(key1, key2): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .createTradeOffer(key1, key2, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              reject(error);
+              console.log(error)
+            };
       });
     });
     return p;
   };
 
   /**
-   * cancelTradeKey function. cancels all trade offers for a given key
+   * cancelTradeKey function. cancels all trade offers for 
+   * a given key
    * @param key:  id of key to cancel trade offers
-   * @return {json} error or success.  Success contains a boolean for successful cancel
+   * @return {json} error or success.  Success contains a 
+   * boolean for successful cancel
    */
   cancelTradeKey(key): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .cancelTradeOffer(key, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              reject(error);
+              console.log(error)
+            };
       });
     });
     return p;
   };
 
   /**
-   * setKeyData function. creates or updates a datavalue on a key
+   * setKeyData function. creates or updates a datavalue on 
+   * a key
    * @param key:  id of key to create data for
    * @param dataKey:  parameter name of the data
    * @param dataValue:  the data
-   * @return {json} error or success.  Success contains a boolean for creation
+   * @return {json} error or success.  Success contains a 
+   * boolean for creation
    */
   setKeyData(key, dataKey, dataValue): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .setKeyData(key.toString(), dataKey, dataValue, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              reject(error);
+              console.log(error)
+            };
       });
     });
     return p;
@@ -873,19 +897,20 @@ export class DrsService {
   /**
    * getKeyInfo function. gets basic infomraiton on key
    * @param key:  id of key to get data on
-   * @return {json} error or success.  Json contains owner, canShare, canSell, canTrade, and parent service values
+   * @return {json} error or success.  Json contains owner, 
+   * canShare, canSell, canTrade, and parent service values
    */
   getKeyInfo(key): any {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .getKey(key, (error, result) => {
-        if (!error) {
-          result.push(key)
-          resolve(result);
-        } else {
-          console.log(error)
-          reject(error);
-        };
+            if (!error) {
+              result.push(key)
+              resolve(result);
+            } else {
+              console.log(error)
+              reject(error);
+            };
       });
     });
     return p;
@@ -915,13 +940,13 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .getKeyData(key, dataKey, (error, result) => {
-        if (!error) {
-          result = this.hexToAscii(result)
-          resolve(result);
-        } else {
-          reject(error);
-          console.log(error)
-        };
+            if (!error) {
+              result = this.hexToAscii(result)
+              resolve(result);
+            } else {
+              reject(error);
+              console.log(error)
+            };
       });
     });
     return p;
@@ -936,11 +961,11 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .getUrlFromKey(key, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            };
       });
     });
     return p;
@@ -956,11 +981,11 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .logAccess(key, data, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            };
       });
     });
     return p;
@@ -978,11 +1003,11 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .message(from, to, category, data, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            };
       });
     });
     return p;
@@ -998,11 +1023,11 @@ export class DrsService {
     let p = new Promise<any>((resolve, reject) => {
       this._contract.at(this.contractAddr)
           .log(from, data, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          console.log(error)
-        };
+            if (!error) {
+              resolve(result);
+            } else {
+              console.log(error)
+            };
       });
     });
     return p;
