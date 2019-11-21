@@ -1,10 +1,10 @@
 'use strict';
 
-var protractor = require('protractor');
-var browser = require("protractor").protractor.browser;
+let protractor = require('protractor');
+let browser = require("protractor").protractor.browser;
 let EC = ExpectedConditions;
 
-var pageParent = function () {
+let pageParent = function () {
    browser.get('localhost:4200');
 };
 

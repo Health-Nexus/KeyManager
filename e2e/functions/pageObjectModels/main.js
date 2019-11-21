@@ -1,10 +1,10 @@
 'use strict';
 
-var protractor = require('protractor');
-var browser = require("protractor").protractor.browser;
-let EC = ExpectedConditions;ß
+let protractor = require('protractor');
+let browser = require("protractor").protractor.browser;
+let EC = ExpectedConditions;
 
-var pageMain = function () {
+let pageMain = function () {
    browser.get('localhost:4200');
 };
 
@@ -33,7 +33,7 @@ pageMain.prototype = Object.create({}, {
          return $$("#parentKeysList").get(num);
       }
    },
-   parentKeyAddress:{
+   parentKeyAddress: {
       get: (num) => {
          browser.wait(EC.presenceOf($$("#parentKeysList").get(num)), 20000);
          let address = $$("#parentKeysList").get(num).getText().then((text) => {
@@ -120,6 +120,7 @@ pageMain.prototype = Object.create({}, {
          return $('#ownedKeysTitleText').last();
       }
    }
+
 });
 
 module.exports = pageMain;

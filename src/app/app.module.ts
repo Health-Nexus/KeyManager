@@ -35,4 +35,4 @@ import { NgxPaginationModule } from 'ngx-pagination';
   providers: [DrsService, HealthcashService, HttpClientModule, WindowRefService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
