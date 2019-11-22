@@ -14,11 +14,14 @@ export class WelcomeComponent implements OnInit {
     console.log(window);
 
     window.addEventListener('load', async () => {
-      const Web3 = require('web3');
+      const Eth = require('ethjs');
+      let eth = new Eth(new Eth.HttpProvider('https://rinkeby.infura.io'));
+      // const Web3 = require('web3');
       // Modern dapp browsers...
-      let web3: any;
+      // let web3: any;
       if ((window as any)['ethereum']) {
-        web3 = new Web3((window as any)['ethereum']);
+        // web3 = new Web3((window as any)['ethereum']);
+        eth = new Eth(new Eth.HttpProvider('https://rinkeby.infura.io'));
         try {
           // Request account access if needed
           let res = await (window as any)['ethereum'].enable();
@@ -29,7 +32,8 @@ export class WelcomeComponent implements OnInit {
       }
       // Legacy dapp browsers...
       else if ((window as any)['web3']) {
-        web3 = new Web3((window as any)['web3'].currentProvider);
+        // web3 = new Web3((window as any)['web3'].currentProvider);
+        eth = new Eth(new Eth.HttpProvider('https://rinkeby.infura.io'));
         // Acccounts always exposed
       }
       // Non-dapp browsers...
